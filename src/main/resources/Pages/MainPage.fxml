@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.12"
+      fx:controller="chiloven.xamlsorter.Controllers.MainController">
+    <children>
+        <!-- 顶部菜单栏 -->
+        <MenuBar>
+            <menus>
+                <Menu text="File">
+                    <items>
+                        <MenuItem onAction="#handleImportOriginalFile" text="Open original XAML..."/>
+                        <MenuItem onAction="#handleImportTargetFile" text="Import target XAML..."/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Save"/>
+                        <MenuItem text="Save as..."/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Exit"/>
+                    </items>
+                </Menu>
+                <Menu text="Edit">
+                    <items>
+                        <MenuItem text="Undo"/>
+                        <MenuItem text="Redo"/>
+                    </items>
+                </Menu>
+                <Menu text="Help">
+                    <items>
+                        <MenuItem text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+
+        <!-- 表格显示部分 -->
+        <TreeTableView fx:id="translationTreeTable" prefHeight="488.0" prefWidth="776.0" VBox.vgrow="ALWAYS">
+            <columns>
+                <TreeTableColumn fx:id="keyColumn" prefWidth="250.0" text="Key"/>
+                <TreeTableColumn fx:id="originalColumn" prefWidth="250.0" text="Original Text"/>
+                <TreeTableColumn fx:id="translatedColumn" prefWidth="250.0" text="Translated Text"/>
+            </columns>
+            <VBox.margin>
+                <Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
+            </VBox.margin>
+        </TreeTableView>
+        <Button mnemonicParsing="false" onAction="#handleAddEntry" text="Add entry">
+            <VBox.margin>
+                <Insets bottom="8.0" left="8.0" right="8.0"/>
+            </VBox.margin>
+        </Button>
+    </children>
+</VBox>
