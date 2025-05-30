@@ -1,40 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-
 <?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
-<VBox xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="chiloven.xamlsorter.Controllers.RegexEditDialogController"
-      spacing="10">
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<?import java.lang.*?>
+<DialogPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
+            fx:controller="chiloven.xamlsorter.Controllers.RegexEditDialogController">
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10" />
+        <Insets bottom="10" left="10" right="10" top="10"/>
     </padding>
+    <content>
+        <VBox spacing="10">
+            <Label text="Regex Pattern:"/>
+            <TextField fx:id="patternField"/>
 
-    <Label text="Regex Pattern:" />
-    <TextField fx:id="patternField" />
+            <Label text="Replacement:"/>
+            <TextField fx:id="replacementField"/>
 
-    <Label text="Replacement:" />
-    <TextField fx:id="replacementField" />
+            <Label text="Apply Scope:"/>
+            <ComboBox fx:id="scopeComboBox">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Current Group"/>
+                        <String fx:value="All Groups"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
 
-    <Label text="Apply Scope:" />
-    <ComboBox fx:id="scopeComboBox">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-                <String fx:value="Current Group" />
-                <String fx:value="All Groups" />
-            </FXCollections>
-        </items>
-    </ComboBox>
+            <Label text="Select Replacement Target:"/>
+            <ComboBox fx:id="replaceTargetComboBox">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Original Text"/>
+                        <String fx:value="Translated Text"/>
+                        <String fx:value="Key"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
 
-    <Button text="Preview Matches" onAction="#handlePreview" />
-    <TextArea fx:id="previewArea" editable="false" prefHeight="200" />
+            <Button text="Preview Matches" onAction="#handlePreview"/>
 
-    <HBox alignment="CENTER_RIGHT" spacing="10">
-        <Button text="Cancel" onAction="#handleCancel" />
-        <Button text="Apply" onAction="#handleApply" />
-    </HBox>
-</VBox>
+            <!-- TreeTableView to show the preview data -->
+            <TreeTableView fx:id="previewTreeTable" prefHeight="200"/>
+        </VBox>
+    </content>
+
+    <!-- Dialog will automatically add the Apply and Cancel buttons -->
+</DialogPane>

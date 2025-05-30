@@ -9,6 +9,5 @@
         <MenuItem fx:id="copyItem" text="Copy" onAction="#handleCopy"/>
         <MenuItem fx:id="cutItem" text="Cut" onAction="#handleCut"/>
         <MenuItem fx:id="pasteItem" text="Paste" onAction="#handlePaste"/>
-        <MenuItem fx:id="regexEditItem" text="Batch Regex Edit" onAction="#handleRegexEdit"/>
     </items>
 </ContextMenu>

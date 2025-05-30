@@ -2,8 +2,10 @@ package chiloven.xamlsorter.Controllers;
 
 import chiloven.xamlsorter.Modules.DataItem;
 import chiloven.xamlsorter.Modules.ShowAlert;
+import chiloven.xamlsorter.Modules.SortAndRefresher;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.stage.FileChooser;
@@ -22,11 +24,11 @@ import java.util.stream.Collectors;
 
 public class MainController {
     private static final Logger logger = LogManager.getLogger(MainController.class);
+    public final Map<String, List<DataItem>> groupedData = new HashMap<>();
     private final ShowAlert alert = new ShowAlert();
-    private final Map<String, List<DataItem>> groupedData = new HashMap<>();
     public DataItem clipboard;
     @FXML
-    private TreeTableView<DataItem> translationTreeTable;
+    public TreeTableView<DataItem> translationTreeTable;
     @FXML
     private TreeTableColumn<DataItem, String> keyColumn;
     @FXML
@@ -60,7 +62,7 @@ public class MainController {
             if (item.getKey().endsWith("...")) {
                 logger.warn("Editing group rows is not allowed.");
                 alert.showAlert(Alert.AlertType.WARNING, "Warning", "Editing group rows is not allowed.");
-                sortAndRefresh();  // 强制刷新防止意外修改
+                SortAndRefresher.refresh(translationTreeTable, groupedData);
                 return;
             }
 
@@ -84,7 +86,7 @@ public class MainController {
             // 放入新分组
             groupedData.computeIfAbsent(newCategory, k -> new ArrayList<>()).add(item);
 
-            sortAndRefresh();
+            SortAndRefresher.refresh(translationTreeTable, groupedData);
         });
 
         originalColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue().getOriginalText()));
@@ -222,37 +224,35 @@ public class MainController {
             DataItem newItem = new DataItem(category, newKey, "New Original", "New Translation");
 
             groupedData.computeIfAbsent(category, k -> new ArrayList<>()).add(newItem);
-            sortAndRefresh();
+            SortAndRefresher.refresh(translationTreeTable, groupedData);
         });
     }
 
-    private void sortAndRefresh() {
-        // 对每个组内条目按 key 排序
-        groupedData.values().forEach(list ->
-                list.sort(Comparator.comparing(DataItem::getKey))
-        );
+    @FXML
+    private void handleRegexEdit() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Dialogs/RegexEditDialog.fxml"));
+            DialogPane dialogPane = loader.load();
 
-        // 对分组按组名排序（可选）
-        Map<String, List<DataItem>> sortedGroupedData = new TreeMap<>(groupedData);
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setDialogPane(dialogPane);
+            dialog.setTitle("Batch Regex Edit");
 
-        TreeItem<DataItem> root = new TreeItem<>(new DataItem("", "", "", ""));
-        root.setExpanded(true);
+            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.APPLY, ButtonType.CANCEL);
 
-        for (Map.Entry<String, List<DataItem>> entry : sortedGroupedData.entrySet()) {
-            String category = entry.getKey();
-            List<DataItem> items = entry.getValue();
+            RegexEditDialogController controller = loader.getController();
+            controller.setData(groupedData, null);
 
-            DataItem categoryItem = new DataItem(category, category + "...", "-", "-");
-            TreeItem<DataItem> categoryNode = new TreeItem<>(categoryItem);
+            Optional<ButtonType> result = dialog.showAndWait();
 
-            for (DataItem item : items) {
-                categoryNode.getChildren().add(new TreeItem<>(item));
+            if (result.isPresent() && result.get() == ButtonType.APPLY) {
+                controller.applyChanges();  // 主动调用控制器的应用方法
+                SortAndRefresher.refresh(translationTreeTable, groupedData);
             }
-            root.getChildren().add(categoryNode);
+        } catch (Exception e) {
+            logger.error("Failed to open regex edit dialog", e);
         }
-
-        translationTreeTable.setRoot(root);
-        translationTreeTable.setShowRoot(false);
     }
+
 
 }

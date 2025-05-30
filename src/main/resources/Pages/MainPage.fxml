@@ -20,10 +20,20 @@
                         <MenuItem text="Exit"/>
                     </items>
                 </Menu>
-                <Menu text="Edit">
+                <Menu mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem text="Undo"/>
-                        <MenuItem text="Redo"/>
+                        <MenuItem mnemonicParsing="false" text="Undo"/>
+                        <MenuItem mnemonicParsing="false" text="Redo"/>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem mnemonicParsing="false" text="Cut"/>
+                        <MenuItem mnemonicParsing="false" text="Copy"/>
+                        <MenuItem mnemonicParsing="false" text="Paste"/>
+                        <MenuItem mnemonicParsing="false" text="Delete"/>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem mnemonicParsing="false" text="Select All"/>
+                        <MenuItem mnemonicParsing="false" text="Unselect All"/>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem mnemonicParsing="false" text="Batch Regex Edit" onAction="#handleRegexEdit"/>
                     </items>
                 </Menu>
                 <Menu text="Help">
