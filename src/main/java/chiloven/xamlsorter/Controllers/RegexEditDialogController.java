@@ -1,6 +1,7 @@
 package chiloven.xamlsorter.Controllers;
 
-import chiloven.xamlsorter.Modules.*;
+import chiloven.xamlsorter.Modules.DataItem;
+import chiloven.xamlsorter.Modules.SortAndRefresher;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.apache.logging.log4j.LogManager;
@@ -15,22 +16,32 @@ import java.util.function.BiConsumer;
 public class RegexEditDialogController {
     private static final Logger logger = LogManager.getLogger(RegexEditDialogController.class);
 
-    @FXML private TextField patternField;
-    @FXML private TextField replacementField;
-    @FXML private ComboBox<String> scopeComboBox;
-    @FXML private ComboBox<String> replaceTargetComboBox;
-    @FXML private TreeTableView<DataItem> previewTreeTable;
-    @FXML private TreeTableColumn<DataItem, String> keyColumn;
-    @FXML private TreeTableColumn<DataItem, String> originalTextColumn;
-    @FXML private TreeTableColumn<DataItem, String> translatedTextColumn;
+    @FXML
+    private TextField patternField;
+    @FXML
+    private TextField replacementField;
+    @FXML
+    private ComboBox<String> scopeComboBox;
+    @FXML
+    private ComboBox<String> replaceTargetComboBox;
+    @FXML
+    private TreeTableView<DataItem> previewTreeTable;
+    @FXML
+    private TreeTableColumn<DataItem, String> keyColumn;
+    @FXML
+    private TreeTableColumn<DataItem, String> originalTextColumn;
+    @FXML
+    private TreeTableColumn<DataItem, String> translatedTextColumn;
 
     private Map<String, List<DataItem>> groupedData;
     private String targetCategory;
 
     public void setData(Map<String, List<DataItem>> groupedData, String targetCategory) {
+        // Initialize the dialog with the provided grouped data and target category
         this.groupedData = groupedData;
         this.targetCategory = targetCategory;
 
+        // Set up the combo boxes with default values
         scopeComboBox.getSelectionModel().select("Current Group");
         replaceTargetComboBox.getSelectionModel().select("Original Text");
 
@@ -53,11 +64,13 @@ public class RegexEditDialogController {
     // Method to handle the preview button click
     @FXML
     private void handlePreview() {
+        // Get the regex pattern, replacement, scope, and target from the UI
         String pattern = patternField.getText();
         String replacement = replacementField.getText();
         String scope = scopeComboBox.getValue();
         String replaceTarget = replaceTargetComboBox.getValue();
 
+        // Process the grouped data and refresh the preview TreeTableView
         Map<String, List<DataItem>> previewGroupedData = processGroupedData(pattern, replacement, scope, replaceTarget, true);
         SortAndRefresher.refresh(previewTreeTable, previewGroupedData, pattern, replacement, replaceTarget);
         logger.info("Preview applied with pattern: {}, replacement: {}, scope: {}, target: {}",
@@ -66,12 +79,15 @@ public class RegexEditDialogController {
 
     // Method to apply changes based on the regex pattern and replacement
     public void applyChanges() {
+        // Get the regex pattern, replacement, scope, and target from the UI
         String pattern = patternField.getText();
         String replacement = replacementField.getText();
         String scope = scopeComboBox.getValue();
         String replaceTarget = replaceTargetComboBox.getValue();
 
+        // Process the grouped data and apply changes
         processGroupedData(pattern, replacement, scope, replaceTarget, false);
+
         logger.info("Changes applied with pattern: {}, replacement: {}, scope: {}, target: {}",
                 pattern, replacement, scope, replaceTarget);
     }
@@ -134,20 +150,21 @@ public class RegexEditDialogController {
     }
 
     /**
-     * Applies the regex replacement to the specified DataItem based on the replace target.
+     * Applies the regex replacement to the specified DataItem based on the replacement target.
      *
-     * @param item the DataItem to apply the replacement to
-     * @param pattern the regex pattern to match
-     * @param replacement the replacement string for the matched pattern
+     * @param item          the DataItem to apply the replacement to
+     * @param pattern       the regex pattern to match
+     * @param replacement   the replacement string for the matched pattern
      * @param replaceTarget the target field to apply the replacement on (e.g., "Key", "Original Text", "Translated Text")
-     *
-     * @throws IllegalStateException if the replace target is not recognized
+     * @throws IllegalStateException if the replacement target is not recognized
      */
     private void applyToItem(DataItem item, String pattern, String replacement, String replaceTarget) {
         try {
+            // Apply the regex replacement based on the target field
             switch (replaceTarget) {
                 case "Original Text" -> item.setOriginalText(item.getOriginalText().replaceAll(pattern, replacement));
-                case "Translated Text" -> item.setTranslatedText(item.getTranslatedText().replaceAll(pattern, replacement));
+                case "Translated Text" ->
+                        item.setTranslatedText(item.getTranslatedText().replaceAll(pattern, replacement));
                 case "Key" -> item.setKey(item.getKey().replaceAll(pattern, replacement));
                 default -> throw new IllegalStateException("Unexpected value: " + replaceTarget);
             }

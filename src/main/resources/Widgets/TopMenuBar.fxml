@@ -20,13 +20,15 @@
                 <MenuItem text="Undo"/>
                 <MenuItem text="Redo"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Cut"/>
-                <MenuItem text="Copy"/>
-                <MenuItem text="Paste"/>
-                <MenuItem text="Delete"/>
+                <MenuItem text="Cut" onAction="#handleCut"/>
+                <MenuItem text="Copy" onAction="#handleCopy"/>
+                <MenuItem text="Paste" onAction="#handlePaste"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Select All"/>
-                <MenuItem text="Unselect All"/>
+                <MenuItem text="Delete" onAction="#handleDelete"/>
+                <MenuItem text="Add entry..." onAction="#handleAdd"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="Select All" onAction="#handleSelectAll"/>
+                <MenuItem text="Unselect All" onAction="#handleUnselectAll"/>
                 <SeparatorMenuItem/>
                 <MenuItem text="Batch Regex Edit" onAction="#handleRegexEdit"/>
             </items>

@@ -10,20 +10,26 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainController {
     private static final Logger logger = LogManager.getLogger(MainController.class);
     private final ShowAlert alert = new ShowAlert();
 
     private final Map<String, List<DataItem>> groupedData = new HashMap<>();
-    public DataItem clipboard;
 
-    @FXML private VBox rootContainer;
-    @FXML private TreeTableView<DataItem> translationTreeTable;
-    @FXML private TreeTableColumn<DataItem, String> keyColumn;
-    @FXML private TreeTableColumn<DataItem, String> originalColumn;
-    @FXML private TreeTableColumn<DataItem, String> translatedColumn;
+    @FXML
+    private VBox rootContainer;
+    @FXML
+    private TreeTableView<DataItem> translationTreeTable;
+    @FXML
+    private TreeTableColumn<DataItem, String> keyColumn;
+    @FXML
+    private TreeTableColumn<DataItem, String> originalColumn;
+    @FXML
+    private TreeTableColumn<DataItem, String> translatedColumn;
 
     @FXML
     public void initialize() {
@@ -35,7 +41,7 @@ public class MainController {
             TopMenuBarController topMenuBarController = loader.getController();
             topMenuBarController.setMainController(this);
 
-            rootContainer.getChildren().add(0, topMenuBar);
+            rootContainer.getChildren().addFirst(topMenuBar);
         } catch (IOException e) {
             logger.error("Failed to load top menu bar", e);
         }
@@ -65,7 +71,7 @@ public class MainController {
                     ContextMenu menu = loader.load();
 
                     ContextMenuController controller = loader.getController();
-                    controller.initializeMenu(groupedData, translationTreeTable, targetItem, clipboard);
+                    controller.initializeMenu(groupedData, translationTreeTable, targetItem);
 
                     menu.show(row, event.getScreenX(), event.getScreenY());
                     event.consume();
@@ -83,7 +89,7 @@ public class MainController {
                 ContextMenu menu = loader.load();
 
                 ContextMenuController controller = loader.getController();
-                controller.initializeMenu(groupedData, translationTreeTable, null, clipboard);
+                controller.initializeMenu(groupedData, translationTreeTable, null);
 
                 menu.show(translationTreeTable, event.getScreenX(), event.getScreenY());
                 event.consume();

@@ -1,5 +1,6 @@
 package chiloven.xamlsorter.Modules;
 
+import javafx.concurrent.Task;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -19,49 +20,72 @@ public class FileProcessor {
     private static final Logger logger = LogManager.getLogger(FileProcessor.class);
 
     /**
-     * Analyze a XAML file and extract data items.
+     * Creates a task to parse a XAML file and extract data items.
      *
      * @param file          the XAML file to parse
-     * @param isTranslation if true, treat the file as a translation file; if false, treat it as an original file
-     * @return a list of DataItem objects extracted from the file
+     * @param isTranslation if true, treats the file as a translation file; otherwise, as an original file
+     * @return a Task that processes the file and returns a list of DataItem objects
      */
-    public static List<DataItem> parseXamlFile(File file, boolean isTranslation) {
-        List<DataItem> items = new ArrayList<>();
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
+    public static Task<List<DataItem>> createParseXamlTask(File file, boolean isTranslation) {
+        return new Task<>() {
+            @Override
+            protected List<DataItem> call() {
+                List<DataItem> items = new ArrayList<>();
+                try {
+                    // Initialize the XML parser
+                    updateMessage("Starting parse...");
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setNamespaceAware(true);
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    Document doc = builder.parse(file);
 
-            NodeList allNodes = doc.getDocumentElement().getChildNodes();
+                    // Normalize the document
+                    NodeList allNodes = doc.getDocumentElement().getChildNodes();
+                    int total = allNodes.getLength();
+                    int processed = 0;
 
-            // Iterate all nodes and extract String elements
-            for (int i = 0; i < allNodes.getLength(); i++) {
-                Node node = allNodes.item(i);
-                // Check if the node is an element and has the local name "String"
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element elem = (Element) node;
-                    String localName = elem.getLocalName();
-
-                    // Check if the element is a String element
-                    if ("String".equals(localName)) {
-                        String key = elem.getAttribute("x:Key");
-                        String value = elem.getTextContent().trim();
-                        String category = key.contains(".") ? key.split("\\.")[0] : "uncategorized";
-
-                        // Create a DataItem based on whether it's a translation or original file
-                        if (isTranslation) {
-                            items.add(new DataItem(category, key, "", value));
-                        } else {
-                            items.add(new DataItem(category, key, value, ""));
+                    // Iterate through all nodes and extract String elements
+                    for (int i = 0; i < total; i++) {
+                        if (isCancelled()) {
+                            updateMessage("Cancelled.");
+                            break;
                         }
+
+                        // Check if the node is an element node
+                        Node node = allNodes.item(i);
+                        if (node.getNodeType() == Node.ELEMENT_NODE) {
+                            Element elem = (Element) node;
+                            String localName = elem.getLocalName();
+
+                            // Process only String elements
+                            if ("String".equals(localName)) {
+                                String key = elem.getAttribute("x:Key");
+                                String value = elem.getTextContent().trim();
+                                String category = key.contains(".") ? key.split("\\.")[0] : "uncategorized";
+
+                                // Create a DataItem based on whether it's a translation or original file
+                                if (isTranslation) {
+                                    items.add(new DataItem(category, key, "", value));
+                                } else {
+                                    items.add(new DataItem(category, key, value, ""));
+                                }
+                            }
+                        }
+
+                        // Update progress and message
+                        processed++;
+                        updateProgress(processed, total);
+                        updateMessage("Processed " + processed + " of " + total);
                     }
+                    // Finished processing
+                    updateMessage("Finished.");
+                } catch (Exception e) {
+                    logger.error("Error parsing XAML file: {}", file.getAbsolutePath(), e);
+                    updateMessage("Error: " + e.getMessage());
                 }
+                return items;
             }
-        } catch (Exception e) {
-            logger.error("Error parsing XAML file: {}", file.getAbsolutePath(), e);
-        }
-        return items;
+        };
     }
 
     // Group DataItems by category
@@ -84,6 +108,4 @@ public class FileProcessor {
             }
         }
     }
-
-    // Other utility methods can be added here as needed
 }

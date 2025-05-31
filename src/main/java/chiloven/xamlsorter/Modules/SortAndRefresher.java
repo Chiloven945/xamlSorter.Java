@@ -55,13 +55,15 @@ public class SortAndRefresher {
             String category = entry.getKey();
             List<DataItem> items = entry.getValue();
 
-            String displayCategory = (replaceTarget != null && "Key".equals(replaceTarget)) ?
+            String displayCategory = ("Key".equals(replaceTarget)) ?
                     category.replaceAll(pattern, replacement) : category;
 
+            // Create a new DataItem for the category
             DataItem categoryItem = new DataItem(displayCategory, displayCategory + "...", "-", "-");
             TreeItem<DataItem> categoryNode = new TreeItem<>(categoryItem);
             categoryNode.setExpanded(true);
 
+            // Add items to the category node
             for (DataItem item : items) {
                 categoryNode.getChildren().add(new TreeItem<>(item));
             }

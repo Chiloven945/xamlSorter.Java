@@ -1,97 +1,102 @@
 package chiloven.xamlsorter.Controllers;
 
-import chiloven.xamlsorter.Modules.*;
+import chiloven.xamlsorter.Modules.ClipboardManager;
+import chiloven.xamlsorter.Modules.DataItem;
+import chiloven.xamlsorter.Modules.DataOperationHelper;
+import chiloven.xamlsorter.Modules.SortAndRefresher;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeTableView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ContextMenuController {
     private static final Logger logger = LogManager.getLogger(ContextMenuController.class);
 
-    @FXML private MenuItem copyEntry;
-    @FXML private MenuItem pasteEntry;
-    @FXML private MenuItem cutEntry;
-    @FXML private MenuItem deleteEntry;
-    @FXML private MenuItem addEntry;
+    @FXML
+    private MenuItem copyEntry;
+    @FXML
+    private MenuItem pasteEntry;
+    @FXML
+    private MenuItem cutEntry;
+    @FXML
+    private MenuItem deleteEntry;
+    @FXML
+    private MenuItem addEntry;
+    @FXML
+    private MenuItem selectAll;
+    @FXML
+    private MenuItem unselectAll;
 
     private Map<String, List<DataItem>> groupedData;
     private TreeTableView<DataItem> translationTreeTable;
-    private DataItem clipboard;
-    private DataItem targetItem;
 
+    /**
+     * Initializes the context menu with the necessary data and enables/disables menu items
+     *
+     * @param groupedData          the grouped data by category
+     * @param translationTreeTable the TreeTableView containing the data items
+     * @param targetItem           the currently selected item in the TreeTableView, can be null
+     */
     public void initializeMenu(Map<String, List<DataItem>> groupedData,
                                TreeTableView<DataItem> translationTreeTable,
-                               DataItem targetItem,
-                               DataItem clipboardHolder) {
+                               DataItem targetItem) {
         this.groupedData = groupedData;
         this.translationTreeTable = translationTreeTable;
-        this.targetItem = targetItem;
-        this.clipboard = clipboardHolder;
 
         boolean hasTarget = targetItem != null;
-        boolean hasClipboard = clipboardHolder != null && clipboardHolder.getKey() != null;
+        boolean hasClipboard = ClipboardManager.hasContent();
 
         copyEntry.setDisable(!hasTarget);
         cutEntry.setDisable(!hasTarget);
         deleteEntry.setDisable(!hasTarget);
         pasteEntry.setDisable(!hasClipboard);
+
+        logger.info("Context menu initialized with grouped data size: {}, target item: {}, clipboard has content: {}",
+                groupedData.size(), hasTarget, hasClipboard);
     }
 
-    // Copy the selected item to the clipboard
+    // Context menu actions
     @FXML
     private void handleCopy() {
-        if (targetItem != null) {
-            clipboard.setCategory(targetItem.getCategory());
-            clipboard.setKey(targetItem.getKey());
-            clipboard.setOriginalText(targetItem.getOriginalText());
-            clipboard.setTranslatedText(targetItem.getTranslatedText());
-        }
+        DataOperationHelper.copy(translationTreeTable);
     }
 
-    // Paste the copied item into the current category or "uncategorized" if no target item is selected
+    // Handles pasting data into the TreeTableView
     @FXML
     private void handlePaste() {
-        if (clipboard != null && clipboard.getKey() != null) {
-            String category = (targetItem != null) ? targetItem.getCategory() : "uncategorized";
-            groupedData.computeIfAbsent(category, k -> new ArrayList<>())
-                    .add(new DataItem(category, clipboard.getKey(), clipboard.getOriginalText(), clipboard.getTranslatedText()));
-            SortAndRefresher.refresh(translationTreeTable, groupedData);
-        }
+        DataOperationHelper.paste(translationTreeTable, groupedData);
     }
 
-    // Cut the selected item: copy it to the clipboard and delete it from the current category
+    // Handles cutting data from the TreeTableView
     @FXML
     private void handleCut() {
-        handleCopy();
-        handleDelete();
+        DataOperationHelper.cut(translationTreeTable, groupedData);
     }
 
-    // Delete the selected item from the current category
+    // Handles deleting the selected entry from the TreeTableView
     @FXML
     private void handleDelete() {
-        if (targetItem != null) {
-            List<DataItem> list = groupedData.get(targetItem.getCategory());
-            if (list != null) {
-                list.remove(targetItem);
-                if (list.isEmpty()) {
-                    groupedData.remove(targetItem.getCategory());
-                }
-                SortAndRefresher.refresh(translationTreeTable, groupedData);
-            }
-        }
+        DataOperationHelper.delete(translationTreeTable, groupedData);
     }
 
-    // Add a new entry to the current category or "uncategorized" if no target item is selected
+    // Handles adding a new entry to the TreeTableView
     @FXML
     private void handleAdd() {
         DataOperationHelper.addEntry(groupedData);
         SortAndRefresher.refresh(translationTreeTable, groupedData);
     }
 
+    @FXML
+    private void handleSelectAll() {
+        DataOperationHelper.selectAll(translationTreeTable);
+    }
+
+    @FXML
+    private void handleUnselectAll() {
+        DataOperationHelper.unselectAll(translationTreeTable);
+    }
 }
