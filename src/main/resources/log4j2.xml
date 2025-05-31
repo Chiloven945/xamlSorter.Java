@@ -2,11 +2,12 @@
 <Configuration status="WARN">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="[%d{HH:mm:ss.SSS}] [%t/%logger{36}/%highlight{%level}]: %msg%n"
+                           disableAnsi="false" noConsoleNoAnsi="false"/>
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="info">
+        <Root level="debug">
             <AppenderRef ref="Console"/>
         </Root>
         <Logger name="Controller.MainController" level="debug" additivity="false">

@@ -55,7 +55,7 @@ public class ContextMenuController {
         deleteEntry.setDisable(!hasTarget);
         pasteEntry.setDisable(!hasClipboard);
 
-        logger.info("Context menu initialized with grouped data size: {}, target item: {}, clipboard has content: {}",
+        logger.debug("Context menu initialized with grouped data size: {}, target item: {}, clipboard has content: {}",
                 groupedData.size(), hasTarget, hasClipboard);
     }
 
