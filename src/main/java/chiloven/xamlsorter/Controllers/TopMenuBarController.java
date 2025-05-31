@@ -11,10 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TopMenuBarController {
@@ -36,21 +33,17 @@ public class TopMenuBarController {
                 Arrays.asList("xaml", "xml")
         );
         if (file != null) {
-            var task = FileProcessor.createParseXamlTask(file, false);
-
-            ProgressDialog.show(task, "Importing Original File",
-                    result -> {
-                        if (result != null) {
-                            Map<String, List<DataItem>> groupedData = mainController.getGroupedData();
-                            groupedData.clear();
-                            groupedData.putAll(FileProcessor.groupByCategory(result));
-                            SortAndRefresher.refresh(mainController.getTranslationTreeTable(), groupedData);
-                            alertHelper.showAlert(Alert.AlertType.INFORMATION, "Success", "Original file imported successfully.");
-                        }
-                    },
-                    ex -> alertHelper.showAlert(Alert.AlertType.ERROR, "Error", "Failed to import original file.\n" + ex.getMessage()),
-                    () -> alertHelper.showAlert(Alert.AlertType.INFORMATION, "Cancelled", "Import was cancelled.")
-            );
+            try {
+                List<DataItem> items = FileProcessor.parseXamlFile(file, false);
+                Map<String, List<DataItem>> groupedData = mainController.getGroupedData();
+                groupedData.clear();
+                groupedData.putAll(FileProcessor.groupByCategory(items));
+                SortAndRefresher.refresh(mainController.getTranslationTreeTable(), groupedData);
+                alertHelper.showAlert(Alert.AlertType.INFORMATION, "Success", "Original file imported successfully.");
+            } catch (Exception e) {
+                logger.error("Failed to import original file", e);
+                alertHelper.showAlert(Alert.AlertType.ERROR, "Error", "Failed to import original file.\n" + e.getMessage());
+            }
         }
     }
 
@@ -62,19 +55,15 @@ public class TopMenuBarController {
                 Arrays.asList("xaml", "xml")
         );
         if (file != null) {
-            var task = FileProcessor.createParseXamlTask(file, true);
-
-            ProgressDialog.show(task, "Importing Translation File",
-                    translations -> {
-                        if (translations != null) {
-                            FileProcessor.applyTranslations(translations, mainController.getGroupedData());
-                            SortAndRefresher.refresh(mainController.getTranslationTreeTable(), mainController.getGroupedData());
-                            alertHelper.showAlert(Alert.AlertType.INFORMATION, "Success", "Translation file imported successfully.");
-                        }
-                    },
-                    ex -> alertHelper.showAlert(Alert.AlertType.ERROR, "Error", "Failed to import translation file.\n" + ex.getMessage()),
-                    () -> alertHelper.showAlert(Alert.AlertType.INFORMATION, "Cancelled", "Import was cancelled.")
-            );
+            try {
+                List<DataItem> translations = FileProcessor.parseXamlFile(file, true);
+                FileProcessor.applyTranslations(translations, mainController.getGroupedData());
+                SortAndRefresher.refresh(mainController.getTranslationTreeTable(), mainController.getGroupedData());
+                alertHelper.showAlert(Alert.AlertType.INFORMATION, "Success", "Translation file imported successfully.");
+            } catch (Exception e) {
+                logger.error("Failed to import translation file", e);
+                alertHelper.showAlert(Alert.AlertType.ERROR, "Error", "Failed to import translation file.\n" + e.getMessage());
+            }
         }
     }
 
@@ -121,6 +110,7 @@ public class TopMenuBarController {
             }
         } catch (Exception e) {
             logger.error("Error opening Regex Edit dialog", e);
+            alertHelper.showAlert(Alert.AlertType.ERROR, "Error", "Failed to open Regex Edit dialog.\n" + e.getMessage());
         }
     }
 
