@@ -1,5 +1,6 @@
 package chiloven.xamlsorter.Modules;
 
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;
@@ -25,15 +26,29 @@ public class DataOperationHelper {
         dialog.setHeaderText("Enter new key (e.g., common.new.key):");
         Optional<String> result = dialog.showAndWait();
 
-        // If the user provided a key, create a new DataItem and add it to the groupedData
+        // Check if the user provided a key
         result.ifPresent(newKey -> {
             String category = newKey.contains(".") ? newKey.split("\\.")[0] : "uncategorized";
+
+            // Check if the key already exists in the grouped data
+            boolean exists = groupedData.values().stream()
+                    .flatMap(List::stream)
+                    .anyMatch(item -> item.getKey().equals(newKey));
+
+            // If the key already exists, show a warning and return
+            if (exists) {
+                ShowAlert alertHelper = new ShowAlert();
+                alertHelper.showAlert(Alert.AlertType.WARNING, "Duplicate Entry",
+                        "An entry with the key '" + newKey + "' already exists and cannot be added.");
+                logger.warn("Attempted to add duplicate entry with key: {}", newKey);
+                return;
+            }
+
+            // If the key does not exist, create a new DataItem and add it to the grouped data
             DataItem newItem = new DataItem(category, newKey, "New Original", "New Translation");
-
             groupedData.computeIfAbsent(category, k -> new ArrayList<>()).add(newItem);
+            logger.info("Added new entry with key: {}", newKey);
         });
-
-        logger.info("Added new entry with key: {}", result.orElse("No key provided"));
     }
 
     /**

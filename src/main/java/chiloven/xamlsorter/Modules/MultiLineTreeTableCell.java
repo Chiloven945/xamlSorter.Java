@@ -16,12 +16,12 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
     public MultiLineTreeTableCell() {
         // Enable text area to handle multiple lines
         textArea.setWrapText(true);
-        textArea.setPrefRowCount(3); // 设置一个初始的行数，按需可以调整
-        textArea.setMaxHeight(200);  // 设置一个最大高度，避免无限扩展
+        textArea.setPrefRowCount(3);
+        textArea.setMaxHeight(200);
 
         // Double click to edit
         this.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
+            if (event.getClickCount() == 2 && !isEmpty()) {
                 startEdit();
             }
         });
@@ -32,8 +32,6 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
                 case ENTER -> {
                     if (event.isShiftDown()) {
                         commitEdit(textArea.getText());
-                        event.consume();
-                    } else {
                         event.consume();
                     }
                 }
@@ -58,7 +56,6 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
         super.startEdit();
         textArea.setText(getItem());
         setGraphic(textArea);
-        setText(null);
         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         textArea.requestFocus();
     }
@@ -74,6 +71,21 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
     @Override
     public void commitEdit(String newValue) {
         super.commitEdit(newValue);
+
+        // Write the new value back to the DataItem if applicable
+        if (getTableRow() != null && getTableRow().getItem() != null) {
+            S rowItem = getTableRow().getItem();
+            if (rowItem instanceof DataItem dataItem) {
+                if (getTableColumn().getText().equals("Original Text")) {
+                    dataItem.setOriginalText(newValue);
+                } else if (getTableColumn().getText().equals("Translated Text")) {
+                    dataItem.setTranslatedText(newValue);
+                } else if (getTableColumn().getText().equals("Key")) {
+                    dataItem.setKey(newValue);
+                }
+            }
+        }
+
         updateDisplay(newValue);
     }
 
@@ -90,7 +102,6 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
             if (isEditing()) {
                 textArea.setText(item);
                 setGraphic(textArea);
-                setText(null);
                 setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             } else {
                 updateDisplay(item);
@@ -104,9 +115,8 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
      * @param item the item to display in the cell
      */
     private void updateDisplay(String item) {
-        label.setText(item);
+        label.setText(item != null ? item : "");
         setGraphic(label);
-        setText(null);
         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
     }
 }

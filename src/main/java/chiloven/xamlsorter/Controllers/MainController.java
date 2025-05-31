@@ -33,7 +33,9 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // Load the top menu bar
+        // ===============================
+        // 1️⃣ Load Top Menu Bar
+        // ===============================
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Widgets/TopMenuBar.fxml"));
             MenuBar topMenuBar = loader.load();
@@ -46,19 +48,60 @@ public class MainController {
             logger.error("Failed to load top menu bar", e);
         }
 
-        // Set up the TreeTableView
+        // ===============================
+        // 2️⃣ Configure TreeTableView and Columns
+        // ===============================
         keyColumn.setCellValueFactory(param -> param.getValue().getValue().getKeyProperty());
-        originalColumn.setCellFactory(param -> new MultiLineTreeTableCell<>());
-        translatedColumn.setCellFactory(param -> new MultiLineTreeTableCell<>());
-
-        // Set up the cell value factories for the columns
         originalColumn.setCellValueFactory(param -> param.getValue().getValue().getOriginalTextProperty());
         translatedColumn.setCellValueFactory(param -> param.getValue().getValue().getTranslatedTextProperty());
 
-        // Enable editing for the TreeTableView
+        // ===============================
+        // 3️⃣ Configure Cell Factories and Edit Commit Handlers
+        // ===============================
         translationTreeTable.setEditable(true);
 
-        // Right-click context menu for rows
+        // key column
+        keyColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+        keyColumn.setOnEditCommit(event -> {
+            DataItem item = event.getRowValue().getValue();
+            if (item.getKey().endsWith("...")) {
+                logger.warn("Editing group rows is not allowed.");
+                alert.showAlert(Alert.AlertType.WARNING, "Warning", "Editing group rows is not allowed.");
+                SortAndRefresher.refresh(translationTreeTable, groupedData);
+                return;
+            }
+            item.setKey(event.getNewValue());
+        });
+
+        // original column
+        originalColumn.setCellFactory(param -> new MultiLineTreeTableCell<>());
+        originalColumn.setOnEditCommit(event -> {
+            DataItem item = event.getRowValue().getValue();
+            if ("-".equals(item.getOriginalText())) {
+                logger.warn("Editing the Original Text with value '-' is not allowed.");
+                alert.showAlert(Alert.AlertType.WARNING, "Warning", "Editing Original Text with value '-' is not allowed.");
+                SortAndRefresher.refresh(translationTreeTable, groupedData);
+                return;
+            }
+            item.setOriginalText(event.getNewValue());
+        });
+
+        // translated column
+        translatedColumn.setCellFactory(param -> new MultiLineTreeTableCell<>());
+        translatedColumn.setOnEditCommit(event -> {
+            DataItem item = event.getRowValue().getValue();
+            if ("-".equals(item.getTranslatedText())) {
+                logger.warn("Editing the Translated Text with value '-' is not allowed.");
+                alert.showAlert(Alert.AlertType.WARNING, "Warning", "Editing Translated Text with value '-' is not allowed.");
+                SortAndRefresher.refresh(translationTreeTable, groupedData);
+                return;
+            }
+            item.setTranslatedText(event.getNewValue());
+        });
+
+        // ===============================
+        // 4️⃣ Set Row Factory for Context Menu
+        // ===============================
         translationTreeTable.setRowFactory(tv -> {
             TreeTableRow<DataItem> row = new TreeTableRow<>();
             row.setOnContextMenuRequested(event -> {
@@ -73,6 +116,11 @@ public class MainController {
                     ContextMenuController controller = loader.getController();
                     controller.initializeMenu(groupedData, translationTreeTable, targetItem);
 
+                    if (translationTreeTable.getContextMenu() != null) {
+                        translationTreeTable.getContextMenu().hide();
+                    }
+                    translationTreeTable.setContextMenu(menu);
+
                     menu.show(row, event.getScreenX(), event.getScreenY());
                     event.consume();
                 } catch (Exception e) {
@@ -82,7 +130,6 @@ public class MainController {
             return row;
         });
 
-        // 空白区域右键
         translationTreeTable.setOnContextMenuRequested(event -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/Widgets/ContextMenu.fxml"));
@@ -91,6 +138,12 @@ public class MainController {
                 ContextMenuController controller = loader.getController();
                 controller.initializeMenu(groupedData, translationTreeTable, null);
 
+                if (translationTreeTable.getContextMenu() != null) {
+                    translationTreeTable.getContextMenu().hide();
+                }
+                translationTreeTable.setContextMenu(menu);
+
+
                 menu.show(translationTreeTable, event.getScreenX(), event.getScreenY());
                 event.consume();
             } catch (Exception e) {
@@ -98,58 +151,13 @@ public class MainController {
             }
         });
 
-        // Set up the cell factories and edit commit handlers for the key column
-        keyColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
-        keyColumn.setOnEditCommit(event -> {
-            DataItem item = event.getRowValue().getValue();
-
-            // Check if the key ends with "..." indicating a group row
-            if (item.getKey().endsWith("...")) {
-                logger.warn("Editing group rows is not allowed.");
-                alert.showAlert(Alert.AlertType.WARNING, "Warning", "Editing group rows is not allowed.");
-                SortAndRefresher.refresh(translationTreeTable, groupedData);
-                return;
-            }
-
-            item.setKey(event.getNewValue());
-        });
-
-        // Set up the cell factories and edit commit handlers for original column
-        originalColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
-        originalColumn.setOnEditCommit(event -> {
-            DataItem item = event.getRowValue().getValue();
-
-            // Check if the original text is "-" indicating a placeholder
-            if ("-".equals(item.getOriginalText())) {
-                logger.warn("Editing the Original Text with value '-' is not allowed.");
-                alert.showAlert(Alert.AlertType.WARNING, "Warning", "Editing Original Text with value '-' is not allowed.");
-                SortAndRefresher.refresh(translationTreeTable, groupedData);
-                return;
-            }
-
-            item.setOriginalText(event.getNewValue());
-        });
-
-        // Set up the cell factories and edit commit handlers for translated column
-        translatedColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
-        translatedColumn.setOnEditCommit(event -> {
-            DataItem item = event.getRowValue().getValue();
-
-            // Check if the translated text is "-" indicating a placeholder
-            if ("-".equals(item.getTranslatedText())) {
-                logger.warn("Editing the Translated Text with value '-' is not allowed.");
-                alert.showAlert(Alert.AlertType.WARNING, "Warning", "Editing Translated Text with value '-' is not allowed.");
-                SortAndRefresher.refresh(translationTreeTable, groupedData);
-                return;
-            }
-
-            item.setTranslatedText(event.getNewValue());
-        });
-
-        // Initialize the TreeTableView with an empty root
+        // ===============================
+        // 5️⃣ Initialize the TreeTableView
+        // ===============================
         translationTreeTable.setRoot(new TreeItem<>(new DataItem("", "", "", "")));
         translationTreeTable.setShowRoot(false);
     }
+
 
     // Method to load and display the grouped data in the TreeTableView
     @FXML
