@@ -7,25 +7,20 @@ import javafx.scene.control.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class RegexEditDialogController {
     private static final Logger logger = LogManager.getLogger(RegexEditDialogController.class);
 
-    @FXML
-    private TextField patternField;
-    @FXML
-    private TextField replacementField;
-    @FXML
-    private ComboBox<String> scopeComboBox;
-    @FXML
-    private ComboBox<String> replaceTargetComboBox;
-    @FXML
-    private TreeTableView<DataItem> previewTreeTable;
+    @FXML private TextField patternField;
+    @FXML private TextField replacementField;
+    @FXML private ComboBox<String> scopeComboBox;
+    @FXML private ComboBox<String> replaceTargetComboBox;
+    @FXML private TreeTableView<DataItem> previewTreeTable;
+    @FXML private TreeTableColumn<DataItem, String> keyColumn;
+    @FXML private TreeTableColumn<DataItem, String> originalTextColumn;
+    @FXML private TreeTableColumn<DataItem, String> translatedTextColumn;
 
     private Map<String, List<DataItem>> groupedData;
     private String targetCategory;
@@ -37,20 +32,15 @@ public class RegexEditDialogController {
         scopeComboBox.getSelectionModel().select("Current Group");
         replaceTargetComboBox.getSelectionModel().select("Original Text");
 
-        initializePreviewTable();
+        initialize();
     }
 
-    private void initializePreviewTable() {
-        TreeTableColumn<DataItem, String> keyColumn = new TreeTableColumn<>("Key");
+    @FXML
+    public void initialize() {
         keyColumn.setCellValueFactory(param -> param.getValue().getValue().getKeyProperty());
-
-        TreeTableColumn<DataItem, String> originalTextColumn = new TreeTableColumn<>("Original Text");
         originalTextColumn.setCellValueFactory(param -> param.getValue().getValue().getOriginalTextProperty());
-
-        TreeTableColumn<DataItem, String> translatedTextColumn = new TreeTableColumn<>("Translated Text");
         translatedTextColumn.setCellValueFactory(param -> param.getValue().getValue().getTranslatedTextProperty());
 
-        previewTreeTable.getColumns().setAll(keyColumn, originalTextColumn, translatedTextColumn);
         previewTreeTable.setRoot(new TreeItem<>());
         previewTreeTable.setShowRoot(false);
     }

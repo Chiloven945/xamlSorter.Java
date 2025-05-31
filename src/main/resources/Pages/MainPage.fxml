@@ -3,47 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.12"
+<VBox fx:id="rootContainer" xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.12"
       fx:controller="chiloven.xamlsorter.Controllers.MainController">
     <children>
-        <!-- 顶部菜单栏 -->
-        <MenuBar>
-            <menus>
-                <Menu text="File">
-                    <items>
-                        <MenuItem onAction="#handleImportOriginalFile" text="Open original XAML..."/>
-                        <MenuItem onAction="#handleImportTargetFile" text="Import target XAML..."/>
-                        <SeparatorMenuItem/>
-                        <MenuItem text="Save"/>
-                        <MenuItem text="Save as..."/>
-                        <SeparatorMenuItem/>
-                        <MenuItem text="Exit"/>
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Undo"/>
-                        <MenuItem mnemonicParsing="false" text="Redo"/>
-                        <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem mnemonicParsing="false" text="Cut"/>
-                        <MenuItem mnemonicParsing="false" text="Copy"/>
-                        <MenuItem mnemonicParsing="false" text="Paste"/>
-                        <MenuItem mnemonicParsing="false" text="Delete"/>
-                        <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem mnemonicParsing="false" text="Select All"/>
-                        <MenuItem mnemonicParsing="false" text="Unselect All"/>
-                        <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem mnemonicParsing="false" text="Batch Regex Edit" onAction="#handleRegexEdit"/>
-                    </items>
-                </Menu>
-                <Menu text="Help">
-                    <items>
-                        <MenuItem text="About"/>
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
-
         <!-- 表格显示部分 -->
         <TreeTableView fx:id="translationTreeTable" prefHeight="488.0" prefWidth="776.0" VBox.vgrow="ALWAYS">
             <columns>
