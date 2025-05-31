@@ -14,7 +14,8 @@ public class SortAndRefresher {
 
     /**
      * Refreshes the TreeTableView with the given grouped data.
-     * @param table the TreeTableView to refresh
+     *
+     * @param table       the TreeTableView to refresh
      * @param groupedData the data grouped by category
      */
     public static void refresh(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {
@@ -27,10 +28,11 @@ public class SortAndRefresher {
 
     /**
      * Refreshes the TreeTableView with the given grouped data and applies a regex replacement
-     * @param table the TreeTableView to refresh
-     * @param groupedData the data grouped by category
-     * @param pattern the regex pattern to match
-     * @param replacement the replacement string for the matched pattern
+     *
+     * @param table         the TreeTableView to refresh
+     * @param groupedData   the data grouped by category
+     * @param pattern       the regex pattern to match
+     * @param replacement   the replacement string for the matched pattern
      * @param replaceTarget the target field to apply the replacement on (e.g., "Key", "Original Text")
      */
     public static void refresh(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData,
@@ -48,6 +50,7 @@ public class SortAndRefresher {
 
         Map<String, List<DataItem>> sortedGroupedData = new TreeMap<>(groupedData);
 
+        // If a pattern is provided, apply the regex replacement to the keys
         for (Map.Entry<String, List<DataItem>> entry : sortedGroupedData.entrySet()) {
             String category = entry.getKey();
             List<DataItem> items = entry.getValue();

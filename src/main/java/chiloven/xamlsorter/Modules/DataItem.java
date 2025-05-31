@@ -3,6 +3,10 @@ package chiloven.xamlsorter.Modules;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**
+ * Represents a data item with a category, key, original text, and translated text.
+ * This class is used to store and manage translation data in the application.
+ */
 public class DataItem {
     private final StringProperty category;
     private final StringProperty key;
@@ -13,9 +17,10 @@ public class DataItem {
 
     /**
      * Create a new DataItem with the specified category, key, original text, and translated text.
-     * @param category the category of the data item
-     * @param key the key of the data item
-     * @param originalText the original text of the data item
+     *
+     * @param category       the category of the data item
+     * @param key            the key of the data item
+     * @param originalText   the original text of the data item
      * @param translatedText the translated text of the data item
      */
     public DataItem(String category, String key, String originalText, String translatedText) {
@@ -27,6 +32,7 @@ public class DataItem {
 
     /**
      * Get the category of the data item.
+     *
      * @return the category as a String
      */
     public String getCategory() {
@@ -37,6 +43,7 @@ public class DataItem {
 
     /**
      * Set the category of the data item.
+     *
      * @param category the category to set
      */
     public void setCategory(String category) {
@@ -45,6 +52,7 @@ public class DataItem {
 
     /**
      * Get the key of the data item.
+     *
      * @return the key as a String
      */
     public String getKey() {
@@ -53,6 +61,7 @@ public class DataItem {
 
     /**
      * Set the key of the data item.
+     *
      * @param key the key to set as a String
      */
     public void setKey(String key) {
@@ -61,6 +70,7 @@ public class DataItem {
 
     /**
      * Get the original text of the data item.
+     *
      * @return the original text as a String
      */
     public String getOriginalText() {
@@ -69,6 +79,7 @@ public class DataItem {
 
     /**
      * Set the original text of the data item.
+     *
      * @param originalText the original text to set as a String
      */
     public void setOriginalText(String originalText) {
@@ -77,6 +88,7 @@ public class DataItem {
 
     /**
      * Get the translated text of the data item.
+     *
      * @return the translated text as a String
      */
     public String getTranslatedText() {
@@ -85,6 +97,7 @@ public class DataItem {
 
     /**
      * Set the translated text of the data item.
+     *
      * @param translatedText the translated text to set as a String
      */
     public void setTranslatedText(String translatedText) {
@@ -92,8 +105,10 @@ public class DataItem {
     }
 
     // Property getter methods for JavaFX binding (if needed)
+
     /**
      * Get the category property for JavaFX binding.
+     *
      * @return the category property as a StringProperty
      */
     public StringProperty getCategoryProperty() {
@@ -102,6 +117,7 @@ public class DataItem {
 
     /**
      * Get the key property for JavaFX binding.
+     *
      * @return the key property as a StringProperty
      */
     public StringProperty getKeyProperty() {
@@ -110,6 +126,7 @@ public class DataItem {
 
     /**
      * Get the original text property for JavaFX binding.
+     *
      * @return the original text property as a StringProperty
      */
     public StringProperty getOriginalTextProperty() {
@@ -118,6 +135,7 @@ public class DataItem {
 
     /**
      * Get the translated text property for JavaFX binding.
+     *
      * @return the translated text property as a StringProperty
      */
     public StringProperty getTranslatedTextProperty() {

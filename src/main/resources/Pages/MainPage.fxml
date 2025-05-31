@@ -3,7 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
-<VBox fx:id="rootContainer" xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.12"
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="rootContainer" prefHeight="600.0" prefWidth="800.0"
+      xmlns="http://javafx.com/javafx/17.0.12"
       fx:controller="chiloven.xamlsorter.Controllers.MainController">
     <children>
         <!-- 表格显示部分 -->

@@ -1,15 +1,12 @@
 package chiloven.xamlsorter.Controllers;
 
-import chiloven.xamlsorter.Modules.DataItem;
-import chiloven.xamlsorter.Modules.SortAndRefresher;
+import chiloven.xamlsorter.Modules.*;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeTableView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,71 +14,84 @@ import java.util.Map;
 public class ContextMenuController {
     private static final Logger logger = LogManager.getLogger(ContextMenuController.class);
 
+    @FXML private MenuItem copyEntry;
+    @FXML private MenuItem pasteEntry;
+    @FXML private MenuItem cutEntry;
+    @FXML private MenuItem deleteEntry;
+    @FXML private MenuItem addEntry;
+
     private Map<String, List<DataItem>> groupedData;
     private TreeTableView<DataItem> translationTreeTable;
     private DataItem clipboard;
     private DataItem targetItem;
 
-    public static ContextMenu create(Map<String, List<DataItem>> groupedData,
-                                     TreeTableView<DataItem> translationTreeTable,
-                                     DataItem item,
-                                     DataItem clipboardHolder) {
-        try {
-            FXMLLoader loader = new FXMLLoader(ContextMenuController.class.getResource("/Widgets/ContextMenu.fxml"));
-            ContextMenu menu = loader.load();
+    public void initializeMenu(Map<String, List<DataItem>> groupedData,
+                               TreeTableView<DataItem> translationTreeTable,
+                               DataItem targetItem,
+                               DataItem clipboardHolder) {
+        this.groupedData = groupedData;
+        this.translationTreeTable = translationTreeTable;
+        this.targetItem = targetItem;
+        this.clipboard = clipboardHolder;
 
-            ContextMenuController controller = loader.getController();
-            controller.groupedData = groupedData;
-            controller.translationTreeTable = translationTreeTable;
-            controller.targetItem = item;
-            controller.clipboard = clipboardHolder;
+        boolean hasTarget = targetItem != null;
+        boolean hasClipboard = clipboardHolder != null && clipboardHolder.getKey() != null;
 
-            return menu;
-        } catch (IOException e) {
-            logger.error("Failed to load context menu", e);
-            return new ContextMenu();
+        copyEntry.setDisable(!hasTarget);
+        cutEntry.setDisable(!hasTarget);
+        deleteEntry.setDisable(!hasTarget);
+        pasteEntry.setDisable(!hasClipboard);
+    }
+
+    // Copy the selected item to the clipboard
+    @FXML
+    private void handleCopy() {
+        if (targetItem != null) {
+            clipboard.setCategory(targetItem.getCategory());
+            clipboard.setKey(targetItem.getKey());
+            clipboard.setOriginalText(targetItem.getOriginalText());
+            clipboard.setTranslatedText(targetItem.getTranslatedText());
         }
     }
 
+    // Paste the copied item into the current category or "uncategorized" if no target item is selected
     @FXML
-    public void handleDelete() {
-        List<DataItem> list = groupedData.get(targetItem.getCategory());
-        if (list != null) {
-            list.remove(targetItem);
-            if (list.isEmpty()) {
-                groupedData.remove(targetItem.getCategory());
-            }
+    private void handlePaste() {
+        if (clipboard != null && clipboard.getKey() != null) {
+            String category = (targetItem != null) ? targetItem.getCategory() : "uncategorized";
+            groupedData.computeIfAbsent(category, k -> new ArrayList<>())
+                    .add(new DataItem(category, clipboard.getKey(), clipboard.getOriginalText(), clipboard.getTranslatedText()));
             SortAndRefresher.refresh(translationTreeTable, groupedData);
         }
     }
 
+    // Cut the selected item: copy it to the clipboard and delete it from the current category
     @FXML
-    public void handleCopy() {
-        clipboard = new DataItem(
-                targetItem.getCategory(),
-                targetItem.getKey(),
-                targetItem.getOriginalText(),
-                targetItem.getTranslatedText()
-        );
-    }
-
-    @FXML
-    public void handleCut() {
+    private void handleCut() {
         handleCopy();
         handleDelete();
     }
 
+    // Delete the selected item from the current category
     @FXML
-    public void handlePaste() {
-        if (clipboard != null) {
-            DataItem newItem = new DataItem(
-                    targetItem.getCategory(),
-                    clipboard.getKey(),
-                    clipboard.getOriginalText(),
-                    clipboard.getTranslatedText()
-            );
-            groupedData.computeIfAbsent(targetItem.getCategory(), k -> new ArrayList<>()).add(newItem);
-            SortAndRefresher.refresh(translationTreeTable, groupedData);
+    private void handleDelete() {
+        if (targetItem != null) {
+            List<DataItem> list = groupedData.get(targetItem.getCategory());
+            if (list != null) {
+                list.remove(targetItem);
+                if (list.isEmpty()) {
+                    groupedData.remove(targetItem.getCategory());
+                }
+                SortAndRefresher.refresh(translationTreeTable, groupedData);
+            }
         }
     }
+
+    // Add a new entry to the current category or "uncategorized" if no target item is selected
+    @FXML
+    private void handleAdd() {
+        DataOperationHelper.addEntry(groupedData);
+        SortAndRefresher.refresh(translationTreeTable, groupedData);
+    }
+
 }

@@ -1,20 +1,23 @@
 package chiloven.xamlsorter.Controllers;
 
-import chiloven.xamlsorter.Modules.DataItem;
-import chiloven.xamlsorter.Modules.SortAndRefresher;
+import chiloven.xamlsorter.Modules.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
-import javafx.stage.FileChooser;
-import org.w3c.dom.*;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TopMenuBarController {
+    private static final Logger logger = LogManager.getLogger(TopMenuBarController.class);
 
     private MainController mainController;
 
@@ -24,22 +27,24 @@ public class TopMenuBarController {
 
     @FXML
     private void handleImportOriginalFile() {
-        File file = showFileChooser("Import Original XAML File");
+        // 使用自定义的 FileChooser 并允许选择 .xaml 文件
+        File file = CustomFileChooser.showOpenFileDialog(mainController.getTranslationTreeTable().getScene().getWindow(), "Import Original XAML File", Arrays.asList("xaml", "xml"));
         if (file != null) {
-            List<DataItem> items = parseXamlFile(file, false);
+            List<DataItem> items = FileProcessor.parseXamlFile(file, false);
             Map<String, List<DataItem>> groupedData = mainController.getGroupedData();
             groupedData.clear();
-            groupedData.putAll(groupByCategory(items));
+            groupedData.putAll(FileProcessor.groupByCategory(items));
             SortAndRefresher.refresh(mainController.getTranslationTreeTable(), groupedData);
         }
     }
 
     @FXML
     private void handleImportTargetFile() {
-        File file = showFileChooser("Import Translation XAML File");
+        // 使用自定义的 FileChooser 并允许选择 .xaml 文件
+        File file = CustomFileChooser.showOpenFileDialog(mainController.getTranslationTreeTable().getScene().getWindow(), "Import Translation XAML File", Arrays.asList("xaml", "xml"));
         if (file != null) {
-            List<DataItem> translations = parseXamlFile(file, true);
-            applyTranslations(translations, mainController.getGroupedData());
+            List<DataItem> translations = FileProcessor.parseXamlFile(file, true);
+            FileProcessor.applyTranslations(translations, mainController.getGroupedData());
             SortAndRefresher.refresh(mainController.getTranslationTreeTable(), mainController.getGroupedData());
         }
     }
@@ -77,66 +82,39 @@ public class TopMenuBarController {
                 SortAndRefresher.refresh(mainController.getTranslationTreeTable(), mainController.getGroupedData());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error opening Regex Edit dialog", e);
         }
     }
 
-    private File showFileChooser(String title) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(title);
-        return fileChooser.showOpenDialog(null);
+    @FXML
+    private void handleCut() {
+        DataOperationHelper.cut(mainController.getTranslationTreeTable(), mainController.getGroupedData());
     }
 
-    private List<DataItem> parseXamlFile(File file, boolean isTranslation) {
-        List<DataItem> items = new ArrayList<>();
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
-
-            NodeList allNodes = doc.getDocumentElement().getChildNodes();
-
-            for (int i = 0; i < allNodes.getLength(); i++) {
-                Node node = allNodes.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element elem = (Element) node;
-                    String localName = elem.getLocalName();
-
-                    if ("String".equals(localName)) {
-                        String key = elem.getAttribute("x:Key");
-                        String value = elem.getTextContent().trim();
-                        String category = key.contains(".") ? key.split("\\.")[0] : "uncategorized";
-
-                        if (isTranslation) {
-                            items.add(new DataItem(category, key, "", value));
-                        } else {
-                            items.add(new DataItem(category, key, value, ""));
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return items;
+    @FXML
+    private void handleCopy() {
+        DataOperationHelper.copy(mainController.getTranslationTreeTable());
     }
 
-    private Map<String, List<DataItem>> groupByCategory(List<DataItem> items) {
-        return items.stream().collect(Collectors.groupingBy(DataItem::getCategory));
+    @FXML
+    private void handlePaste() {
+        DataOperationHelper.paste(mainController.getTranslationTreeTable(), mainController.getGroupedData());
     }
 
-    private void applyTranslations(List<DataItem> translations, Map<String, List<DataItem>> groupedData) {
-        Map<String, String> translationMap = translations.stream()
-                .collect(Collectors.toMap(DataItem::getKey, DataItem::getTranslatedText));
-
-        for (List<DataItem> group : groupedData.values()) {
-            for (DataItem item : group) {
-                String translated = translationMap.get(item.getKey());
-                if (translated != null) {
-                    item.setTranslatedText(translated);
-                }
-            }
-        }
+    @FXML
+    private void handleDelete() {
+        DataOperationHelper.delete(mainController.getTranslationTreeTable(), mainController.getGroupedData());
     }
+
+    @FXML
+    private void handleSelectAll() {
+        DataOperationHelper.selectAll(mainController.getTranslationTreeTable());
+    }
+
+    @FXML
+    private void handleUnselectAll() {
+        DataOperationHelper.unselectAll(mainController.getTranslationTreeTable());
+    }
+
+
 }

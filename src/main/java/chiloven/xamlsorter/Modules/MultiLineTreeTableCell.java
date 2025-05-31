@@ -4,26 +4,29 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeTableCell;
-import javafx.scene.input.MouseButton;
 
 public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
     private final TextArea textArea = new TextArea();
     private final Label label = new Label();
 
+    /**
+     * Constructs a MultiLineTreeTableCell that allows editing of multi-line text.
+     * The cell will display a TextArea for editing and a Label for display.
+     */
     public MultiLineTreeTableCell() {
+        // Enable text area to handle multiple lines
         textArea.setWrapText(true);
-        textArea.setPrefRowCount(3);
+        textArea.setPrefRowCount(3); // 设置一个初始的行数，按需可以调整
+        textArea.setMaxHeight(200);  // 设置一个最大高度，避免无限扩展
 
-        label.setWrapText(true);
-
-        // 双击进入编辑
+        // Double click to edit
         this.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+            if (event.getClickCount() == 2) {
                 startEdit();
             }
         });
 
-        // 键盘控制：Shift+Enter 保存，ESC 取消，Enter 换行
+        // Keyboard event handling: Shift+Enter to commit, ESC to cancel, Enter for new line
         textArea.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case ENTER -> {
@@ -31,7 +34,7 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
                         commitEdit(textArea.getText());
                         event.consume();
                     } else {
-                        event.consume();  // <== 重要，防止重复
+                        event.consume();
                     }
                 }
                 case ESCAPE -> {
@@ -41,7 +44,7 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
             }
         });
 
-        // 单击其他地方，失去焦点时保存
+        // Save changes when focus is lost
         textArea.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused && isEditing()) {
                 commitEdit(textArea.getText());
@@ -49,6 +52,7 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
         });
     }
 
+    // Override startEdit to initialize the text area with the current item
     @Override
     public void startEdit() {
         super.startEdit();
@@ -59,22 +63,26 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
         textArea.requestFocus();
     }
 
+    // Override cancelEdit to reset the display
     @Override
     public void cancelEdit() {
         super.cancelEdit();
         updateDisplay(getItem());
     }
 
+    // Override commitEdit to update the display with the new value
     @Override
     public void commitEdit(String newValue) {
         super.commitEdit(newValue);
         updateDisplay(newValue);
     }
 
+    // Override updateItem to handle empty items and set the correct display
     @Override
     protected void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
 
+        // If the item is empty or null, clear the cell
         if (empty || item == null) {
             setText(null);
             setGraphic(null);
@@ -90,6 +98,11 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
         }
     }
 
+    /**
+     * Updates the display of the cell with the given item.
+     *
+     * @param item the item to display in the cell
+     */
     private void updateDisplay(String item) {
         label.setText(item);
         setGraphic(label);
