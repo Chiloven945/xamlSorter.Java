@@ -59,6 +59,7 @@ public class MainController {
         // 3️⃣ Configure Cell Factories and Edit Commit Handlers
         // ===============================
         translationTreeTable.setEditable(true);
+        translationTreeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         // key column
         keyColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
