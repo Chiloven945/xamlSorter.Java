@@ -16,20 +16,13 @@ import java.util.Map;
 public class ContextMenuController {
     private static final Logger logger = LogManager.getLogger(ContextMenuController.class);
 
-    @FXML
-    private MenuItem copyEntry;
-    @FXML
-    private MenuItem pasteEntry;
-    @FXML
-    private MenuItem cutEntry;
-    @FXML
-    private MenuItem deleteEntry;
-    @FXML
-    private MenuItem addEntry;
-    @FXML
-    private MenuItem selectAll;
-    @FXML
-    private MenuItem unselectAll;
+    @FXML private MenuItem copyEntry;
+    @FXML private MenuItem pasteEntry;
+    @FXML private MenuItem cutEntry;
+    @FXML private MenuItem deleteEntry;
+    @FXML private MenuItem addEntry;
+    @FXML private MenuItem selectAll;
+    @FXML private MenuItem unselectAll;
 
     private Map<String, List<DataItem>> groupedData;
     private TreeTableView<DataItem> translationTreeTable;

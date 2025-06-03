@@ -16,22 +16,14 @@ import java.util.function.BiConsumer;
 public class RegexEditDialogController {
     private static final Logger logger = LogManager.getLogger(RegexEditDialogController.class);
 
-    @FXML
-    private TextField patternField;
-    @FXML
-    private TextField replacementField;
-    @FXML
-    private ComboBox<String> scopeComboBox;
-    @FXML
-    private ComboBox<String> replaceTargetComboBox;
-    @FXML
-    private TreeTableView<DataItem> previewTreeTable;
-    @FXML
-    private TreeTableColumn<DataItem, String> keyColumn;
-    @FXML
-    private TreeTableColumn<DataItem, String> originalTextColumn;
-    @FXML
-    private TreeTableColumn<DataItem, String> translatedTextColumn;
+    @FXML private TextField patternField;
+    @FXML private TextField replacementField;
+    @FXML private ComboBox<String> scopeComboBox;
+    @FXML private ComboBox<String> replaceTargetComboBox;
+    @FXML private TreeTableView<DataItem> previewTreeTable;
+    @FXML private TreeTableColumn<DataItem, String> keyColumn;
+    @FXML private TreeTableColumn<DataItem, String> originalTextColumn;
+    @FXML private TreeTableColumn<DataItem, String> translatedTextColumn;
 
     private Map<String, List<DataItem>> groupedData;
     private String targetCategory;
