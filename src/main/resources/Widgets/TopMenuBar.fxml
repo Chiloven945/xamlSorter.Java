@@ -35,7 +35,7 @@
         </Menu>
         <Menu text="Help">
             <items>
-                <MenuItem text="About"/>
+                <MenuItem text="About" onAction="#handleAbout"/>
             </items>
         </Menu>
     </menus>

@@ -160,5 +160,24 @@ public class TopMenuBarController {
         DataOperationHelper.unselectAll(mainController.getTranslationTreeTable());
     }
 
+    // Method to handle the "Export" action
+    @FXML
+    private void handleAbout() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Dialogs/AboutDialog.fxml"));
+            DialogPane dialogPane = loader.load();
+
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setDialogPane(dialogPane);
+            dialog.setTitle("About");
+
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+            dialog.showAndWait();
+        } catch (Exception e) {
+            logger.error("Error opening About dialog", e);
+        }
+    }
+
 
 }
