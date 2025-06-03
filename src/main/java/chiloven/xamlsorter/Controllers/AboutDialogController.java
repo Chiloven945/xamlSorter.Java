@@ -12,7 +12,7 @@ public class AboutDialogController {
     @FXML
     public void initialize() {
         // 加载图标
-        Image iconImage = new Image(getClass().getResourceAsStream("/Icons/application.png"));
+        Image iconImage = new Image(getClass().getResourceAsStream("/Icons/application-about.png"));
         appIconView.setImage(iconImage);
     }
 }
