@@ -1,35 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-
-<DialogPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chiloven.xamlsorter.Controllers.AboutDialogController">
+<DialogPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
+            fx:controller="chiloven.xamlsorter.Controllers.AboutDialogController">
 
     <content>
         <VBox spacing="18.0">
             <HBox maxWidth="765.0">
                 <VBox spacing="18.0">
-                    <Label style="-fx-font-size: 22px; -fx-font-weight: bold;" text="xamlSorter.Java" />
-                    <Label style="-fx-font-size: 16px;" text="Version: alpha.0.0.1" />
-                    <Label style="-fx-font-size: 13px;" text="© 2025 Chiloven945, All rights reserved." />
+                    <Label style="-fx-font-size: 22px; -fx-font-weight: bold;" text="xamlSorter.Java"/>
+                    <Label style="-fx-font-size: 16px;" text="Version: alpha.0.0.1"/>
+                    <Label style="-fx-font-size: 13px;" text="© 2025 Chiloven945, All rights reserved."/>
                 </VBox>
 
                 <!-- 弹性占位 -->
                 <Pane HBox.hgrow="ALWAYS"/>
 
-                <ImageView fx:id="appIconView" fitHeight="100.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                <ImageView fx:id="appIconView" fitHeight="100.0" fitWidth="200.0" pickOnBounds="true"
+                           preserveRatio="true"/>
             </HBox>
-            <Separator />
+            <Separator/>
             <VBox spacing="6.0">
-                <Label maxWidth="Infinity" style="-fx-font-size: 13px;" text="Author: Chiloven" wrapText="true" />
-                <Label maxWidth="Infinity" style="-fx-font-size: 13px;" text="xamlSorter.Java (XAML Sorter) is a batch XAML resource text editing, grouping, regex processing, and translation tool." wrapText="true" />
-                <Label maxWidth="Infinity" style="-fx-font-size: 13px;" text="For suggestions and feedback, please submit an issue on GitHub or contact the developer." wrapText="true" />
+                <Label maxWidth="Infinity" style="-fx-font-size: 13px;" text="Author: Chiloven" wrapText="true"/>
+                <Label maxWidth="Infinity" style="-fx-font-size: 13px;"
+                       text="xamlSorter.Java (XAML Sorter) is a batch XAML resource text editing, grouping, regex processing, and translation tool."
+                       wrapText="true"/>
+                <Label maxWidth="Infinity" style="-fx-font-size: 13px;"
+                       text="For suggestions and feedback, please submit an issue on GitHub or contact the developer."
+                       wrapText="true"/>
             </VBox>
         </VBox>
     </content>
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 </DialogPane>

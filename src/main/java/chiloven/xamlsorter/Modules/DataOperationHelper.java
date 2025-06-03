@@ -57,7 +57,8 @@ public class DataOperationHelper {
 
     /**
      * Cuts the selected entries from the TreeTableView and copies them to the clipboard.
-     * @param table the TreeTableView containing the data items
+     *
+     * @param table       the TreeTableView containing the data items
      * @param groupedData the map containing grouped data by category
      */
     public static void cut(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {
@@ -87,6 +88,7 @@ public class DataOperationHelper {
 
     /**
      * Copies the selected entries from the TreeTableView to the clipboard.
+     *
      * @param table the TreeTableView containing the data items
      */
     public static void copy(TreeTableView<DataItem> table) {
@@ -103,7 +105,8 @@ public class DataOperationHelper {
 
     /**
      * Deletes the selected entries from the TreeTableView and updates the grouped data.
-     * @param table the TreeTableView containing the data items
+     *
+     * @param table       the TreeTableView containing the data items
      * @param groupedData the map containing grouped data by category
      */
     public static void delete(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {
@@ -126,7 +129,8 @@ public class DataOperationHelper {
 
     /**
      * Pastes the clipboard content into the TreeTableView, adding new entries or updating existing ones.
-     * @param table the TreeTableView to paste data into
+     *
+     * @param table       the TreeTableView to paste data into
      * @param groupedData the map containing grouped data by category
      */
     public static void paste(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {

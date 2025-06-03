@@ -28,34 +28,36 @@ public class FileProcessor {
     public static List<DataItem> parseXamlFile(File file, boolean isTranslation) {
         List<DataItem> items = new ArrayList<>();
         try {
+            // Create a DocumentBuilderFactory and configure it for namespace awareness
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(file);
             doc.getDocumentElement().normalize();
 
+            // Get all child nodes of the document element
             NodeList allNodes = doc.getDocumentElement().getChildNodes();
             int total = allNodes.getLength();
 
+            // Iterate through all nodes and extract String elements
             for (int i = 0; i < total; i++) {
                 Node node = allNodes.item(i);
+                // Check if the node is an element node
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element elem = (Element) node;
                     String localName = elem.getLocalName();
 
+                    // Check if the element is a String element
                     if ("String".equals(localName)) {
                         String key = elem.getAttribute("x:Key");
-                        if (key == null || key.isEmpty()) {
-                            key = "unnamed";
-                        }
+
+                        // If the key is not set, use the element's text content as the key
+                        if (key == null || key.isEmpty()) key = "unnamed";
+
+                        // If the key is not a valid identifier, log a warning
                         String value = elem.getTextContent().trim();
                         String category = key.contains(".") ? key.split("\\.")[0] : "uncategorized";
-
-                        if (isTranslation) {
-                            items.add(new DataItem(category, key, "", value));
-                        } else {
-                            items.add(new DataItem(category, key, value, ""));
-                        }
+                        items.add(new DataItem(category, key, isTranslation ? "" : value, isTranslation ? value : ""));
                     }
                 }
             }

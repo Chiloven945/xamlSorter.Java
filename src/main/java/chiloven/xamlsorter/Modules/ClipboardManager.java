@@ -13,6 +13,7 @@ public class ClipboardManager {
 
     /**
      * Copies a list of DataItem objects to the clipboard.
+     *
      * @param items the list of DataItem objects to copy
      */
     public static void copyFrom(List<DataItem> items) {
@@ -26,6 +27,7 @@ public class ClipboardManager {
 
     /**
      * Copies a single DataItem to the clipboard.
+     *
      * @return the copied DataItem
      */
     public static List<DataItem> getClipboard() {
@@ -38,6 +40,7 @@ public class ClipboardManager {
 
     /**
      * Checks if the clipboard has any content.
+     *
      * @return true if the clipboard is not empty, false otherwise
      */
     public static boolean hasContent() {
