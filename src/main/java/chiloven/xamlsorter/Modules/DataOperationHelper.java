@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DataOperationHelper {
     private static final Logger logger = LogManager.getLogger(DataOperationHelper.class);
@@ -24,7 +25,10 @@ public class DataOperationHelper {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Add New Entry");
         dialog.setHeaderText("Enter new key (e.g., common.new.key):");
+        logger.info("Opening dialog to add new entry.");
         Optional<String> result = dialog.showAndWait();
+
+        logger.info("User input for new key: {}", result.orElse("No input provided"));
 
         // Check if the user provided a key
         result.ifPresent(newKey -> {
@@ -52,69 +56,102 @@ public class DataOperationHelper {
     }
 
     /**
-     * Cuts the selected entry from the TreeTableView and places it in the clipboard.
-     *
-     * @param table       the TreeTableView containing DataItems
+     * Cuts the selected entries from the TreeTableView and copies them to the clipboard.
+     * @param table the TreeTableView containing the data items
      * @param groupedData the map containing grouped data by category
      */
     public static void cut(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {
-        TreeItem<DataItem> selected = table.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            copy(table);
-            groupedData.get(selected.getValue().getCategory()).remove(selected.getValue());
-            SortAndRefresher.refresh(table, groupedData);
+        List<TreeItem<DataItem>> selected = new ArrayList<>(table.getSelectionModel().getSelectedItems());
+        if (!selected.isEmpty()) {
+            List<DataItem> toCopy = selected.stream()
+                    .map(TreeItem::getValue)
+                    .filter(item -> item != null && !item.getKey().endsWith("..."))
+                    .collect(Collectors.toList());
+            ClipboardManager.copyFrom(toCopy);
 
-            logger.info("Cut entry with key: {}", selected.getValue().getKey());
+            // Rearrange the grouped data by removing the cut items
+            for (TreeItem<DataItem> item : selected) {
+                DataItem data = item.getValue();
+                if (data != null && !data.getKey().endsWith("...")) {
+                    List<DataItem> list = groupedData.get(data.getCategory());
+                    if (list != null) {
+                        list.remove(data);
+                        if (list.isEmpty()) groupedData.remove(data.getCategory());
+                    }
+                }
+            }
+            SortAndRefresher.refresh(table, groupedData);
+            logger.info("Cut {} entries.", toCopy.size());
         }
     }
 
     /**
-     * Copies the selected entry from the TreeTableView to the clipboard.
-     *
-     * @param table the TreeTableView containing DataItems
+     * Copies the selected entries from the TreeTableView to the clipboard.
+     * @param table the TreeTableView containing the data items
      */
     public static void copy(TreeTableView<DataItem> table) {
-        TreeItem<DataItem> selected = table.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            ClipboardManager.copyFrom(selected.getValue());
-
-            logger.info("Copied entry with key: {}", selected.getValue().getKey());
+        List<TreeItem<DataItem>> selected = new ArrayList<>(table.getSelectionModel().getSelectedItems());
+        List<DataItem> toCopy = selected.stream()
+                .map(TreeItem::getValue)
+                .filter(item -> item != null && !item.getKey().endsWith("..."))
+                .collect(Collectors.toList());
+        if (!toCopy.isEmpty()) {
+            ClipboardManager.copyFrom(toCopy);
+            logger.info("Copied {} entries.", toCopy.size());
         }
     }
 
     /**
-     * Pastes the clipboard entry into the TreeTableView under the selected category.
-     *
-     * @param table       the TreeTableView where the entry will be pasted
-     * @param groupedData the map containing grouped data by category
-     */
-    public static void paste(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {
-        DataItem clipboard = ClipboardManager.getClipboard();
-        if (ClipboardManager.hasContent()) {
-            TreeItem<DataItem> selected = table.getSelectionModel().getSelectedItem();
-            String category = (selected != null) ? selected.getValue().getCategory() : "uncategorized";
-
-            groupedData.computeIfAbsent(category, k -> new ArrayList<>())
-                    .add(new DataItem(category, clipboard.getKey(), clipboard.getOriginalText(), clipboard.getTranslatedText()));
-            SortAndRefresher.refresh(table, groupedData);
-
-            logger.info("Pasted entry with key: {}", clipboard.getKey());
-        }
-    }
-
-    /**
-     * Deletes the selected entry from the TreeTableView and updates the grouped data.
-     *
-     * @param table       the TreeTableView containing DataItems
+     * Deletes the selected entries from the TreeTableView and updates the grouped data.
+     * @param table the TreeTableView containing the data items
      * @param groupedData the map containing grouped data by category
      */
     public static void delete(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {
-        TreeItem<DataItem> selected = table.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            groupedData.get(selected.getValue().getCategory()).remove(selected.getValue());
+        List<TreeItem<DataItem>> selected = new ArrayList<>(table.getSelectionModel().getSelectedItems());
+        if (!selected.isEmpty()) {
+            for (TreeItem<DataItem> item : selected) {
+                DataItem data = item.getValue();
+                if (data != null && !data.getKey().endsWith("...")) {
+                    List<DataItem> list = groupedData.get(data.getCategory());
+                    if (list != null) {
+                        list.remove(data);
+                        if (list.isEmpty()) groupedData.remove(data.getCategory());
+                    }
+                }
+            }
             SortAndRefresher.refresh(table, groupedData);
+            logger.info("Deleted {} entries.", selected.size());
+        }
+    }
 
-            logger.info("Deleted entry with key: {}", selected.getValue().getKey());
+    /**
+     * Pastes the clipboard content into the TreeTableView, adding new entries or updating existing ones.
+     * @param table the TreeTableView to paste data into
+     * @param groupedData the map containing grouped data by category
+     */
+    public static void paste(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {
+        List<DataItem> clipboardItems = ClipboardManager.getClipboard();
+        if (!clipboardItems.isEmpty()) {
+            for (DataItem clipboard : clipboardItems) {
+                String key = clipboard.getKey();
+                String category = key.contains(".") ? key.split("\\.")[0] : "uncategorized";
+                List<DataItem> dataItems = groupedData.computeIfAbsent(category, k -> new ArrayList<>());
+                // Check if the key already exists
+                Optional<DataItem> existingItemOpt = dataItems.stream()
+                        .filter(item -> item.getKey().equals(key))
+                        .findFirst();
+
+                if (existingItemOpt.isPresent()) {
+                    // Replace existing content
+                    DataItem existingItem = existingItemOpt.get();
+                    existingItem.setOriginalText(clipboard.getOriginalText());
+                    existingItem.setTranslatedText(clipboard.getTranslatedText());
+                } else {
+                    dataItems.add(new DataItem(category, clipboard.getKey(), clipboard.getOriginalText(), clipboard.getTranslatedText()));
+                }
+            }
+            SortAndRefresher.refresh(table, groupedData);
+            logger.info("Pasted {} entries.", clipboardItems.size());
         }
     }
 
@@ -124,9 +161,28 @@ public class DataOperationHelper {
      * @param table the TreeTableView to select all entries in
      */
     public static void selectAll(TreeTableView<DataItem> table) {
-        table.getSelectionModel().selectAll();
-
+        // 清空之前的选择
+        table.getSelectionModel().clearSelection();
+        // 递归选中所有叶子节点
+        selectAllLeafNodes(table.getRoot(), table);
         logger.info("Selected all entries in the TreeTableView.");
+    }
+
+    /**
+     * Recursively selects all leaf nodes in the TreeTableView.
+     *
+     * @param node  the current TreeItem node to check
+     * @param table the TreeTableView to select entries in
+     */
+    private static void selectAllLeafNodes(TreeItem<DataItem> node, TreeTableView<DataItem> table) {
+        if (node == null) return;
+        if (node.isLeaf() && node.getValue() != null && !node.getValue().getKey().endsWith("...")) {
+            int row = table.getRow(node);
+            table.getSelectionModel().select(row);
+        }
+        for (TreeItem<DataItem> child : node.getChildren()) {
+            selectAllLeafNodes(child, table);
+        }
     }
 
     /**

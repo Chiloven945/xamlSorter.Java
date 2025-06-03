@@ -1,48 +1,54 @@
 package chiloven.xamlsorter.Modules;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ClipboardManager {
     /**
-     * The clipboard holds a single DataItem that can be copied or pasted.
-     * It is initialized with an empty DataItem.
+     * Clipboard to hold DataItem objects.
+     * This is a static list that acts as a clipboard for copying and pasting DataItem objects.
      */
-    private static DataItem clipboard = new DataItem("", "", "", "");
+    private static List<DataItem> clipboard = new ArrayList<>();
 
     /**
-     * Copies the content of the provided DataItem to the clipboard.
-     *
-     * @param item the DataItem to copy to the clipboard
+     * Copies a list of DataItem objects to the clipboard.
+     * @param items the list of DataItem objects to copy
      */
-    public static void copyFrom(DataItem item) {
-        if (item != null) {
-            clipboard.setCategory(item.getCategory());
-            clipboard.setKey(item.getKey());
-            clipboard.setOriginalText(item.getOriginalText());
-            clipboard.setTranslatedText(item.getTranslatedText());
+    public static void copyFrom(List<DataItem> items) {
+        clipboard.clear();
+        for (DataItem item : items) {
+            clipboard.add(new DataItem(
+                    item.getCategory(), item.getKey(), item.getOriginalText(), item.getTranslatedText()
+            ));
         }
     }
 
     /**
-     * Retrieves the current content of the clipboard.
-     *
-     * @return the DataItem currently stored in the clipboard
+     * Copies a single DataItem to the clipboard.
+     * @return the copied DataItem
      */
-    public static DataItem getClipboard() {
-        return clipboard;
+    public static List<DataItem> getClipboard() {
+        // Return a copy of the clipboard to avoid external modifications
+        return clipboard.stream()
+                .map(item -> new DataItem(
+                        item.getCategory(), item.getKey(), item.getOriginalText(), item.getTranslatedText()))
+                .collect(Collectors.toList());
     }
 
     /**
-     * Checks if the clipboard has content.
-     *
-     * @return true if the clipboard has content, false otherwise
+     * Checks if the clipboard has any content.
+     * @return true if the clipboard is not empty, false otherwise
      */
     public static boolean hasContent() {
-        return clipboard != null && clipboard.getKey() != null && !clipboard.getKey().isEmpty();
+        return !clipboard.isEmpty();
     }
 
     /**
-     * Clears the clipboard content.
+     * Clears the clipboard.
      */
     public static void clear() {
-        clipboard = new DataItem("", "", "", "");
+        clipboard.clear();
     }
 }
+
