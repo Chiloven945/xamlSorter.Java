@@ -11,6 +11,7 @@
                 <SeparatorMenuItem/>
                 <MenuItem text="Save"/>
                 <MenuItem text="Save as..."/>
+                <MenuItem text="Export..." onAction="#handleExport"/>
                 <SeparatorMenuItem/>
                 <MenuItem text="Exit"/>
             </items>

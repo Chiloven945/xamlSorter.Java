@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+
+<DialogPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            fx:controller="chiloven.xamlsorter.Controllers.ExportDialogController"
+            prefWidth="360.0" prefHeight="220.0"
+            fx:id="dialogPane">
+
+    <content>
+        <VBox spacing="12">
+            <Label text="Export Settings" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="File Type:"/>
+                <ChoiceBox fx:id="fileTypeChoiceBox">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value=".xaml"/>
+                        </FXCollections>
+                    </items>
+                </ChoiceBox>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Field to Export:"/>
+                <ChoiceBox fx:id="fieldChoiceBox">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Original"/>
+                            <String fx:value="Translated"/>
+                        </FXCollections>
+                    </items>
+                </ChoiceBox>
+            </HBox>
+
+            <CheckBox fx:id="commentCheckBox" text="Add top-level comments" selected="true"/>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button text="Cancel" onAction="#handleCancel"/>
+                <Button text="Export" onAction="#handleExport" defaultButton="true"/>
+            </HBox>
+        </VBox>
+    </content>
+
+    <padding>
+        <Insets top="12" right="16" bottom="12" left="16"/>
+    </padding>
+</DialogPane>

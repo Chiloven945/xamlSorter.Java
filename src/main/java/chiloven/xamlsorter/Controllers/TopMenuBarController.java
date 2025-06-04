@@ -70,6 +70,27 @@ public class TopMenuBarController {
         }
     }
 
+    // Export Configuration Handler
+    @FXML
+    private void handleExport() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Dialogs/ExportDialog.fxml"));
+            DialogPane pane = loader.load();
+
+            ExportDialogController controller = loader.getController();
+            controller.setGroupedData(mainController.getGroupedData());
+
+            Dialog<Void> dialog = new Dialog<>();
+            dialog.setDialogPane(pane);
+            dialog.setTitle("Export Configuration");
+            dialog.showAndWait();
+
+        } catch (Exception e) {
+            logger.error("Failed to open export dialog", e);
+            new ShowAlert().showAlert(Alert.AlertType.ERROR, "Export Error", "Unable to open export dialog.");
+        }
+    }
+
     // Regex Edit Dialog Handler
     @FXML
     private void handleRegexEdit() {
