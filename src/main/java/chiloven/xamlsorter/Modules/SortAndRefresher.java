@@ -17,6 +17,7 @@ public class SortAndRefresher {
      *
      * @param table       the TreeTableView to refresh
      * @param groupedData the data grouped by category
+     * @see #buildTree(Map, String, String, String)
      */
     public static void refresh(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {
 
@@ -34,6 +35,7 @@ public class SortAndRefresher {
      * @param pattern       the regex pattern to match
      * @param replacement   the replacement string for the matched pattern
      * @param replaceTarget the target field to apply the replacement on (e.g., "Key", "Original Text")
+     * @see #buildTree(Map, String, String, String)
      */
     public static void refresh(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData,
                                String pattern, String replacement, String replaceTarget) {
@@ -43,6 +45,15 @@ public class SortAndRefresher {
         logger.info("Sorted and refreshed {} matching regex \"{}\" to replace with \"{}\", targeting {}.", table.getId(), pattern, replacement, replaceTarget);
     }
 
+    /**
+     * Builds a TreeItem structure from the grouped data, applying regex replacements if specified.
+     *
+     * @param groupedData   the data grouped by category
+     * @param pattern       the regex pattern to match for replacement
+     * @param replacement   the replacement string for the matched pattern
+     * @param replaceTarget the target field to apply the replacement on (e.g., "Key", "Original Text")
+     * @return a TreeItem representing the root of the tree structure
+     */
     private static TreeItem<DataItem> buildTree(Map<String, List<DataItem>> groupedData,
                                                 String pattern, String replacement, String replaceTarget) {
         TreeItem<DataItem> root = new TreeItem<>(new DataItem("", "", "", ""));
