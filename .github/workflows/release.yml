@@ -38,7 +38,7 @@ jobs:
 
       - name: Copy and rename JAR
         run: |
-          cp target/*.jar xamlSorter.Java-${{ steps.mvn_version.outputs.mvn_version }}.jar
+          cp target/xaml-sorter-java-${{ steps.mvn_version.outputs.mvn_version }}-shaded.jar xamlSorter.Java-${{ steps.mvn_version.outputs.mvn_version }}.jar
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
