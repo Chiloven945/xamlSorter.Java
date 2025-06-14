@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<MenuBar xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="chiloven.xamlsorter.controllers.TopMenuBarController">
+    <menus>
+        <Menu text="File">
+            <items>
+                <MenuItem text="Open"/>
+                <MenuItem onAction="#handleSaveProject" text="Save"/>
+                <MenuItem onAction="#handleSaveAsProject" text="Save as..."/>
+                <SeparatorMenuItem/>
+                <MenuItem onAction="#handleCreateProject" text="New project..."/>
+                <MenuItem onAction="#handleCreateFromOriginal" text="Create from original XAML..."/>
+                <MenuItem onAction="#handleCreateFromTranslated" text="Create from translated XAML..."/>
+                <SeparatorMenuItem/>
+                <MenuItem onAction="#handleImportOriginal" text="Import original XAML..."/>
+                <MenuItem onAction="#handleImportTranslated" text="Import translated XAML..."/>
+                <SeparatorMenuItem/>
+                <MenuItem text="Export..." onAction="#handleExport"/>
+            </items>
+        </Menu>
+        <Menu text="Edit">
+            <items>
+                <MenuItem text="Undo"/>
+                <MenuItem text="Redo"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="Cut" onAction="#handleCut"/>
+                <MenuItem text="Copy" onAction="#handleCopy"/>
+                <MenuItem text="Paste" onAction="#handlePaste"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="Delete" onAction="#handleDelete"/>
+                <MenuItem text="Add entry..." onAction="#handleAdd"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="Select All" onAction="#handleSelectAll"/>
+                <MenuItem text="Unselect All" onAction="#handleUnselectAll"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="Preference..."/>
+            </items>
+        </Menu>
+        <Menu text="Tools">
+            <items>
+                <MenuItem text="Batch Regex Edit..." onAction="#handleRegexEdit"/>
+            </items>
+        </Menu>
+        <Menu text="Help">
+            <items>
+                <MenuItem text="About..." onAction="#handleAbout"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="GitHub..."/>
+            </items>
+        </Menu>
+    </menus>
+</MenuBar>

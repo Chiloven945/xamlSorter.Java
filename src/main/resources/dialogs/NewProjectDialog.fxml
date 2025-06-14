@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<DialogPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
+            fx:controller="chiloven.xamlsorter.controllers.NewProjectDialogController">
+    <content>
+        <VBox prefHeight="160.0" prefWidth="320.0" spacing="10">
+            <Label style="-fx-font-size:16px; -fx-font-weight:bold;" text="Create a New Project"/>
+            <TextField fx:id="projectNameField" promptText="Project name"/>
+            <TextField fx:id="projectAuthorField" promptText="Author"/>
+            <TextArea fx:id="projectDescField" prefRowCount="2" promptText="Description"/>
+        </VBox>
+    </content>
+    <buttonTypes>
+        <ButtonType buttonData="OK_DONE" text="Create"/>
+        <ButtonType buttonData="CANCEL_CLOSE" text="Cancel"/>
+    </buttonTypes>
+</DialogPane>

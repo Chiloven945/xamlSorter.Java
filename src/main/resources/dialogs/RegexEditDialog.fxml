@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+<DialogPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="640.0" prefWidth="480.0"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            fx:controller="chiloven.xamlsorter.controllers.RegexEditDialogController">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10"/>
+    </padding>
+    <content>
+        <VBox spacing="10">
+            <Label text="Regex Pattern:"/>
+            <TextField fx:id="patternField"/>
+
+            <Label text="Replacement:"/>
+            <TextField fx:id="replacementField"/>
+            <HBox prefHeight="44.0" prefWidth="440.0" spacing="10.0">
+                <children>
+                    <VBox prefHeight="49.0" prefWidth="163.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                        <children>
+
+                            <Label text="Apply Scope:">
+                                <VBox.margin>
+                                    <Insets/>
+                                </VBox.margin>
+                            </Label>
+                            <ComboBox fx:id="scopeComboBox" prefHeight="23.0" prefWidth="158.0">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="Current Group"/>
+                                        <String fx:value="All Groups"/>
+                                    </FXCollections>
+                                </items>
+                            </ComboBox>
+                        </children>
+                    </VBox>
+                    <VBox prefHeight="49.0" prefWidth="162.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                        <children>
+
+                            <Label text="Replacement Target:"/>
+                            <ComboBox fx:id="replaceTargetComboBox" prefHeight="23.0" prefWidth="188.0">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="Original Text"/>
+                                        <String fx:value="Translated Text"/>
+                                        <String fx:value="Key"/>
+                                    </FXCollections>
+                                </items>
+                            </ComboBox>
+                        </children>
+                    </VBox>
+                    <VBox alignment="BOTTOM_RIGHT" prefHeight="49.0" prefWidth="152.0" HBox.hgrow="ALWAYS">
+                        <children>
+
+                            <Button onAction="#handlePreview" prefHeight="23.0" prefWidth="147.0"
+                                    text="Preview Matches">
+                                <VBox.margin>
+                                    <Insets/>
+                                </VBox.margin>
+                            </Button>
+                        </children>
+                    </VBox>
+                </children>
+            </HBox>
+
+            <!-- TreeTableView with columns -->
+            <TreeTableView fx:id="previewTreeTable" prefHeight="489.0" prefWidth="440.0">
+                <columns>
+                    <TreeTableColumn fx:id="keyColumn" prefWidth="150.0" text="Key"/>
+                    <TreeTableColumn fx:id="originalTextColumn" prefWidth="150.0" text="Original Text"/>
+                    <TreeTableColumn fx:id="translatedTextColumn" prefWidth="150.0" text="Translated Text"/>
+                </columns>
+                <VBox.margin>
+                    <Insets top="10.0"/>
+                </VBox.margin>
+            </TreeTableView>
+        </VBox>
+    </content>
+</DialogPane>

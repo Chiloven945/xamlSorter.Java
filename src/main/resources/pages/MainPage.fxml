@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" prefHeight="600.0" prefWidth="800.0"
+           xmlns="http://javafx.com/javafx/17.0.12" fx:controller="chiloven.xamlsorter.controllers.MainController">
+    <VBox>
+        <fx:include source="/widgets/TopMenuBar.fxml" fx:id="topMenuBar"/>
+        <VBox fx:id="editorBox">
+            <children>
+                <TreeTableView fx:id="translationTreeTable" prefHeight="488.0" prefWidth="776.0" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TreeTableColumn fx:id="keyColumn" prefWidth="250.0" text="Key"/>
+                        <TreeTableColumn fx:id="originalColumn" prefWidth="250.0" text="Original Text"/>
+                        <TreeTableColumn fx:id="translatedColumn" prefWidth="250.0" text="Translated Text"/>
+                    </columns>
+                    <VBox.margin>
+                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
+                    </VBox.margin>
+                </TreeTableView>
+                <Button mnemonicParsing="false" onAction="#handleAddEntry" text="Add entry">
+                    <VBox.margin>
+                        <Insets bottom="8.0" left="8.0" right="8.0"/>
+                    </VBox.margin>
+                </Button>
+            </children>
+        </VBox>
+    </VBox>
+
+    <!-- 覆盖层（只在欢迎页时显示）-->
+    <StackPane fx:id="welcomeOverlay" style="-fx-background-color: transparent;" pickOnBounds="false">
+        <!-- 半透明黑色背景 -->
+        <Pane style="-fx-background-color: rgba(0,0,0,0.28);"
+              StackPane.alignment="CENTER"
+              prefHeight="9999" prefWidth="9999"/>
+        <!-- 中间白色卡片 -->
+        <VBox alignment="CENTER" spacing="18.0"
+              style="-fx-background-color: white; -fx-background-radius: 8px; -fx-padding: 40 50;"
+              maxWidth="370" maxHeight="350">
+            <Label style="-fx-font-size:28px; -fx-font-weight:bold;" text="xamlSorter.Java"/>
+            <Button onAction="#handleCreateProject" text="New project..."/>
+            <Button onAction="#handleOpenProject" text="Open project..."/>
+            <Button onAction="#handleCreateFromOriginal" text="Create from Original XAML..."/>
+            <Button onAction="#handleCreateFromTranslated" text="Create from Translated XAML..."/>
+            <Button onAction="#handleShowAbout" text="About..."/>
+        </VBox>
+    </StackPane>
+</StackPane>

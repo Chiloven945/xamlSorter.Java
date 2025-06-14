@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<ContextMenu xmlns:fx="http://javafx.com/fxml/1"
+             xmlns="http://javafx.com/javafx/17.0.12"
+             fx:controller="chiloven.xamlsorter.controllers.ContextMenuController">
+    <items>
+        <MenuItem fx:id="copyEntry" text="Copy" onAction="#handleCopy"/>
+        <MenuItem fx:id="pasteEntry" text="Paste" onAction="#handlePaste"/>
+        <MenuItem fx:id="cutEntry" text="Cut" onAction="#handleCut"/>
+        <SeparatorMenuItem/>
+        <MenuItem fx:id="deleteEntry" text="Delete" onAction="#handleDelete"/>
+        <MenuItem fx:id="addEntry" text="Add entry..." onAction="#handleAdd"/>
+        <SeparatorMenuItem/>
+        <MenuItem fx:id="selectAll" text="Select All" onAction="#handleSelectAll"/>
+        <MenuItem fx:id="unselectAll" text="Unselect All" onAction="#handleUnselectAll"/>
+    </items>
+</ContextMenu>
