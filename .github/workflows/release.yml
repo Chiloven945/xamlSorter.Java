@@ -3,6 +3,7 @@ name: Build & Attach Release Artifacts
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -38,7 +39,8 @@ jobs:
 
       - name: Copy and rename JAR
         run: |
-          cp target/xaml-sorter-java-${{ steps.mvn_version.outputs.mvn_version }}-shaded.jar xamlSorter.Java-${{ steps.mvn_version.outputs.mvn_version }}.jar
+          cp target/xaml-sorter-java-${{ steps.mvn_version.outputs.mvn_version }}.jar \
+          xamlSorter.Java-${{ steps.mvn_version.outputs.mvn_version }}.jar
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
@@ -73,8 +75,7 @@ jobs:
             --main-jar xamlSorter.Java-${{ needs.build.outputs.mvn_version }}.jar ^
             --main-class chiloven.xamlsorter.Main ^
             --dest dist ^
-            --app-version ${{ needs.build.outputs.mvn_version }} ^
-            --icon src/main/resources/Icons/application.ico ^
+            --icon src/main/resources/icons/application/application-ico.ico ^
             --java-options "--enable-native-access=ALL-UNNAMED"
         shell: cmd
 
@@ -117,8 +118,7 @@ jobs:
             --main-jar xamlSorter.Java-${{ needs.build.outputs.mvn_version }}.jar \
             --main-class chiloven.xamlsorter.Main \
             --dest dist \
-            --app-version ${{ needs.build.outputs.mvn_version }} \
-            --icon src/main/resources/Icons/application.png \
+            --icon src/main/resources/icons/application/application-256x256.png \
             --java-options "--enable-native-access=ALL-UNNAMED"
 
       - name: Zip Linux app-image
@@ -157,13 +157,13 @@ jobs:
             --main-jar xamlSorter.Java-${{ needs.build.outputs.mvn_version }}.jar \
             --main-class chiloven.xamlsorter.Main \
             --dest dist \
-            --app-version ${{ needs.build.outputs.mvn_version }} \
-            --icon src/main/resources/Icons/application.icns \
+            --icon src/main/resources/icons/application/application-icns.icns \
             --java-options "--enable-native-access=ALL-UNNAMED"
 
       - name: Zip macOS app-image
         run: |
-          cd dist && zip -r ../xamlSorter.Java-${{ needs.build.outputs.mvn_version }}-macos.zip xamlSorter.Java
+          cd dist
+          zip -r ../xamlSorter.Java-${{ needs.build.outputs.mvn_version }}-macos.zip xamlSorter.Java.app
 
       - name: Upload macOS zip
         uses: actions/upload-artifact@v4
@@ -200,7 +200,7 @@ jobs:
           path: ./artifact
 
       - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           files: |
             artifact/xamlSorter.Java-*.jar
