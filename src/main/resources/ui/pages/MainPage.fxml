@@ -7,13 +7,13 @@
            xmlns="http://javafx.com/javafx/17.0.12" fx:controller="chiloven.xamlsorter.controllers.MainController">
     <VBox>
         <fx:include source="/ui/widgets/TopMenuBar.fxml" fx:id="topMenuBar"/>
-        <VBox fx:id="editorBox">
+        <VBox fx:id="editorBox" VBox.vgrow="ALWAYS">
             <children>
                 <TreeTableView fx:id="translationTreeTable" prefHeight="488.0" prefWidth="776.0" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TreeTableColumn fx:id="keyColumn" prefWidth="250.0" text="Key"/>
-                        <TreeTableColumn fx:id="originalColumn" prefWidth="250.0" text="Original Text"/>
-                        <TreeTableColumn fx:id="translatedColumn" prefWidth="250.0" text="Translated Text"/>
+                        <TreeTableColumn fx:id="keyColumn" minWidth="80" text="Key"/>
+                        <TreeTableColumn fx:id="originalColumn" minWidth="120" text="Original Text"/>
+                        <TreeTableColumn fx:id="translatedColumn" minWidth="120" text="Translated Text"/>
                     </columns>
                     <VBox.margin>
                         <Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>

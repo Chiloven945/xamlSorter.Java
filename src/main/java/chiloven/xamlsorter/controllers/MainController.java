@@ -6,7 +6,9 @@ import chiloven.xamlsorter.controllers.widgets.TopMenuBarController;
 import chiloven.xamlsorter.entities.DataItem;
 import chiloven.xamlsorter.entities.MultiLineTreeTableCell;
 import chiloven.xamlsorter.entities.ProjectMeta;
-import chiloven.xamlsorter.modules.*;
+import chiloven.xamlsorter.modules.DataOperationHelper;
+import chiloven.xamlsorter.modules.ProjectManager;
+import chiloven.xamlsorter.modules.SortAndRefresher;
 import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -88,9 +90,16 @@ public class MainController {
         // 2️⃣ Configure the TreeTableView columns
         // =========================
 
+        translationTreeTable.setPlaceholder(new Label("No entries. Click 'Add entry' to create one."));
+
         keyColumn.setCellValueFactory(param -> param.getValue().getValue().getKeyProperty());
         originalColumn.setCellValueFactory(param -> param.getValue().getValue().getOriginalTextProperty());
         translatedColumn.setCellValueFactory(param -> param.getValue().getValue().getTranslatedTextProperty());
+
+        double total = 1 + 1.5 + 1.5; // = 4.0
+        keyColumn.prefWidthProperty().bind(translationTreeTable.widthProperty().multiply(1 / total));
+        originalColumn.prefWidthProperty().bind(translationTreeTable.widthProperty().multiply(1.5 / total));
+        translatedColumn.prefWidthProperty().bind(translationTreeTable.widthProperty().multiply(1.5 / total));
 
         // =========================
         // 3️⃣ Configure the TreeTableView and enable editing
