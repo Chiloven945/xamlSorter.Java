@@ -46,8 +46,11 @@
         <Menu text="Help">
             <items>
                 <MenuItem text="About..." onAction="#handleAbout"/>
+                <MenuItem text="License..." onAction="#handleLicense"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="GitHub..."/>
+                <MenuItem text="Documentation..." onAction="#handleDocumentation"/>
+                <MenuItem text="Report issue..." onAction="#handleReportIssue"/>
+                <MenuItem text="GitHub..." onAction="#handleGitHub"/>
             </items>
         </Menu>
     </menus>

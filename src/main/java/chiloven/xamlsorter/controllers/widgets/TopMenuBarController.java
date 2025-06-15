@@ -5,6 +5,8 @@ import chiloven.xamlsorter.controllers.dialogs.AboutDialogController;
 import chiloven.xamlsorter.controllers.dialogs.RegexEditDialogController;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.ProjectManager;
+import chiloven.xamlsorter.utils.BrowserUtil;
+import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.fxml.FXML;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,6 +134,38 @@ public class TopMenuBarController {
         AboutDialogController.showAboutDialog(
                 mainController.getDataTreeTable().getScene().getWindow()
         );
+    }
+
+    @FXML
+    private void handleLicense() {
+        ShowAlert.info(
+                "License",
+                "xamlSorter.Java License",
+                """
+                        This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
+                        
+                        You can view the full license text at: https://www.gnu.org/licenses/gpl-3.0.en.html"""
+        );
+        logger.info("License information displayed to the user.");
+    }
+
+    @FXML
+    private void handleDocumentation() {
+        ShowAlert.info(
+                "Documentation",
+                "WIP...",
+                "The documentation is currently a work in progress. Please check back later for updates. :("
+                );
+    }
+
+    @FXML
+    private void handleReportIssue() {
+        BrowserUtil.openWebpage("https://github.com/Chiloven945/xamlSorter.Java/issues/new");
+    }
+
+    @FXML
+    private void handleGitHub() {
+        BrowserUtil.openWebpage("https://github.com/Chiloven945/xamlSorter.Java");
     }
 
 }
