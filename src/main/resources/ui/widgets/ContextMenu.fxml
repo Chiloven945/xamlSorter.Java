@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <ContextMenu xmlns:fx="http://javafx.com/fxml/1"
              xmlns="http://javafx.com/javafx/17.0.12"
-             fx:controller="chiloven.xamlsorter.controllers.ContextMenuController">
+             fx:controller="chiloven.xamlsorter.controllers.widgets.ContextMenuController">
     <items>
         <MenuItem fx:id="copyEntry" text="Copy" onAction="#handleCopy"/>
         <MenuItem fx:id="pasteEntry" text="Paste" onAction="#handlePaste"/>

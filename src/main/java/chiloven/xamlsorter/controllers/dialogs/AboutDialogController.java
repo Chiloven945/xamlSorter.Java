@@ -1,4 +1,4 @@
-package chiloven.xamlsorter.controllers;
+package chiloven.xamlsorter.controllers.dialogs;
 
 import chiloven.xamlsorter.modules.ShowAlert;
 import javafx.fxml.FXML;
@@ -28,7 +28,7 @@ public class AboutDialogController {
      */
     public static void showAboutDialog(Window owner) {
         try {
-            FXMLLoader loader = new FXMLLoader(AboutDialogController.class.getResource("/dialogs/AboutDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(AboutDialogController.class.getResource("/ui/dialogs/AboutDialog.fxml"));
             DialogPane dialogPane = loader.load();
 
             dialogPane.getButtonTypes().add(javafx.scene.control.ButtonType.CLOSE);
@@ -53,7 +53,7 @@ public class AboutDialogController {
     @FXML
     public void initialize() {
         // Load the application icon
-        Image iconImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/application/application-about.png")));
+        Image iconImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-about.png")));
         appIconView.setImage(iconImage);
     }
 

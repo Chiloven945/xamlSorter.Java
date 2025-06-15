@@ -6,7 +6,7 @@
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" prefHeight="600.0" prefWidth="800.0"
            xmlns="http://javafx.com/javafx/17.0.12" fx:controller="chiloven.xamlsorter.controllers.MainController">
     <VBox>
-        <fx:include source="/widgets/TopMenuBar.fxml" fx:id="topMenuBar"/>
+        <fx:include source="/ui/widgets/TopMenuBar.fxml" fx:id="topMenuBar"/>
         <VBox fx:id="editorBox">
             <children>
                 <TreeTableView fx:id="translationTreeTable" prefHeight="488.0" prefWidth="776.0" VBox.vgrow="ALWAYS">

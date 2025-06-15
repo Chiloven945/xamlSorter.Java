@@ -1,4 +1,4 @@
-package chiloven.xamlsorter.controllers;
+package chiloven.xamlsorter.controllers.dialogs;
 
 import chiloven.xamlsorter.modules.ProjectMeta;
 import javafx.fxml.FXML;

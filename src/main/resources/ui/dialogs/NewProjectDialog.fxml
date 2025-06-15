@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 <DialogPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
-            fx:controller="chiloven.xamlsorter.controllers.NewProjectDialogController">
+            fx:controller="chiloven.xamlsorter.controllers.dialogs.NewProjectDialogController">
     <content>
         <VBox prefHeight="160.0" prefWidth="320.0" spacing="10">
             <Label style="-fx-font-size:16px; -fx-font-weight:bold;" text="Create a New Project"/>

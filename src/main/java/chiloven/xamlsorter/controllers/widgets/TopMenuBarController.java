@@ -1,5 +1,8 @@
-package chiloven.xamlsorter.controllers;
+package chiloven.xamlsorter.controllers.widgets;
 
+import chiloven.xamlsorter.controllers.MainController;
+import chiloven.xamlsorter.controllers.dialogs.AboutDialogController;
+import chiloven.xamlsorter.controllers.dialogs.RegexEditDialogController;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.ProjectManager;
 import javafx.fxml.FXML;

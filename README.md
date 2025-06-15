@@ -1,5 +1,5 @@
 <div align="middle">
-  <img src="src/main/resources/icons/application/application-svg.svg" height="192"/>
+  <img src="src/main/resources/assets/icons/application/application-svg.svg" height="192"/>
 
 # xamlSorter.Java
 
