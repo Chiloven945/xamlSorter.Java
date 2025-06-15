@@ -1,5 +1,7 @@
 package chiloven.xamlsorter.modules;
 
+import chiloven.xamlsorter.entities.DataItem;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

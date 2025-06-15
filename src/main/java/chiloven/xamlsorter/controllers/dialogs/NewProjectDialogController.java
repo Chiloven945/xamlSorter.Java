@@ -1,6 +1,6 @@
 package chiloven.xamlsorter.controllers.dialogs;
 
-import chiloven.xamlsorter.modules.ProjectMeta;
+import chiloven.xamlsorter.entities.ProjectMeta;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;

@@ -1,4 +1,4 @@
-package chiloven.xamlsorter.modules;
+package chiloven.xamlsorter.entities;
 
 import java.io.Serializable;
 

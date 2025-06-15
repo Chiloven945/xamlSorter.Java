@@ -1,4 +1,4 @@
-package chiloven.xamlsorter.modules;
+package chiloven.xamlsorter.utils;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;

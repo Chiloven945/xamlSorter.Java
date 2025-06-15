@@ -1,4 +1,4 @@
-package chiloven.xamlsorter.modules;
+package chiloven.xamlsorter.utils;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Window;

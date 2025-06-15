@@ -1,7 +1,7 @@
 package chiloven.xamlsorter.controllers.widgets;
 
 import chiloven.xamlsorter.modules.ClipboardManager;
-import chiloven.xamlsorter.modules.DataItem;
+import chiloven.xamlsorter.entities.DataItem;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.SortAndRefresher;
 import javafx.fxml.FXML;

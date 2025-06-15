@@ -1,4 +1,4 @@
-package chiloven.xamlsorter.modules;
+package chiloven.xamlsorter.entities;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

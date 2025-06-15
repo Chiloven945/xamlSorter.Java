@@ -1,6 +1,8 @@
 package chiloven.xamlsorter.modules;
 
 import chiloven.xamlsorter.controllers.MainController;
+import chiloven.xamlsorter.entities.DataItem;
+import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;

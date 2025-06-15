@@ -1,5 +1,8 @@
 package chiloven.xamlsorter.modules;
 
+import chiloven.xamlsorter.entities.DataItem;
+import chiloven.xamlsorter.entities.ProjectMeta;
+import chiloven.xamlsorter.utils.ShowAlert;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;

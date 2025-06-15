@@ -1,4 +1,4 @@
-package chiloven.xamlsorter.modules;
+package chiloven.xamlsorter.entities;
 
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;

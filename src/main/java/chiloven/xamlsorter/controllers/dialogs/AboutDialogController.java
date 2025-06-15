@@ -1,6 +1,6 @@
 package chiloven.xamlsorter.controllers.dialogs;
 
-import chiloven.xamlsorter.modules.ShowAlert;
+import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Dialog;

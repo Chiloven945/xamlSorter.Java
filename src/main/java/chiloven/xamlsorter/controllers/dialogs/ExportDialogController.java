@@ -1,8 +1,8 @@
 package chiloven.xamlsorter.controllers.dialogs;
 
 import chiloven.xamlsorter.controllers.MainController;
-import chiloven.xamlsorter.modules.CustomFileChooser;
-import chiloven.xamlsorter.modules.DataItem;
+import chiloven.xamlsorter.utils.CustomFileChooser;
+import chiloven.xamlsorter.entities.DataItem;
 import chiloven.xamlsorter.modules.FileProcessor;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;

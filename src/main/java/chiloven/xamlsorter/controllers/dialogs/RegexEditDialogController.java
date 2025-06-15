@@ -1,9 +1,9 @@
 package chiloven.xamlsorter.controllers.dialogs;
 
 import chiloven.xamlsorter.controllers.MainController;
-import chiloven.xamlsorter.modules.DataItem;
+import chiloven.xamlsorter.entities.DataItem;
 import chiloven.xamlsorter.modules.DataOperationHelper;
-import chiloven.xamlsorter.modules.ShowAlert;
+import chiloven.xamlsorter.utils.ShowAlert;
 import chiloven.xamlsorter.modules.SortAndRefresher;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

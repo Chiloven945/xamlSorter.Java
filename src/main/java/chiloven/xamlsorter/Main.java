@@ -1,7 +1,7 @@
 package chiloven.xamlsorter;
 
 import chiloven.xamlsorter.controllers.MainController;
-import chiloven.xamlsorter.modules.ShowAlert;
+import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

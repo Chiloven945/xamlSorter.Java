@@ -1,5 +1,6 @@
 package chiloven.xamlsorter.modules;
 
+import chiloven.xamlsorter.entities.DataItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;
 import org.apache.logging.log4j.LogManager;
