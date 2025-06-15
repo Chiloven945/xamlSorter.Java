@@ -1,5 +1,6 @@
-package chiloven.xamlsorter.controllers;
+package chiloven.xamlsorter.controllers.dialogs;
 
+import chiloven.xamlsorter.controllers.MainController;
 import chiloven.xamlsorter.modules.DataItem;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.ShowAlert;
@@ -45,7 +46,7 @@ public class RegexEditDialogController {
      */
     public static void showAndHandleRegexEdit(Map<String, List<DataItem>> groupedData, MainController mainController) {
         try {
-            FXMLLoader loader = new FXMLLoader(RegexEditDialogController.class.getResource("/dialogs/RegexEditDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(RegexEditDialogController.class.getResource("/ui/dialogs/RegexEditDialog.fxml"));
             DialogPane dialogPane = loader.load();
 
             RegexEditDialogController controller = loader.getController();

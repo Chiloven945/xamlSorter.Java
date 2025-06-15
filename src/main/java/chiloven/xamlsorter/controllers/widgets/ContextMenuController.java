@@ -1,4 +1,4 @@
-package chiloven.xamlsorter.controllers;
+package chiloven.xamlsorter.controllers.widgets;
 
 import chiloven.xamlsorter.modules.ClipboardManager;
 import chiloven.xamlsorter.modules.DataItem;

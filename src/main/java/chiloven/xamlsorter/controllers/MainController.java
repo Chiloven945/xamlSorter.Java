@@ -1,5 +1,8 @@
 package chiloven.xamlsorter.controllers;
 
+import chiloven.xamlsorter.controllers.dialogs.AboutDialogController;
+import chiloven.xamlsorter.controllers.widgets.ContextMenuController;
+import chiloven.xamlsorter.controllers.widgets.TopMenuBarController;
 import chiloven.xamlsorter.modules.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -130,7 +133,7 @@ public class MainController {
                         ? row.getTreeItem().getValue()
                         : null;
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/widgets/ContextMenu.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/widgets/ContextMenu.fxml"));
                     ContextMenu menu = loader.load();
                     ContextMenuController controller = loader.getController();
                     controller.initializeMenu(groupedData, translationTreeTable, targetItem);
@@ -151,7 +154,7 @@ public class MainController {
 
         translationTreeTable.setOnContextMenuRequested(event -> {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/widgets/ContextMenu.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/widgets/ContextMenu.fxml"));
                 ContextMenu menu = loader.load();
                 ContextMenuController controller = loader.getController();
                 controller.initializeMenu(groupedData, translationTreeTable, null);

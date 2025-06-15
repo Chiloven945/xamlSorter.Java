@@ -1,8 +1,8 @@
 package chiloven.xamlsorter.modules;
 
-import chiloven.xamlsorter.controllers.ExportDialogController;
+import chiloven.xamlsorter.controllers.dialogs.ExportDialogController;
 import chiloven.xamlsorter.controllers.MainController;
-import chiloven.xamlsorter.controllers.NewProjectDialogController;
+import chiloven.xamlsorter.controllers.dialogs.NewProjectDialogController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import org.apache.logging.log4j.LogManager;
@@ -98,7 +98,7 @@ public class ProjectManager {
     public static boolean createProject(MainController mainController) {
         if (!mainController.promptSaveIfNeeded()) return false;
         try {
-            FXMLLoader loader = new FXMLLoader(ProjectManager.class.getResource("/dialogs/NewProjectDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(ProjectManager.class.getResource("/ui/dialogs/NewProjectDialog.fxml"));
             DialogPane dialogPane = loader.load();
 
             Dialog<ButtonType> dialog = new Dialog<>();
@@ -192,7 +192,7 @@ public class ProjectManager {
      */
     public static void showExportDialog(MainController mainController) {
         try {
-            FXMLLoader loader = new FXMLLoader(ProjectManager.class.getResource("/dialogs/ExportDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(ProjectManager.class.getResource("/ui/dialogs/ExportDialog.fxml"));
             DialogPane pane = loader.load();
 
             ExportDialogController controller = loader.getController();

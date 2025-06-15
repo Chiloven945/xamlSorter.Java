@@ -23,7 +23,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         try {
             logger.info("Starting xamlSorter.Java application");
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/pages/MainPage.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/pages/MainPage.fxml"));
             Scene scene = new Scene(loader.load());
 
             mainController = loader.getController();
@@ -39,12 +39,12 @@ public class Main extends Application {
 
             primaryStage.setTitle("xamlSorter.Java");
             primaryStage.getIcons().addAll(
-                    new Image(getClass().getResourceAsStream("/icons/application/application-16x16.png")),
-                    new Image(getClass().getResourceAsStream("/icons/application/application-32x32.png")),
-                    new Image(getClass().getResourceAsStream("/icons/application/application-64x64.png")),
-                    new Image(getClass().getResourceAsStream("/icons/application/application-128x128.png")),
-                    new Image(getClass().getResourceAsStream("/icons/application/application-192x192.png")),
-                    new Image(getClass().getResourceAsStream("/icons/application/application-256x256.png"))
+                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-16x16.png")),
+                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-32x32.png")),
+                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-64x64.png")),
+                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-128x128.png")),
+                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-192x192.png")),
+                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-256x256.png"))
             );
             primaryStage.setScene(scene);
             primaryStage.show();

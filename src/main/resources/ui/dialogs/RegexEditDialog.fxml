@@ -7,7 +7,7 @@
 <?import java.lang.*?>
 <DialogPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="640.0" prefWidth="480.0"
             xmlns="http://javafx.com/javafx/17.0.12"
-            fx:controller="chiloven.xamlsorter.controllers.RegexEditDialogController">
+            fx:controller="chiloven.xamlsorter.controllers.dialogs.RegexEditDialogController">
     <padding>
         <Insets bottom="10" left="10" right="10" top="10"/>
     </padding>

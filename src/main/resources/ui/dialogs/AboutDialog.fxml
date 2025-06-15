@@ -5,7 +5,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <DialogPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
-            fx:controller="chiloven.xamlsorter.controllers.AboutDialogController">
+            fx:controller="chiloven.xamlsorter.controllers.dialogs.AboutDialogController">
 
     <content>
         <VBox spacing="18.0">
