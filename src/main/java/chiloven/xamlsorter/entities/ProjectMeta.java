@@ -78,17 +78,4 @@ public class ProjectMeta implements Serializable {
         this.author = author;
     }
 
-    /**
-     * Returns a string representation of the project metadata.
-     *
-     * @return a string containing the project name, author, and description
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "Project name: " + name +
-                (author != null && !author.isEmpty() ? "\nAuthor: " + author : "") +
-                (description != null && !description.isEmpty() ? "\nDescription: " + description : "");
-    }
-
 }
