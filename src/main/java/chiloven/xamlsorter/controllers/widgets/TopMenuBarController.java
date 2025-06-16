@@ -2,6 +2,7 @@ package chiloven.xamlsorter.controllers.widgets;
 
 import chiloven.xamlsorter.controllers.MainController;
 import chiloven.xamlsorter.controllers.dialogs.AboutDialogController;
+import chiloven.xamlsorter.controllers.dialogs.PreferencesDialogController;
 import chiloven.xamlsorter.controllers.dialogs.RegexEditDialogController;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.ProjectManager;
@@ -112,6 +113,11 @@ public class TopMenuBarController {
     @FXML
     private void handleUnselectAll() {
         DataOperationHelper.unselectAll(mainController.getDataTreeTable());
+    }
+
+    @FXML
+    private void handlePreferences() {
+        PreferencesDialogController.showPreferencesDialog(mainController.getRootPane().getScene().getWindow());
     }
 
     // =========================

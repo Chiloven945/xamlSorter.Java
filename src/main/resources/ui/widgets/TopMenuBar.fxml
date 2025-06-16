@@ -35,7 +35,7 @@
                 <MenuItem text="Select All" onAction="#handleSelectAll"/>
                 <MenuItem text="Unselect All" onAction="#handleUnselectAll"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Preference..."/>
+                <MenuItem text="Preference..." onAction="#handlePreferences"/>
             </items>
         </Menu>
         <Menu text="Tools">
