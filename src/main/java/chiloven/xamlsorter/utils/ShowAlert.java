@@ -2,7 +2,9 @@ package chiloven.xamlsorter.utils;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
 
 import java.util.Optional;
 
@@ -19,16 +21,50 @@ public class ShowAlert {
      * Show a JavaFX alert.
      *
      * @param alertType the type of alert (e.g., Alert.AlertType.INFORMATION, Alert.AlertType.ERROR)
+     * @param header    the header text of the alert dialog
      * @param title     the title of the alert dialog
      * @param content   the content text of the alert dialog
-     * @param header    the header text of the alert dialog
+     * @param stacktrace the stack trace to display in the alert (optional, can be null or empty)
      */
-    public static void showAlert(Alert.AlertType alertType, String title, String header, String content) {
+    public static void showAlert(Alert.AlertType alertType, String title, String header, String content, Exception stacktrace) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(header);
 
-        if (isLongMessage(content)) {
+        if (stacktrace != null) {
+            // Build a detailed message with stack trace
+            StringBuilder sb = new StringBuilder();
+            sb.append(stacktrace).append("\n");
+            for (StackTraceElement element : stacktrace.getStackTrace()) {
+                sb.append("    at ").append(element).append("\n");
+            }
+
+            VBox vbox = new VBox(10);
+            if (isLongMessage(content)) {
+                TextArea contentArea = new TextArea(content);
+                contentArea.setEditable(false);
+                contentArea.setWrapText(true);
+                contentArea.setMaxWidth(Double.MAX_VALUE);
+                contentArea.setMaxHeight(120);
+                vbox.getChildren().add(contentArea);
+            } else {
+                Label contentLabel = new Label(content);
+                contentLabel.setWrapText(true);
+                vbox.getChildren().add(contentLabel);
+            }
+
+            Label stackLabel = new Label("Detail: ");
+            TextArea stackArea = new TextArea(sb.toString());
+            stackArea.setEditable(false);
+            stackArea.setWrapText(false);
+            stackArea.setMaxWidth(Double.MAX_VALUE);
+            stackArea.setMaxHeight(180);
+            vbox.getChildren().addAll(stackLabel, stackArea);
+
+            vbox.setPrefWidth(540);
+            alert.getDialogPane().setContent(vbox);
+
+        } else if (isLongMessage(content)) {
             TextArea textArea = new TextArea(content);
             textArea.setEditable(false);
             textArea.setWrapText(true);
@@ -40,17 +76,6 @@ public class ShowAlert {
         }
 
         alert.showAndWait();
-    }
-
-    /**
-     * Show a JavaFX alert with no header text.
-     *
-     * @param alertType the type of alert (e.g., Alert.AlertType.INFORMATION, Alert.AlertType.ERROR)
-     * @param title     the title of the alert dialog
-     * @param content   the content text of the alert dialog
-     */
-    public static void showAlert(Alert.AlertType alertType, String title, String content) {
-        showAlert(alertType, title, null, content);
     }
 
     /**
@@ -70,10 +95,10 @@ public class ShowAlert {
      * @param title   the title of the alert dialog
      * @param header  the header text of the alert dialog
      * @param content the content text of the alert dialog
-     * @see #showAlert(Alert.AlertType, String, String, String)
+     * @see #showAlert(Alert.AlertType, String, String, String, Exception)
      */
     public static void info(String title, String header, String content) {
-        showAlert(Alert.AlertType.INFORMATION, title, header, content);
+        showAlert(Alert.AlertType.INFORMATION, title, header, content, null);
     }
 
     /**
@@ -81,10 +106,10 @@ public class ShowAlert {
      *
      * @param title   the title of the alert dialog
      * @param content the content text of the alert dialog
-     * @see #showAlert(Alert.AlertType, String, String)
+     * @see #showAlert(Alert.AlertType, String, String, String, Exception)
      */
     public static void info(String title, String content) {
-        showAlert(Alert.AlertType.INFORMATION, title, content);
+        info(title, null, content);
     }
 
     /**
@@ -93,10 +118,10 @@ public class ShowAlert {
      * @param title   the title of the alert dialog
      * @param header  the header text of the alert dialog
      * @param content the content text of the alert dialog
-     * @see #showAlert(Alert.AlertType, String, String, String)
+     * @see #showAlert(Alert.AlertType, String, String, String, Exception)
      */
     public static void warn(String title, String header, String content) {
-        showAlert(Alert.AlertType.WARNING, title, header, content);
+        showAlert(Alert.AlertType.WARNING, title, header, content, null);
     }
 
     /**
@@ -104,10 +129,10 @@ public class ShowAlert {
      *
      * @param title   the title of the alert dialog
      * @param content the content text of the alert dialog
-     * @see #showAlert(Alert.AlertType, String, String)
+     * @see #showAlert(Alert.AlertType, String, String, String, Exception)
      */
     public static void warn(String title, String content) {
-        showAlert(Alert.AlertType.WARNING, title, content);
+        warn(title, null, content);
     }
 
     /**
@@ -116,10 +141,23 @@ public class ShowAlert {
      * @param title   the title of the alert dialog
      * @param header  the header text of the alert dialog
      * @param content the content text of the alert dialog
-     * @see #showAlert(Alert.AlertType, String, String, String)
+     * @see #showAlert(Alert.AlertType, String, String, String, Exception)
      */
     public static void error(String title, String header, String content) {
-        showAlert(Alert.AlertType.ERROR, title, header, content);
+        showAlert(Alert.AlertType.ERROR, title, header, content, null);
+    }
+
+    /**
+     * Show an error alert with stacktrace.
+     *
+     * @param title the title of the alert dialog
+     * @param header the header text of the alert dialog
+     * @param content the content text of the alert dialog
+     * @param stacktrace the stack trace to display in the alert
+     * @see #showAlert(Alert.AlertType, String, String, String, Exception)
+     */
+    public static void error(String title, String header, String content, Exception stacktrace) {
+        showAlert(Alert.AlertType.ERROR, title, header, content, stacktrace);
     }
 
     /**
@@ -127,10 +165,10 @@ public class ShowAlert {
      *
      * @param title   the title of the alert dialog
      * @param content the content text of the alert dialog
-     * @see #showAlert(Alert.AlertType, String, String)
+     * @see #showAlert(Alert.AlertType, String, String, String, Exception)
      */
     public static void error(String title, String content) {
-        showAlert(Alert.AlertType.ERROR, title, content);
+        error(title, null, content);
     }
 
     /**
@@ -139,10 +177,10 @@ public class ShowAlert {
      * @param title   the title of the alert dialog
      * @param header  the header text of the alert dialog
      * @param content the content text of the alert dialog
-     * @see #showAlert(Alert.AlertType, String, String, String)
+     * @see #showAlert(Alert.AlertType, String, String, String, Exception)
      */
     public static void confirm(String title, String header, String content) {
-        showAlert(Alert.AlertType.CONFIRMATION, title, header, content);
+        showAlert(Alert.AlertType.CONFIRMATION, title, header, content, null);
     }
 
     /**
@@ -150,10 +188,10 @@ public class ShowAlert {
      *
      * @param title   the title of the alert dialog
      * @param content the content text of the alert dialog
-     * @see #showAlert(Alert.AlertType, String, String)
+     * @see #showAlert(Alert.AlertType, String, String, String, Exception)
      */
     public static void confirm(String title, String content) {
-        showAlert(Alert.AlertType.CONFIRMATION, title, content);
+        confirm(title, null, content);
     }
 
     /**

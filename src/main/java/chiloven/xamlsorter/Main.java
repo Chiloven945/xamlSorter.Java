@@ -10,6 +10,8 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
+
 public class Main extends Application {
 
     private static final Logger logger = LogManager.getLogger(Main.class);
@@ -51,7 +53,12 @@ public class Main extends Application {
 
             logger.info("application UI loaded successfully");
         } catch (Exception e) {
-            ShowAlert.error("Error", "Failed to load the main application UI", "An error occurred while trying to load the main application UI. Please check the logs for more details.");
+            ShowAlert.error(
+                    "Error",
+                    "Failed to load the main application UI",
+                    "An error occurred while loading the UI. Please check the logs for more details.",
+                    e
+            );
             logger.error("Error loading UI", e);
         }
     }

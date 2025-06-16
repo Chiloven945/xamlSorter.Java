@@ -93,9 +93,13 @@ public class FileProcessor {
                 // case "resx" -> exportToResxFile(...);
                 default -> throw new IllegalArgumentException("Unsupported file type: " + fileType);
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Unexpected file format: {}", fileType, e);
-            ShowAlert.error("Unsupported Format", "Unsupported export format: " + fileType);
+            ShowAlert.error(
+                    "Error",
+                    "Unsupported Format" + fileType,
+                    "Unsupported file format: " + fileType + ". Please select a valid file type."
+            );
         }
     }
 
@@ -142,7 +146,11 @@ public class FileProcessor {
 
         } catch (Exception e) {
             logger.error("Failed to export file: {}", file.getAbsolutePath(), e);
-            ShowAlert.error("Export Error", "Failed to export file: " + e.getMessage());
+            ShowAlert.error(
+                    "Error",
+                    "Failed to export file",
+                    "An error occurred while exporting the file to " + file.getAbsolutePath() + ": " + e.getMessage()
+            );
         }
     }
 

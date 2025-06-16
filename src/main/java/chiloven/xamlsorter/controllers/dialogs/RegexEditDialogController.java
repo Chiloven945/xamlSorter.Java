@@ -63,7 +63,12 @@ public class RegexEditDialogController {
                 controller.applyChanges();
             }
         } catch (Exception e) {
-            ShowAlert.error("Error", "Failed to open Regex Edit dialog", e.getMessage());
+            ShowAlert.error(
+                    "Error",
+                    "Failed to open Regex Edit dialog",
+                    e.getMessage(),
+                    e
+            );
         }
     }
 

@@ -45,8 +45,13 @@ public class AboutDialogController {
 
             dialog.showAndWait();
         } catch (Exception e) {
-            ShowAlert.error("Error", "Error loading About dialog", "An error occurred while trying to load the About dialog. Please try again later.");
             logger.error("Failed to load About dialog", e);
+            ShowAlert.error(
+                    "Error",
+                    "Error loading About dialog",
+                    "An error occurred while trying to load the About dialog. Please report this as an issue.",
+                    e
+            );
         }
     }
 

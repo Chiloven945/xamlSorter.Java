@@ -210,7 +210,12 @@ public class ProjectManager {
 
         } catch (Exception e) {
             LogManager.getLogger(ProjectManager.class).error("Failed to open export dialog", e);
-            ShowAlert.error("Export Error", "Unable to open export dialog.");
+            ShowAlert.error(
+                    "Error",
+                    "Failed to open export dialog",
+                    "An error occurred while trying to open the export dialog. Please report this as an issue.",
+                    e
+            );
         }
     }
 

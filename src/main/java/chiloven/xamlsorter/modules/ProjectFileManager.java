@@ -97,7 +97,11 @@ public class ProjectFileManager {
             ShowAlert.info("Save Successful", "Project saved successfully.");
             logger.info("Project saved successfully to {}", file.getAbsolutePath());
         } catch (Exception e) {
-            ShowAlert.error("Save Failed", "Failed to save project: " + e.getMessage());
+            ShowAlert.error(
+                    "Error",
+                    "Failed to save project",
+                    "An error occurred while saving the project to " + file.getAbsolutePath() + ": " + e.getMessage()
+            );
             logger.error("Failed to save project to {}: {}", file.getAbsolutePath(), e.getMessage());
         }
     }
@@ -168,7 +172,11 @@ public class ProjectFileManager {
 
             return new LoadedProject(meta, items, clipboardKeys);
         } catch (Exception e) {
-            ShowAlert.error("Load Failed", "Failed to load project: " + e.getMessage());
+            ShowAlert.error(
+                    "Error",
+                    "Failed to load project",
+                    "An error occurred while loading the project from " + file.getAbsolutePath() + ": " + e.getMessage()
+            );
             logger.error("Failed to load project from {}: {}", file.getAbsolutePath(), e.getMessage());
             return null;
         }
