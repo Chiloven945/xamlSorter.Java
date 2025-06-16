@@ -77,7 +77,7 @@ jobs:
             --main-jar xamlSorter.Java-${{ needs.build.outputs.mvn_version }}.jar ^
             --main-class chiloven.xamlsorter.Main ^
             --dest dist ^
-            --icon src/main/resources/icons/application/application-ico.ico ^
+            --icon src/main/resources/assets/icons/application/application-ico.ico ^
             --java-options "--enable-native-access=ALL-UNNAMED"
         shell: cmd
 
@@ -121,7 +121,7 @@ jobs:
             --main-jar xamlSorter.Java-${{ needs.build.outputs.mvn_version }}.jar \
             --main-class chiloven.xamlsorter.Main \
             --dest dist \
-            --icon src/main/resources/icons/application/application-256x256.png \
+            --icon src/main/resources/assets/icons/application/application-256x256.png \
             --java-options "--enable-native-access=ALL-UNNAMED"
 
       - name: Zip Linux app-image
@@ -161,7 +161,7 @@ jobs:
             --main-jar xamlSorter.Java-${{ needs.build.outputs.mvn_version }}.jar \
             --main-class chiloven.xamlsorter.Main \
             --dest dist \
-            --icon src/main/resources/icons/application/application-icns.icns \
+            --icon src/main/resources/assets/icons/application/application-icns.icns \
             --java-options "--enable-native-access=ALL-UNNAMED"
 
       - name: Zip macOS app-image
