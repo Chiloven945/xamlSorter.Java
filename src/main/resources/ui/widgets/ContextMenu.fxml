@@ -5,14 +5,14 @@
              xmlns="http://javafx.com/javafx/17.0.12"
              fx:controller="chiloven.xamlsorter.controllers.widgets.ContextMenuController">
     <items>
-        <MenuItem fx:id="copyEntry" text="Copy" onAction="#handleCopy"/>
-        <MenuItem fx:id="pasteEntry" text="Paste" onAction="#handlePaste"/>
-        <MenuItem fx:id="cutEntry" text="Cut" onAction="#handleCut"/>
+        <MenuItem fx:id="copyEntry" text="%widget.context_menu.copy" onAction="#handleCopy"/>
+        <MenuItem fx:id="pasteEntry" text="%widget.context_menu.paste" onAction="#handlePaste"/>
+        <MenuItem fx:id="cutEntry" text="%widget.context_menu.cut" onAction="#handleCut"/>
         <SeparatorMenuItem/>
-        <MenuItem fx:id="deleteEntry" text="Delete" onAction="#handleDelete"/>
-        <MenuItem fx:id="addEntry" text="Add entry..." onAction="#handleAdd"/>
+        <MenuItem fx:id="deleteEntry" text="%widget.context_menu.delete" onAction="#handleDelete"/>
+        <MenuItem fx:id="addEntry" text="%general.button.add_entry" onAction="#handleAdd"/>
         <SeparatorMenuItem/>
-        <MenuItem fx:id="selectAll" text="Select All" onAction="#handleSelectAll"/>
-        <MenuItem fx:id="unselectAll" text="Unselect All" onAction="#handleUnselectAll"/>
+        <MenuItem fx:id="selectAll" text="%widget.context_menu.select_all" onAction="#handleSelectAll"/>
+        <MenuItem fx:id="unselectAll" text="%widget.context_menu.unselect_all" onAction="#handleUnselectAll"/>
     </items>
 </ContextMenu>

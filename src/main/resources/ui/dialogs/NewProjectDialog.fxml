@@ -6,14 +6,14 @@
             fx:controller="chiloven.xamlsorter.controllers.dialogs.NewProjectDialogController">
     <content>
         <VBox prefHeight="160.0" prefWidth="320.0" spacing="10">
-            <Label style="-fx-font-size:16px; -fx-font-weight:bold;" text="Create a New Project"/>
-            <TextField fx:id="projectNameField" promptText="Project name"/>
-            <TextField fx:id="projectAuthorField" promptText="Author"/>
-            <TextArea fx:id="projectDescField" prefRowCount="2" promptText="Description"/>
+            <Label style="-fx-font-size:16px; -fx-font-weight:bold;" text="%dialog.new_proj.title.label"/>
+            <TextField fx:id="projectNameField" promptText="%dialog.new_proj.name.label"/>
+            <TextField fx:id="projectAuthorField" promptText="%dialog.new_proj.author.label"/>
+            <TextArea fx:id="projectDescField" prefRowCount="2" promptText="%dialog.new_proj.description.label"/>
         </VBox>
     </content>
     <buttonTypes>
-        <ButtonType buttonData="OK_DONE" text="Create"/>
-        <ButtonType buttonData="CANCEL_CLOSE" text="Cancel"/>
+        <ButtonType buttonData="OK_DONE" text="%general.button.create"/>
+        <ButtonType buttonData="CANCEL_CLOSE" text="%general.button.cancel"/>
     </buttonTypes>
 </DialogPane>

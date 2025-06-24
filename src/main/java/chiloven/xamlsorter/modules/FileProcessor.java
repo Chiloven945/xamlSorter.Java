@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.*;
 
+import static chiloven.xamlsorter.modules.I18n.getLang;
+
 public class FileProcessor {
     private static final Logger logger = LogManager.getLogger(FileProcessor.class);
 
@@ -60,7 +62,7 @@ public class FileProcessor {
 
                         // If the key is not a valid identifier, log a warning
                         String value = elem.getTextContent().trim();
-                        String category = key.contains(".") ? key.split("\\.")[0] : "uncategorized";
+                        String category = key.contains(".") ? key.split("\\.")[0] : getLang("page.main.tree_table.item.uncategorized");
                         items.add(new DataItem(category, key, isTranslation ? "" : value, isTranslation ? value : ""));
                     }
                 }
@@ -96,9 +98,9 @@ public class FileProcessor {
         } catch (IllegalArgumentException e) {
             logger.error("Unexpected file format: {}", fileType, e);
             ShowAlert.error(
-                    "Error",
-                    "Unsupported Format" + fileType,
-                    "Unsupported file format: " + fileType + ". Please select a valid file type."
+                    getLang("general.alert.error"),
+                    getLang("module.file_proc.export.exception.alert.header", fileType),
+                    getLang("module.file_proc.export.exception.alert.content", fileType)
             );
         }
     }
@@ -113,7 +115,7 @@ public class FileProcessor {
      */
     public static void exportToXamlFile(File file, String fieldToExport, boolean addComments, Map<String, List<DataItem>> groupedData) {
         try (PrintWriter writer = new PrintWriter(file)) {
-            writer.println("<!-- Exported by xamlSorter.Java -->");
+            writer.println("<!-- " + getLang("module.file_proc.export_xaml.credits_comments") + " -->");
             writer.println("<ResourceDictionary");
             writer.println("    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"");
             writer.println("    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"");
@@ -133,7 +135,7 @@ public class FileProcessor {
                 }
 
                 for (DataItem item : sortedItems) {
-                    String value = "Original".equalsIgnoreCase(fieldToExport) ? item.getOriginalText() : item.getTranslatedText();
+                    String value = getLang("general.datatype.original").equalsIgnoreCase(fieldToExport) ? item.getOriginalText() : item.getTranslatedText();
                     writer.printf("    <String x:Key=\"%s\">%s</String>%n", item.getKey(), escapeXml(value));
                 }
 
@@ -142,14 +144,20 @@ public class FileProcessor {
 
             writer.println("</ResourceDictionary>");
             logger.info("Exported XAML to: {}", file.getAbsolutePath());
-            ShowAlert.info("Export Successful", "File exported successfully.");
+            ShowAlert.info(
+                    getLang("module.file_proc.export.success.alert.title"),
+                    getLang("module.file_proc.export.success.alert.content")
+            );
 
         } catch (Exception e) {
             logger.error("Failed to export file: {}", file.getAbsolutePath(), e);
             ShowAlert.error(
-                    "Error",
-                    "Failed to export file",
-                    "An error occurred while exporting the file to " + file.getAbsolutePath() + ": " + e.getMessage()
+                    getLang("general.alert.error"),
+                    getLang("module.file_proc.export_xaml.exception.alert.header"),
+                    getLang("module.file_proc.export_xaml.exception.alert.content",
+                            file.getAbsolutePath(),
+                            e.getMessage()
+                    )
             );
         }
     }

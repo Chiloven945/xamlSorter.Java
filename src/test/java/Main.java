@@ -3,11 +3,14 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
+        System.out.println(Font.getFontNames());
+        if (Font.getFontNames().contains("Segoe UI")) System.out.println("a");
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("File");
         MenuItem exit = new MenuItem("Exit");

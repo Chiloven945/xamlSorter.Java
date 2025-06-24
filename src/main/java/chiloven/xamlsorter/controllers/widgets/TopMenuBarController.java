@@ -2,6 +2,7 @@ package chiloven.xamlsorter.controllers.widgets;
 
 import chiloven.xamlsorter.controllers.MainController;
 import chiloven.xamlsorter.controllers.dialogs.AboutDialogController;
+import chiloven.xamlsorter.controllers.dialogs.ExportDialogController;
 import chiloven.xamlsorter.controllers.dialogs.PreferencesDialogController;
 import chiloven.xamlsorter.controllers.dialogs.RegexEditDialogController;
 import chiloven.xamlsorter.modules.DataOperationHelper;
@@ -11,6 +12,8 @@ import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.fxml.FXML;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import static chiloven.xamlsorter.modules.I18n.getLang;
 
 public class TopMenuBarController {
     private static final Logger logger = LogManager.getLogger(TopMenuBarController.class);
@@ -24,6 +27,12 @@ public class TopMenuBarController {
     // =========================
     // File Menu Handlers
     // =========================
+
+    // Open Project Handler
+    @FXML
+    private void handleOpenProject() {
+        ProjectManager.openProject(mainController);
+    }
 
     // Save (as) Project Handler
     @FXML
@@ -66,7 +75,7 @@ public class TopMenuBarController {
     // Export Configuration Handler
     @FXML
     private void handleExport() {
-        ProjectManager.showExportDialog(mainController);
+        ExportDialogController.showDialog(mainController);
     }
 
     // =========================
@@ -145,12 +154,9 @@ public class TopMenuBarController {
     @FXML
     private void handleLicense() {
         ShowAlert.info(
-                "License",
-                "xamlSorter.Java License",
-                """
-                        This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
-                        
-                        You can view the full license text at: https://www.gnu.org/licenses/gpl-3.0.en.html"""
+                getLang("widget.menu_bar.help.license.title"),
+                getLang("widget.menu_bar.help.license.header"),
+                getLang("widget.menu_bar.help.license.content")
         );
         logger.info("License information displayed to the user.");
     }

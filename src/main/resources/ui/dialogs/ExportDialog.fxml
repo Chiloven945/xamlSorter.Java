@@ -14,10 +14,10 @@
 
     <content>
         <VBox spacing="12">
-            <Label text="Export Settings" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <Label text="%dialog.export.header" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="File Type:"/>
+                <Label text="%dialog.export.filetype.label"/>
                 <ChoiceBox fx:id="fileTypeChoiceBox">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
@@ -28,22 +28,15 @@
             </HBox>
 
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Field to Export:"/>
-                <ChoiceBox fx:id="fieldChoiceBox">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Original"/>
-                            <String fx:value="Translated"/>
-                        </FXCollections>
-                    </items>
-                </ChoiceBox>
+                <Label text="%dialog.export.field_to_export.label"/>
+                <ChoiceBox fx:id="fieldChoiceBox"/>
             </HBox>
 
-            <CheckBox fx:id="commentCheckBox" text="Add top-level comments" selected="true"/>
+            <CheckBox fx:id="commentCheckBox" text="%dialog.export.top_level_comments.checkbox" selected="true"/>
 
             <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button text="Cancel" onAction="#handleCancel"/>
-                <Button text="Export" onAction="#handleExport" defaultButton="true"/>
+                <Button text="%general.button.cancel" onAction="#handleCancel"/>
+                <Button text="%dialog.export.button.export" onAction="#handleExport" defaultButton="true"/>
             </HBox>
         </VBox>
     </content>

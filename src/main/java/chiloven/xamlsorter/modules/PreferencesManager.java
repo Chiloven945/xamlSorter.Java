@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
+import static chiloven.xamlsorter.modules.I18n.getLang;
+
 public class PreferencesManager {
     private static final Logger logger = LogManager.getLogger(PreferencesManager.class);
 
@@ -34,9 +36,9 @@ public class PreferencesManager {
         } catch (Exception e) {
             logger.error("Failed to initialize PreferencesManager", e);
             ShowAlert.error(
-                    "Error",
-                    "Failed to initialize Preferences Manager",
-                    "An error occurred while initializing the Preferences Manager. Please check your configuration directory.",
+                    getLang("general.alert.error"),
+                    getLang("module.pref_manager.exception.alert.header"),
+                    getLang("module.pref_manager.exception.alert.content"),
                     e
             );
         }
@@ -68,14 +70,14 @@ public class PreferencesManager {
      */
     public static void save() {
         try (FileOutputStream fos = new FileOutputStream(CONFIG_FILE)) {
-            props.store(fos, "User Preferences");
+            props.store(fos, getLang("module.pref_manager.save.top_comment"));
             logger.info("Preferences saved to: {}", CONFIG_FILE);
         } catch (IOException e) {
             logger.error("Failed to save preferences", e);
             ShowAlert.error(
-                    "Error",
-                    "Failed to save preferences",
-                    "An error occurred while trying to save your preferences. Please check your configuration directory.",
+                    getLang("general.alert.error"),
+                    getLang("module.pref_manager.save.exception.alert.header"),
+                    getLang("module.pref_manager.save.exception.alert.content"),
                     e
             );
         }

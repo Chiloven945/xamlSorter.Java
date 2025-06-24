@@ -1,5 +1,7 @@
 package chiloven.xamlsorter.utils;
 
+import chiloven.xamlsorter.modules.I18n;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -7,6 +9,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 
 import java.util.Optional;
+
+import static chiloven.xamlsorter.modules.I18n.getLang;
 
 /**
  * Utility class for displaying JavaFX alerts with customizable content.
@@ -28,6 +32,10 @@ public class ShowAlert {
      */
     public static void showAlert(Alert.AlertType alertType, String title, String header, String content, Exception stacktrace) {
         Alert alert = new Alert(alertType);
+
+        Scene scene = alert.getDialogPane().getScene();
+        I18n.applyDefaultFont(scene);
+
         alert.setTitle(title);
         alert.setHeaderText(header);
 
@@ -36,7 +44,7 @@ public class ShowAlert {
             StringBuilder sb = new StringBuilder();
             sb.append(stacktrace).append("\n");
             for (StackTraceElement element : stacktrace.getStackTrace()) {
-                sb.append("    at ").append(element).append("\n");
+                sb.append("    ").append(getLang("util.show_alert.stacktrace.at")).append(" ").append(element).append("\n");
             }
 
             VBox vbox = new VBox(10);
@@ -53,7 +61,7 @@ public class ShowAlert {
                 vbox.getChildren().add(contentLabel);
             }
 
-            Label stackLabel = new Label("Detail: ");
+            Label stackLabel = new Label(getLang("util.show_alert.stacktrace.detail"));
             TextArea stackArea = new TextArea(sb.toString());
             stackArea.setEditable(false);
             stackArea.setWrapText(false);
@@ -206,6 +214,10 @@ public class ShowAlert {
     public static Optional<ButtonType> confirm(String title, String header, String content,
                                                ButtonType... customButtons) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+        Scene scene = alert.getDialogPane().getScene();
+        I18n.applyDefaultFont(scene);
+
         alert.setTitle(title);
         alert.setHeaderText(header);
 

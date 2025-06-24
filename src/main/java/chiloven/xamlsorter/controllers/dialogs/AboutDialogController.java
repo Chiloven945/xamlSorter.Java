@@ -1,8 +1,10 @@
 package chiloven.xamlsorter.controllers.dialogs;
 
+import chiloven.xamlsorter.modules.I18n;
 import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
@@ -14,6 +16,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
+
+import static chiloven.xamlsorter.modules.I18n.getBundle;
+import static chiloven.xamlsorter.modules.I18n.getLang;
 
 public class AboutDialogController {
     private static final Logger logger = LogManager.getLogger(AboutDialogController.class);
@@ -29,13 +34,18 @@ public class AboutDialogController {
     public static void showAboutDialog(Window owner) {
         try {
             FXMLLoader loader = new FXMLLoader(AboutDialogController.class.getResource("/ui/dialogs/AboutDialog.fxml"));
+            loader.setResources(getBundle());
             DialogPane dialogPane = loader.load();
 
             dialogPane.getButtonTypes().add(javafx.scene.control.ButtonType.CLOSE);
 
             Dialog<Void> dialog = new Dialog<>();
             dialog.setDialogPane(dialogPane);
-            dialog.setTitle("About xamlSorter.Java");
+
+            Scene scene = dialog.getDialogPane().getScene();
+            I18n.applyDefaultFont(scene);
+
+            dialog.setTitle(getLang("dialog.about.title"));
 
             if (owner != null) {
                 Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
@@ -47,9 +57,9 @@ public class AboutDialogController {
         } catch (Exception e) {
             logger.error("Failed to load About dialog", e);
             ShowAlert.error(
-                    "Error",
-                    "Error loading About dialog",
-                    "An error occurred while trying to load the About dialog. Please report this as an issue.",
+                    getLang("general.alert.error"),
+                    getLang("dialog.about.exception.alert.header"),
+                    getLang("dialog.about.exception.alert.content"),
                     e
             );
         }

@@ -16,13 +16,13 @@ public class CustomFileChooser {
      * @param extensions a list of file extensions to filter the selectable files
      * @return the selected file, or null if no file was selected
      */
-    public static File showOpenFileDialog(Window owner, String title, List<String> extensions) {
+    public static File showOpenFileDialog(Window owner, String title, String files, List<String> extensions) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
 
         // Add file type filters based on the provided extensions
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
-                "Files", extensions.stream().map(ext -> "*." + ext).toArray(String[]::new)
+                files, extensions.stream().map(ext -> "*." + ext).toArray(String[]::new)
         );
         fileChooser.getExtensionFilters().add(extFilter);
 
@@ -39,13 +39,13 @@ public class CustomFileChooser {
      * @param defaultFileName the default file name to be suggested in the dialog
      * @return the selected file, or null if no file was selected
      */
-    public static File showSaveFileDialog(Window owner, String title, List<String> extensions, String defaultFileName) {
+    public static File showSaveFileDialog(Window owner, String title, String files, List<String> extensions, String defaultFileName) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
 
         // Add file type filters based on the provided extensions
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
-                "Files", extensions.stream().map(ext -> "*." + ext).toArray(String[]::new)
+                files, extensions.stream().map(ext -> "*." + ext).toArray(String[]::new)
         );
         fileChooser.getExtensionFilters().add(extFilter);
 

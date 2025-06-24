@@ -3,10 +3,12 @@ package chiloven.xamlsorter.controllers.dialogs;
 import chiloven.xamlsorter.controllers.MainController;
 import chiloven.xamlsorter.entities.DataItem;
 import chiloven.xamlsorter.modules.DataOperationHelper;
-import chiloven.xamlsorter.utils.ShowAlert;
+import chiloven.xamlsorter.modules.I18n;
 import chiloven.xamlsorter.modules.SortAndRefresher;
+import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +16,9 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+
+import static chiloven.xamlsorter.modules.I18n.getBundle;
+import static chiloven.xamlsorter.modules.I18n.getLang;
 
 public class RegexEditDialogController {
     private static final Logger logger = LogManager.getLogger(RegexEditDialogController.class);
@@ -47,6 +52,7 @@ public class RegexEditDialogController {
     public static void showAndHandleRegexEdit(Map<String, List<DataItem>> groupedData, MainController mainController) {
         try {
             FXMLLoader loader = new FXMLLoader(RegexEditDialogController.class.getResource("/ui/dialogs/RegexEditDialog.fxml"));
+            loader.setResources(getBundle());
             DialogPane dialogPane = loader.load();
 
             RegexEditDialogController controller = loader.getController();
@@ -55,7 +61,11 @@ public class RegexEditDialogController {
 
             Dialog<ButtonType> dialog = new Dialog<>();
             dialog.setDialogPane(dialogPane);
-            dialog.setTitle("Batch Regex Edit");
+
+            Scene scene = dialog.getDialogPane().getScene();
+            I18n.applyDefaultFont(scene);
+
+            dialog.setTitle(getLang("dialog.regex.title"));
             dialog.getDialogPane().getButtonTypes().setAll(ButtonType.APPLY, ButtonType.CANCEL);
 
             Optional<ButtonType> result = dialog.showAndWait();
@@ -64,8 +74,8 @@ public class RegexEditDialogController {
             }
         } catch (Exception e) {
             ShowAlert.error(
-                    "Error",
-                    "Failed to open Regex Edit dialog",
+                    getLang("general.alert.error"),
+                    getLang("dialog.regex.exception.alert.header"),
                     e.getMessage(),
                     e
             );
@@ -76,40 +86,33 @@ public class RegexEditDialogController {
         this.mainController = mainController;
     }
 
+    @FXML
+    public void initialize() {
+        scopeComboBox.getItems().addAll(
+                getLang("dialog.regex.scope.current"),
+                getLang("dialog.regex.scope.all")
+        );
+        replaceTargetComboBox.getItems().addAll(
+                getLang("general.datatype.translated_text"),
+                getLang("general.datatype.original_text"),
+                getLang("general.datatype.key")
+        );
+
+        scopeComboBox.getSelectionModel().selectFirst();
+        replaceTargetComboBox.getSelectionModel().selectFirst();
+        initializeTable();
+    }
+
     /**
-     * Set the data for the dialog, including the grouped data and target category.
+     * Set the data for the dialog.
      *
-     * @param groupedData    the data grouped by categories, where each key is a category and the value is a list of DataItem
-     * @param targetCategory the category to target for regex operations, or null for all categories
+     * @param groupedData the data grouped by categories
+     * @param targetCategory the category to target for replacements, or null for all categories
      */
     public void setData(Map<String, List<DataItem>> groupedData, String targetCategory) {
         this.groupedData = groupedData;
         this.targetCategory = targetCategory;
-        // Initialize the combo boxes if they are empty
-        if (scopeComboBox.getItems().isEmpty()) {
-            scopeComboBox.getItems().addAll("Current Group", "All Groups");
-        }
-        if (replaceTargetComboBox.getItems().isEmpty()) {
-            replaceTargetComboBox.getItems().addAll("Key", "Original Text", "Translated Text");
-        }
-        scopeComboBox.getSelectionModel().select("Current Group");
-        replaceTargetComboBox.getSelectionModel().select("Original Text");
-        initializeTable();
         refreshPreview();
-    }
-
-    @FXML
-    public void initialize() {
-        // Make sure the combo boxes have items
-        if (scopeComboBox.getItems().isEmpty()) {
-            scopeComboBox.getItems().addAll("Current Group", "All Groups");
-        }
-        if (replaceTargetComboBox.getItems().isEmpty()) {
-            replaceTargetComboBox.getItems().addAll("Key", "Original Text", "Translated Text");
-        }
-        scopeComboBox.getSelectionModel().select("Current Group");
-        replaceTargetComboBox.getSelectionModel().select("Original Text");
-        initializeTable();
     }
 
     private void initializeTable() {
@@ -180,16 +183,17 @@ public class RegexEditDialogController {
                     ? new DataItem(item.getCategory(), item.getKey(), item.getOriginalText(), item.getTranslatedText())
                     : item;
 
-            switch (replaceTarget) {
-                case "Key" -> copy.setKey(safeReplace(copy.getKey(), pattern, replacement));
-                case "Original Text" -> copy.setOriginalText(safeReplace(copy.getOriginalText(), pattern, replacement));
-                case "Translated Text" ->
-                        copy.setTranslatedText(safeReplace(copy.getTranslatedText(), pattern, replacement));
+            if (replaceTarget.equals(getLang("general.datatype.key"))) {
+                copy.setKey(safeReplace(copy.getKey(), pattern, replacement));
+            } else if (replaceTarget.equals(getLang("general.datatype.original_text"))) {
+                copy.setOriginalText(safeReplace(copy.getOriginalText(), pattern, replacement));
+            } else if (replaceTarget.equals(getLang("general.datatype.translated_text"))) {
+                copy.setTranslatedText(safeReplace(copy.getTranslatedText(), pattern, replacement));
             }
             list.add(copy);
         };
 
-        if ("Current Group".equals(scope) && targetCategory != null) {
+        if (getLang("dialog.regex.scope.current").equals(scope) && targetCategory != null) {
             List<DataItem> source = groupedData.getOrDefault(targetCategory, Collections.emptyList());
             List<DataItem> updated = new ArrayList<>();
             for (DataItem item : source) applier.accept(item, updated);

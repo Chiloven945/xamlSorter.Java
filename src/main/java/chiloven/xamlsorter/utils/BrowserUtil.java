@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.net.URI;
 
+import static chiloven.xamlsorter.modules.I18n.getLang;
+
 public class BrowserUtil {
     private static final Logger logger = LogManager.getLogger(BrowserUtil.class);
 
@@ -25,9 +27,12 @@ public class BrowserUtil {
         } catch (Exception e) {
             logger.error("Failed to open webpage: {}", url, e);
             ShowAlert.error(
-                    "Error",
-                    "Failed to open webpage",
-                    "Could not open the URL: " + url + "\n" + e.getMessage()
+                    getLang("general.alert.error"),
+                    getLang("util.browser.open.exception.alert.header"),
+                    getLang("util.browser.open.exception.alert.content",
+                            url,
+                            e.getMessage()
+                    )
             );
         }
     }

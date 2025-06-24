@@ -4,53 +4,53 @@
 <MenuBar xmlns:fx="http://javafx.com/fxml/1"
          fx:controller="chiloven.xamlsorter.controllers.widgets.TopMenuBarController">
     <menus>
-        <Menu text="File">
+        <Menu text="%widget.menu_bar.file">
             <items>
-                <MenuItem text="Open"/>
-                <MenuItem onAction="#handleSaveProject" text="Save"/>
-                <MenuItem onAction="#handleSaveAsProject" text="Save as..."/>
+                <MenuItem onAction="#handleOpenProject" text="Open"/>
+                <MenuItem onAction="#handleSaveProject" text="%widget.menu_bar.file.save"/>
+                <MenuItem onAction="#handleSaveAsProject" text="%widget.menu_bar.file.save_as"/>
                 <SeparatorMenuItem/>
-                <MenuItem onAction="#handleCreateProject" text="New project..."/>
-                <MenuItem onAction="#handleCreateFromOriginal" text="Create from original XAML..."/>
-                <MenuItem onAction="#handleCreateFromTranslated" text="Create from translated XAML..."/>
+                <MenuItem onAction="#handleCreateProject" text="%general.proj.new"/>
+                <MenuItem onAction="#handleCreateFromOriginal" text="%general.button.proj.new.original"/>
+                <MenuItem onAction="#handleCreateFromTranslated" text="%general.button.proj.new.translated"/>
                 <SeparatorMenuItem/>
-                <MenuItem onAction="#handleImportOriginal" text="Import original XAML..."/>
-                <MenuItem onAction="#handleImportTranslated" text="Import translated XAML..."/>
+                <MenuItem onAction="#handleImportOriginal" text="%widget.menu_bar.file.import.original"/>
+                <MenuItem onAction="#handleImportTranslated" text="%widget.menu_bar.file.import.translated"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Export..." onAction="#handleExport"/>
+                <MenuItem onAction="#handleExport" text="%widget.menu_bar.file.export"/>
             </items>
         </Menu>
-        <Menu text="Edit">
+        <Menu text="%widget.menu_bar.edit">
             <items>
-                <MenuItem text="Undo"/>
-                <MenuItem text="Redo"/>
+                <MenuItem text="%widget.menu_bar.edit.undo"/>
+                <MenuItem text="%widget.menu_bar.edit.redo"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Cut" onAction="#handleCut"/>
-                <MenuItem text="Copy" onAction="#handleCopy"/>
-                <MenuItem text="Paste" onAction="#handlePaste"/>
+                <MenuItem text="%widget.context_menu.cut" onAction="#handleCut"/>
+                <MenuItem text="%widget.context_menu.copy" onAction="#handleCopy"/>
+                <MenuItem text="%widget.context_menu.paste" onAction="#handlePaste"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Delete" onAction="#handleDelete"/>
-                <MenuItem text="Add entry..." onAction="#handleAdd"/>
+                <MenuItem text="%widget.context_menu.delete" onAction="#handleDelete"/>
+                <MenuItem text="%general.button.add_entry" onAction="#handleAdd"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Select All" onAction="#handleSelectAll"/>
-                <MenuItem text="Unselect All" onAction="#handleUnselectAll"/>
+                <MenuItem text="%widget.context_menu.select_all" onAction="#handleSelectAll"/>
+                <MenuItem text="%widget.context_menu.unselect_all" onAction="#handleUnselectAll"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Preference..." onAction="#handlePreferences"/>
+                <MenuItem text="%widget.menu_bar.edit.preferences" onAction="#handlePreferences"/>
             </items>
         </Menu>
-        <Menu text="Tools">
+        <Menu text="%widget.menu_bar.tools">
             <items>
-                <MenuItem text="Batch Regex Edit..." onAction="#handleRegexEdit"/>
+                <MenuItem text="%widget.menu_bar.tools.regex" onAction="#handleRegexEdit"/>
             </items>
         </Menu>
-        <Menu text="Help">
+        <Menu text="%widget.menu_bar.help">
             <items>
-                <MenuItem text="About..." onAction="#handleAbout"/>
-                <MenuItem text="License..." onAction="#handleLicense"/>
+                <MenuItem text="%general.button.about" onAction="#handleAbout"/>
+                <MenuItem text="%widget.menu_bar.help.license" onAction="#handleLicense"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Documentation..." onAction="#handleDocumentation"/>
-                <MenuItem text="Report issue..." onAction="#handleReportIssue"/>
-                <MenuItem text="GitHub..." onAction="#handleGitHub"/>
+                <MenuItem text="%widget.menu_bar.help.documentation" onAction="#handleDocumentation"/>
+                <MenuItem text="%widget.menu_bar.help.report_issue" onAction="#handleReportIssue"/>
+                <MenuItem text="%widget.menu_bar.help.github" onAction="#handleGitHub"/>
             </items>
         </Menu>
     </menus>

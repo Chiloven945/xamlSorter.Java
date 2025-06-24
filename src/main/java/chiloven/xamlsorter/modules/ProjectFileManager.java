@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static chiloven.xamlsorter.modules.I18n.getLang;
+
 public class ProjectFileManager {
     private static final Logger logger = LogManager.getLogger(ProjectFileManager.class);
 
@@ -94,13 +96,19 @@ public class ProjectFileManager {
             StreamResult result = new StreamResult(file);
             transformer.transform(source, result);
 
-            ShowAlert.info("Save Successful", "Project saved successfully.");
+            ShowAlert.info(
+                    getLang("module.proj_file_manager.save.success.alert.title"),
+                    getLang("module.proj_file_manager.save.success.alert.content")
+            );
             logger.info("Project saved successfully to {}", file.getAbsolutePath());
         } catch (Exception e) {
             ShowAlert.error(
-                    "Error",
-                    "Failed to save project",
-                    "An error occurred while saving the project to " + file.getAbsolutePath() + ": " + e.getMessage()
+                    getLang("general.alert.error"),
+                    getLang("module.proj_file_manager.save.exception.alert.header"),
+                    getLang("module.proj_file_manager.save.exception.alert.content",
+                            file.getAbsolutePath(),
+                            e.getMessage()
+                    )
             );
             logger.error("Failed to save project to {}: {}", file.getAbsolutePath(), e.getMessage());
         }
@@ -173,9 +181,12 @@ public class ProjectFileManager {
             return new LoadedProject(meta, items, clipboardKeys);
         } catch (Exception e) {
             ShowAlert.error(
-                    "Error",
-                    "Failed to load project",
-                    "An error occurred while loading the project from " + file.getAbsolutePath() + ": " + e.getMessage()
+                    getLang("general.alert.error"),
+                    getLang("module.proj_file_manager.load.exception.alert.header"),
+                    getLang("module.proj_file_manager.load.exception.alert.content",
+                            file.getAbsolutePath(),
+                            e.getMessage()
+                    )
             );
             logger.error("Failed to load project from {}: {}", file.getAbsolutePath(), e.getMessage());
             return null;

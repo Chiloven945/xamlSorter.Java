@@ -1,6 +1,5 @@
 package chiloven.xamlsorter.modules;
 
-import chiloven.xamlsorter.controllers.dialogs.ExportDialogController;
 import chiloven.xamlsorter.controllers.MainController;
 import chiloven.xamlsorter.controllers.dialogs.NewProjectDialogController;
 import chiloven.xamlsorter.entities.DataItem;
@@ -8,6 +7,7 @@ import chiloven.xamlsorter.entities.ProjectMeta;
 import chiloven.xamlsorter.utils.CustomFileChooser;
 import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,9 +16,50 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
-public class ProjectManager {
+import static chiloven.xamlsorter.modules.I18n.getBundle;
+import static chiloven.xamlsorter.modules.I18n.getLang;
 
+public class ProjectManager {
     private static final Logger logger = LogManager.getLogger(ProjectManager.class);
+
+    /**
+     * Open an existing project file (.xsproject), load data and update the main controller.
+     *
+     * @param mainController the MainController instance to update
+     */
+    public static void openProject(MainController mainController) {
+        if (!mainController.promptSaveIfNeeded()) return;
+
+        File file = CustomFileChooser.showOpenFileDialog(
+                mainController.getRootPane().getScene().getWindow(),
+                getLang("module.proj_manager.open.title"),
+                getLang("general.files.xsproject"),
+                List.of("xsproject")
+        );
+        if (file == null) {
+            logger.info("Open project operation cancelled by user.");
+            return;
+        }
+
+        // Read the project file
+        ProjectFileManager.LoadedProject loaded = ProjectFileManager.loadXsProject(file);
+        if (loaded == null) return;
+
+        mainController.setCurrentProjectMeta(loaded.meta());
+        mainController.getGroupedData().clear();
+        loaded.items().stream()
+                .collect(java.util.stream.Collectors.groupingBy(DataItem::getCategory))
+                .forEach((k, v) -> mainController.getGroupedData().put(k, v));
+
+        ClipboardManager.clear();
+        ClipboardManager.setClipboardKeys(loaded.clipboard(), loaded.items());
+
+        mainController.setCurrentProjectFile(file);
+        mainController.setModified(false);
+        mainController.showEditor();
+
+        logger.info("Project opened: {}", file.getAbsolutePath());
+    }
 
     /**
      * Save the current project to its file if it exists, otherwise prompt to save as.
@@ -42,9 +83,12 @@ public class ProjectManager {
     public static void saveProjectAs(MainController mainController) {
         File file = CustomFileChooser.showSaveFileDialog(
                 mainController.getRootPane().getScene().getWindow(),
-                "Save project as...",
+                getLang("module.proj_manager.save_as.title"),
+                getLang("general.files.xsproject"),
                 List.of("xsproject"),
-                MainController.getCurrentProjectMeta().getName() + ".xsproject");
+                MainController.getCurrentProjectMeta().getName() + ".xsproject"
+        );
+
         if (file != null) {
             doSave(mainController, file);
             mainController.setCurrentProjectFile(file); // 切换到新文件
@@ -69,31 +113,6 @@ public class ProjectManager {
     }
 
     /**
-     * Open an existing project from a file dialog and set the current project meta in the main controller.
-     *
-     * @param mainController the MainController instance to update the UI
-     */
-    public static void openProject(MainController mainController) {
-        if (!mainController.promptSaveIfNeeded()) return;
-        File file = CustomFileChooser.showOpenFileDialog(
-                mainController.getRootPane().getScene().getWindow(), "Open project...", List.of("xsproject"));
-        if (file != null) {
-            ProjectFileManager.LoadedProject loaded = ProjectFileManager.loadXsProject(file);
-            if (loaded != null) {
-                mainController.setCurrentProjectMeta(loaded.meta());
-                mainController.getGroupedData().clear();
-                mainController.getGroupedData().putAll(DataOperationHelper.groupByCategory(loaded.items()));
-                ClipboardManager.setClipboardKeys(loaded.clipboard(), loaded.items());
-                mainController.showEditor();
-
-                logger.info("Project opened successfully: {}", loaded.meta().getName());
-                return;
-            }
-        }
-        logger.info("Open project cancelled or failed.");
-    }
-
-    /**
      * Create a new project dialog and set the current project meta in the main controller.
      *
      * @param mainController the MainController instance to update the UI
@@ -103,11 +122,16 @@ public class ProjectManager {
         if (!mainController.promptSaveIfNeeded()) return false;
         try {
             FXMLLoader loader = new FXMLLoader(ProjectManager.class.getResource("/ui/dialogs/NewProjectDialog.fxml"));
+            loader.setResources(getBundle());
             DialogPane dialogPane = loader.load();
 
             Dialog<ButtonType> dialog = new Dialog<>();
             dialog.setDialogPane(dialogPane);
-            dialog.setTitle("New project...");
+
+            Scene scene = dialog.getDialogPane().getScene();
+            I18n.applyDefaultFont(scene);
+
+            dialog.setTitle(getLang("general.proj.new"));
             dialog.initOwner(mainController.getRootPane().getScene().getWindow());
 
             logger.info("Opening new project dialog.");
@@ -153,7 +177,8 @@ public class ProjectManager {
     public static void importXaml(MainController controller, boolean isTranslated) {
         File file = CustomFileChooser.showOpenFileDialog(
                 controller.getRootPane().getScene().getWindow(),
-                isTranslated ? "Import Translation XAML File" : "Import Original XAML File",
+                getLang("module.proj_manager.import.%s.title".formatted(isTranslated ? "original" : "translated")),
+                getLang("general.files.xaml"),
                 List.of("xaml", "xml")
         );
 
@@ -164,10 +189,17 @@ public class ProjectManager {
                 DataOperationHelper.applyColumnUpdates(items, controller.getGroupedData(), column);
 
                 SortAndRefresher.refresh(controller.getDataTreeTable(), controller.getGroupedData());
-                ShowAlert.info("Success", "XAML file imported successfully.");
+                ShowAlert.info(
+                        getLang("general.alert.success"),
+                        getLang("module.proj_manager.import_xaml.success.alert.content")
+                );
                 return;
             } catch (Exception e) {
-                ShowAlert.error("Error", "Failed to Import", e.getMessage());
+                ShowAlert.error(
+                        getLang("general.alert.error"),
+                        getLang("module.proj_manager.import_xaml.exception.alert.content"),
+                        e.getMessage()
+                );
             }
         }
         logger.info("Import XAML cancelled or failed.");
@@ -187,36 +219,6 @@ public class ProjectManager {
             return;
         }
         logger.info("Create project from XAML cancelled by user.");
-    }
-
-    /**
-     * Show the export dialog to configure export options.
-     *
-     * @param mainController the MainController instance to access grouped data
-     */
-    public static void showExportDialog(MainController mainController) {
-        try {
-            FXMLLoader loader = new FXMLLoader(ProjectManager.class.getResource("/ui/dialogs/ExportDialog.fxml"));
-            DialogPane pane = loader.load();
-
-            ExportDialogController controller = loader.getController();
-            controller.setGroupedData(mainController.getGroupedData());
-
-            Dialog<Void> dialog = new Dialog<>();
-            dialog.setDialogPane(pane);
-            dialog.setTitle("Export Configuration");
-            dialog.initOwner(mainController.getDataTreeTable().getScene().getWindow());
-            dialog.showAndWait();
-
-        } catch (Exception e) {
-            LogManager.getLogger(ProjectManager.class).error("Failed to open export dialog", e);
-            ShowAlert.error(
-                    "Error",
-                    "Failed to open export dialog",
-                    "An error occurred while trying to open the export dialog. Please report this as an issue.",
-                    e
-            );
-        }
     }
 
 }

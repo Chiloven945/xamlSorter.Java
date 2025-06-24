@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.collections.*?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import java.lang.*?>
 <DialogPane prefWidth="400" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="chiloven.xamlsorter.controllers.dialogs.PreferencesDialogController">
     <content>
         <VBox alignment="CENTER_LEFT" prefHeight="115.0" prefWidth="268.0" spacing="14">
-            <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Preferences" />
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="%dialog.pref.title"/>
             <HBox spacing="10">
-                <Label text="Language:" />
+                <Label text="%dialog.pref.language.label"/>
                 <ComboBox fx:id="languageComboBox" prefHeight="23.0" prefWidth="100.0">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
@@ -33,20 +33,13 @@
                 </ComboBox>
             </HBox>
             <HBox spacing="10">
-                <Label text="Theme:" />
-                <ComboBox fx:id="themeComboBox" prefHeight="23.0" prefWidth="100.0">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Light" />
-                            <String fx:value="Dark" />
-                        </FXCollections>
-                    </items>
-                </ComboBox>
+                <Label text="%dialog.pref.theme.label"/>
+                <ComboBox fx:id="themeComboBox" prefHeight="23.0" prefWidth="100.0"/>
             </HBox>
         </VBox>
     </content>
     <buttonTypes>
-        <ButtonType buttonData="OK_DONE" text="OK" />
-        <ButtonType buttonData="CANCEL_CLOSE" text="Cancel" />
+        <ButtonType buttonData="OK_DONE" text="%general.button.ok"/>
+        <ButtonType buttonData="CANCEL_CLOSE" text="%general.button.cancel"/>
     </buttonTypes>
 </DialogPane>

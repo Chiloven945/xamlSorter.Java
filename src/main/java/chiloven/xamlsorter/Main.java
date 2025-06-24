@@ -1,32 +1,51 @@
 package chiloven.xamlsorter;
 
 import chiloven.xamlsorter.controllers.MainController;
+import chiloven.xamlsorter.modules.I18n;
+import chiloven.xamlsorter.modules.PreferencesManager;
 import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
+import static chiloven.xamlsorter.modules.I18n.getBundle;
+import static chiloven.xamlsorter.modules.I18n.getLang;
 
 public class Main extends Application {
 
     private static final Logger logger = LogManager.getLogger(Main.class);
     private MainController mainController;
+    public static Stage primaryStage;
 
     public static void main(String[] args) {
         launch(args);
     }
 
+    public static void safeClose() {
+        if (primaryStage != null) {
+            primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));
+        }
+    }
+
     @Override
     public void start(Stage primaryStage) {
+        Main.primaryStage = primaryStage;
         try {
             logger.info("Starting xamlSorter.Java application");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/pages/MainPage.fxml"));
+
+            PreferencesManager.reload();
+            String lang = PreferencesManager.get("language", "en");
+            I18n.setLocale(lang);
+            loader.setResources(getBundle());
+
             Scene scene = new Scene(loader.load());
+            I18n.applyDefaultFont(scene);
 
             mainController = loader.getController();
 
@@ -54,9 +73,9 @@ public class Main extends Application {
             logger.info("application UI loaded successfully");
         } catch (Exception e) {
             ShowAlert.error(
-                    "Error",
-                    "Failed to load the main application UI",
-                    "An error occurred while loading the UI. Please check the logs for more details.",
+                    getLang("general.alert.error"),
+                    getLang("main.start.exception.alert.header"),
+                    getLang("main.start.exception.alert.content"),
                     e
             );
             logger.error("Error loading UI", e);
@@ -66,7 +85,7 @@ public class Main extends Application {
     @Override
     public void stop() {
         logger.info("Stopping xamlSorter.Java application");
-        logger.info("application stopped successfully");
+        logger.info("Application stopped successfully");
     }
 
 }

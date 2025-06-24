@@ -3,6 +3,7 @@ package chiloven.xamlsorter.modules;
 import chiloven.xamlsorter.controllers.MainController;
 import chiloven.xamlsorter.entities.DataItem;
 import chiloven.xamlsorter.utils.ShowAlert;
+import javafx.scene.Scene;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;
@@ -11,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static chiloven.xamlsorter.modules.I18n.getLang;
 
 public class DataOperationHelper {
     private static final Logger logger = LogManager.getLogger(DataOperationHelper.class);
@@ -79,8 +82,12 @@ public class DataOperationHelper {
      */
     public static void addEntry(Map<String, List<DataItem>> groupedData) {
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Add New Entry");
-        dialog.setHeaderText("Enter new key (e.g., common.new.key):");
+
+        Scene scene = dialog.getDialogPane().getScene();
+        I18n.applyDefaultFont(scene);
+
+        dialog.setTitle(getLang("module.data_op.add_entry.title"));
+        dialog.setHeaderText(getLang("module.data_op.add_entry.header"));
         logger.info("Opening dialog to add new entry.");
         Optional<String> result = dialog.showAndWait();
 
@@ -88,7 +95,7 @@ public class DataOperationHelper {
 
         // Check if the user provided a key
         result.ifPresent(newKey -> {
-            String category = newKey.contains(".") ? newKey.split("\\.")[0] : "uncategorized";
+            String category = newKey.contains(".") ? newKey.split("\\.")[0] : getLang("page.main.tree_table.item.uncategorized");
 
             // Check if the key already exists in the grouped data
             boolean exists = groupedData.values().stream()
@@ -97,14 +104,21 @@ public class DataOperationHelper {
 
             // If the key already exists, show a warning and return
             if (exists) {
-                ShowAlert.warn("Duplicate Entry",
-                        "An entry with the key '" + newKey + "' already exists and cannot be added.");
+                ShowAlert.warn(
+                        getLang("general.alert.warn"),
+                        getLang("module.data_op.add_entry.exception.alert.header"),
+                        getLang("module.data_op.add_entry.exception.alert.content", newKey)
+                );
                 logger.warn("Attempted to add duplicate entry with key: {}", newKey);
                 return;
             }
 
             // If the key does not exist, create a new DataItem and add it to the grouped data
-            DataItem newItem = new DataItem(category, newKey, "New Original", "New Translation");
+            DataItem newItem = new DataItem(
+                    category, newKey,
+                    getLang("module.data_op.add_entry.default.original"),
+                    getLang("module.data_op.add_entry.default.translated")
+            );
             groupedData.computeIfAbsent(category, k -> new ArrayList<>()).add(newItem);
 
             SortAndRefresher.refresh(mainController.getDataTreeTable(), mainController.getGroupedData());
@@ -199,7 +213,7 @@ public class DataOperationHelper {
         if (!clipboardItems.isEmpty()) {
             for (DataItem clipboard : clipboardItems) {
                 String key = clipboard.getKey();
-                String category = key.contains(".") ? key.split("\\.")[0] : "uncategorized";
+                String category = key.contains(".") ? key.split("\\.")[0] : getLang("page.main.tree_table.item.uncategorized");
                 List<DataItem> dataItems = groupedData.computeIfAbsent(category, k -> new ArrayList<>());
                 // Check if the key already exists
                 Optional<DataItem> existingItemOpt = dataItems.stream()

@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static chiloven.xamlsorter.modules.I18n.getBundle;
+import static chiloven.xamlsorter.modules.I18n.getLang;
+
 public class MainController {
     private static final Logger logger = LogManager.getLogger(MainController.class);
     private static ProjectMeta currentProjectMeta;
@@ -90,7 +93,7 @@ public class MainController {
         // 2️⃣ Configure the TreeTableView columns
         // =========================
 
-        translationTreeTable.setPlaceholder(new Label("No entries. Click 'Add entry' to create one."));
+        translationTreeTable.setPlaceholder(new Label(getLang("page.main.tree_table.placeholder")));
 
         keyColumn.setCellValueFactory(param -> param.getValue().getValue().getKeyProperty());
         originalColumn.setCellValueFactory(param -> param.getValue().getValue().getOriginalTextProperty());
@@ -147,6 +150,7 @@ public class MainController {
                         : null;
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/widgets/ContextMenu.fxml"));
+                    loader.setResources(getBundle());
                     ContextMenu menu = loader.load();
                     ContextMenuController controller = loader.getController();
                     controller.initializeMenu(groupedData, translationTreeTable, targetItem);
@@ -168,6 +172,7 @@ public class MainController {
         translationTreeTable.setOnContextMenuRequested(event -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/widgets/ContextMenu.fxml"));
+                loader.setResources(getBundle());
                 ContextMenu menu = loader.load();
                 ContextMenuController controller = loader.getController();
                 controller.initializeMenu(groupedData, translationTreeTable, null);
@@ -207,7 +212,11 @@ public class MainController {
                                java.util.function.Predicate<String> forbidPredicate,
                                java.util.function.Consumer<String> valueSetter) {
         if (forbidPredicate.test(forbiddenValueGetter.get())) {
-            ShowAlert.error("Error", "Invalid Input", "Editing the category item is not allowed.");
+            ShowAlert.error(
+                    getLang("general.alert.error"),
+                    getLang("page.main.tree_table.cell.exception.category_edit.header"),
+                    getLang("page.main.tree_table.cell.exception.category_edit.content")
+            );
             logger.warn("User attempted to edit the category item {} with value '{}', rejected", forbiddenValueGetter.get(), newValue);
             SortAndRefresher.refresh(translationTreeTable, groupedData);
             return;
@@ -252,9 +261,9 @@ public class MainController {
 
     // Update the window title based on the current project metadata and modification status
     private void updateWindowTitle() {
-        String projectName = (currentProjectMeta != null ? currentProjectMeta.getName() : "Untitled");
+        String projectName = (currentProjectMeta != null ? currentProjectMeta.getName() : getLang("page.main.title.proj_name.untitled"));
         String modified = projectModified ? "*" : "";
-        String title = "xamlSorter.Java - Editing: " + projectName + modified;
+        String title = getLang("page.main.title.editing", projectName, modified);
         Stage stage = (Stage) rootPane.getScene().getWindow();
         stage.setTitle(title);
     }
@@ -285,14 +294,14 @@ public class MainController {
     public boolean promptSaveIfNeeded() {
         if (!projectModified) return true;
 
-        ButtonType saveBtn = new ButtonType("Save");
-        ButtonType dontSaveBtn = new ButtonType("Do not save");
-        ButtonType cancelBtn = ButtonType.CANCEL;
+        ButtonType saveBtn = new ButtonType(getLang("page.main.save.confirm.button.save"));
+        ButtonType dontSaveBtn = new ButtonType(getLang("page.main.save.confirm.button.do_not_save"));
+        ButtonType cancelBtn = new ButtonType(getLang("general.button.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
 
         Optional<ButtonType> result = ShowAlert.confirm(
-                "Unsaved Changes",
-                "You have unsaved changes.",
-                "Do you want to save before continuing?",
+                getLang("page.main.save.confirm.title"),
+                getLang("page.main.save.confirm.header"),
+                getLang("page.main.save.confirm.content"),
                 saveBtn, dontSaveBtn, cancelBtn
         );
 
