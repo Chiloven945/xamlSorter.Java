@@ -12,7 +12,7 @@
             <HBox maxWidth="765.0">
                 <VBox spacing="18.0">
                     <Label style="-fx-font-size: 22px; -fx-font-weight: bold;" text="%general.application.name"/>
-                    <Label style="-fx-font-size: 16px;" text="%dialog.about.text.version"/>
+                    <Label style="-fx-font-size: 16px;" fx:id="appVersionLabel"/>
                     <Label style="-fx-font-size: 13px;" text="%dialog.about.text.copyright"/>
                 </VBox>
 

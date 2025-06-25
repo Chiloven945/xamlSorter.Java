@@ -20,6 +20,7 @@ public class Main extends Application {
 
     private static final Logger logger = LogManager.getLogger(Main.class);
     public static Stage primaryStage;
+    public static String version = "Release.0.2.0";
     private MainController mainController;
 
     public static void main(String[] args) {

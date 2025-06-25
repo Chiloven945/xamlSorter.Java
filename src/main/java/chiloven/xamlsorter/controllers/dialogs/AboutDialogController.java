@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
@@ -17,11 +18,15 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
+import static chiloven.xamlsorter.Main.version;
 import static chiloven.xamlsorter.modules.I18n.getBundle;
 import static chiloven.xamlsorter.modules.I18n.getLang;
 
 public class AboutDialogController {
     private static final Logger logger = LogManager.getLogger(AboutDialogController.class);
+
+    @FXML
+    public Label appVersionLabel;
 
     @FXML
     private ImageView appIconView;
@@ -71,9 +76,14 @@ public class AboutDialogController {
     @FXML
     public void initialize() {
         logger.debug("Initializing AboutDialogController");
+
         // Load the application icon
         Image iconImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-about.png")));
         appIconView.setImage(iconImage);
+
+        // Set the application version label
+        appVersionLabel.setText(getLang("dialog.about.text.version") + version);
+
         logger.debug("Application icon loaded and set");
     }
 

@@ -5,7 +5,7 @@
 
     <groupId>chiloven.xamlsorter</groupId>
     <artifactId>xaml-sorter-java</artifactId>
-    <version>Alpha.0.1.1</version>
+    <version>Release.0.2.0</version>
     <packaging>jar</packaging>
 
     <name>xamlSorter.Java</name>
