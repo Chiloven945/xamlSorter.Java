@@ -2,7 +2,7 @@ name: Build & Attach Release Artifacts
 
 on:
   release:
-    types: [published]
+    types: [ published ]
   workflow_dispatch:
 
 jobs:
@@ -176,7 +176,7 @@ jobs:
           path: xamlSorter.Java-${{ needs.build.outputs.mvn_version }}-macos.zip
 
   release:
-    needs: [build, package-windows, package-linux, package-macos]
+    needs: [ build, package-windows, package-linux, package-macos ]
     runs-on: ubuntu-latest
     steps:
       - name: Download JAR

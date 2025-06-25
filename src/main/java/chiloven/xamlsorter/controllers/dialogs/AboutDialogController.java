@@ -32,6 +32,7 @@ public class AboutDialogController {
      * @param owner the owner window of the dialog, can be null
      */
     public static void showAboutDialog(Window owner) {
+        logger.debug("Opening About dialog");
         try {
             FXMLLoader loader = new FXMLLoader(AboutDialogController.class.getResource("/ui/dialogs/AboutDialog.fxml"));
             loader.setResources(getBundle());
@@ -48,12 +49,14 @@ public class AboutDialogController {
             dialog.setTitle(getLang("dialog.about.title"));
 
             if (owner != null) {
+                logger.debug("Setting owner and modality for About dialog");
                 Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
                 stage.initOwner(owner);
                 stage.initModality(Modality.WINDOW_MODAL);
             }
 
             dialog.showAndWait();
+            logger.debug("About dialog closed");
         } catch (Exception e) {
             logger.error("Failed to load About dialog", e);
             ShowAlert.error(
@@ -67,9 +70,11 @@ public class AboutDialogController {
 
     @FXML
     public void initialize() {
+        logger.debug("Initializing AboutDialogController");
         // Load the application icon
         Image iconImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-about.png")));
         appIconView.setImage(iconImage);
+        logger.debug("Application icon loaded and set");
     }
 
 }

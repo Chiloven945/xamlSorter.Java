@@ -20,20 +20,25 @@ public class SortAndRefresher {
      * @param groupedData the data grouped by category
      */
     public static void refresh(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {
+        logger.debug("Starting refresh for table: {}", table.getId());
         TreeItem<DataItem> root = new TreeItem<>(new DataItem("", "", "", ""));
         root.setExpanded(true);
 
         Map<String, List<DataItem>> sortedGroupedData = new TreeMap<>(groupedData);
+        logger.debug("Grouped data sorted. Categories: {}", sortedGroupedData.keySet());
 
         for (Map.Entry<String, List<DataItem>> entry : sortedGroupedData.entrySet()) {
             String category = entry.getKey();
             List<DataItem> items = entry.getValue();
+
+            logger.debug("Processing category: {} with {} items", category, items.size());
 
             DataItem categoryItem = new DataItem(category, category + "...", "-", "-");
             TreeItem<DataItem> categoryNode = new TreeItem<>(categoryItem);
             categoryNode.setExpanded(true);
 
             for (DataItem item : items) {
+                logger.trace("Adding item to category '{}': {}", category, item);
                 categoryNode.getChildren().add(new TreeItem<>(item));
             }
 

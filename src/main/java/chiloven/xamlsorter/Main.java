@@ -19,8 +19,8 @@ import static chiloven.xamlsorter.modules.I18n.getLang;
 public class Main extends Application {
 
     private static final Logger logger = LogManager.getLogger(Main.class);
-    private MainController mainController;
     public static Stage primaryStage;
+    private MainController mainController;
 
     public static void main(String[] args) {
         launch(args);
@@ -72,13 +72,13 @@ public class Main extends Application {
 
             logger.info("application UI loaded successfully");
         } catch (Exception e) {
+            logger.fatal("Error loading UI", e);
             ShowAlert.error(
                     getLang("general.alert.error"),
                     getLang("main.start.exception.alert.header"),
                     getLang("main.start.exception.alert.content"),
                     e
             );
-            logger.error("Error loading UI", e);
         }
     }
 

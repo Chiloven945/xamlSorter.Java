@@ -31,6 +31,7 @@ public class PreferencesDialogController {
      * @param owner the owner window, can be null if no owner
      */
     public static void showPreferencesDialog(javafx.stage.Window owner) {
+        logger.debug("Opening Preferences dialog");
         try {
             FXMLLoader loader = new FXMLLoader(PreferencesDialogController.class.getResource("/ui/dialogs/PreferencesDialog.fxml"));
             loader.setResources(getBundle());
@@ -51,8 +52,11 @@ public class PreferencesDialogController {
             controller.languageComboBox.setValue(PreferencesManager.get("language", "English"));
             controller.themeComboBox.setValue(PreferencesManager.get("theme", "Light"));
 
+            logger.debug("Showing Preferences dialog to user");
             dialog.showAndWait().ifPresent(btn -> {
+                logger.debug("Dialog closed with button: {}", btn.getButtonData());
                 if (btn.getButtonData() == ButtonData.OK_DONE) {
+                    logger.debug("User confirmed preferences, saving...");
                     controller.savePreferences();
                 }
             });
@@ -80,6 +84,7 @@ public class PreferencesDialogController {
      * Save the user preferences from the dialog
      */
     public void savePreferences() {
+        logger.debug("Saving preferences...");
         String oldLang = PreferencesManager.get("language", "English");
         String newLang = languageComboBox.getValue();
         String oldTheme = PreferencesManager.get("theme", "Light");
@@ -88,11 +93,15 @@ public class PreferencesDialogController {
         boolean langChanged = !oldLang.equals(newLang);
         boolean themeChanged = !oldTheme.equals(newTheme);
 
+        logger.debug("Old language: {}, New language: {}", oldLang, newLang);
+        logger.debug("Old theme: {}, New theme: {}", oldTheme, newTheme);
+
         PreferencesManager.set("language", newLang);
         PreferencesManager.set("theme", newTheme);
         PreferencesManager.save();
 
         if (langChanged) {
+            logger.info("Language preference changed from '{}' to '{}'", oldLang, newLang);
             Optional<ButtonType> result = ShowAlert.confirm(
                     getLang("general.alert.info"),
                     getLang("dialog.pref.lang.info.header"),
@@ -101,8 +110,15 @@ public class PreferencesDialogController {
                     new ButtonType(getLang("general.button.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE)
             );
             if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                logger.info("User chose to restart the application after language change.");
                 Main.safeClose();
+            } else {
+                logger.info("User cancelled the restart after language change.");
             }
+        }
+
+        if (themeChanged) {
+            logger.info("Theme preference changed from '{}' to '{}'", oldTheme, newTheme);
         }
     }
 

@@ -50,6 +50,7 @@ public class RegexEditDialogController {
      * @param groupedData data grouped by categories
      */
     public static void showAndHandleRegexEdit(Map<String, List<DataItem>> groupedData, MainController mainController) {
+        logger.debug("Opening Regex Edit dialog");
         try {
             FXMLLoader loader = new FXMLLoader(RegexEditDialogController.class.getResource("/ui/dialogs/RegexEditDialog.fxml"));
             loader.setResources(getBundle());
@@ -70,9 +71,13 @@ public class RegexEditDialogController {
 
             Optional<ButtonType> result = dialog.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.APPLY) {
+                logger.info("User applied changes in Regex Edit dialog");
                 controller.applyChanges();
+            } else {
+                logger.info("User cancelled Regex Edit dialog");
             }
         } catch (Exception e) {
+            logger.error("Exception occurred while showing Regex Edit dialog", e);
             ShowAlert.error(
                     getLang("general.alert.error"),
                     getLang("dialog.regex.exception.alert.header"),
@@ -88,6 +93,7 @@ public class RegexEditDialogController {
 
     @FXML
     public void initialize() {
+        logger.debug("Initializing RegexEditDialogController");
         scopeComboBox.getItems().addAll(
                 getLang("dialog.regex.scope.current"),
                 getLang("dialog.regex.scope.all")
@@ -101,12 +107,13 @@ public class RegexEditDialogController {
         scopeComboBox.getSelectionModel().selectFirst();
         replaceTargetComboBox.getSelectionModel().selectFirst();
         initializeTable();
+        logger.debug("Initialization complete");
     }
 
     /**
      * Set the data for the dialog.
      *
-     * @param groupedData the data grouped by categories
+     * @param groupedData    the data grouped by categories
      * @param targetCategory the category to target for replacements, or null for all categories
      */
     public void setData(Map<String, List<DataItem>> groupedData, String targetCategory) {
@@ -130,10 +137,14 @@ public class RegexEditDialogController {
 
     // Method to handle the refresh action
     private void refreshPreview() {
+        logger.debug("Refreshing preview in RegexEditDialogController");
         String pattern = patternField.getText();
         String replacement = replacementField.getText();
         String scope = scopeComboBox.getValue();
         String replaceTarget = replaceTargetComboBox.getValue();
+
+        logger.debug("Preview parameters - pattern: {}, replacement: {}, scope: {}, replaceTarget: {}",
+                pattern, replacement, scope, replaceTarget);
 
         Map<String, List<DataItem>> previewGroupedData = processGroupedData(pattern, replacement, scope, replaceTarget, true);
 
@@ -145,6 +156,7 @@ public class RegexEditDialogController {
             }
         }
         previewTreeTable.setRoot(root);
+        logger.debug("Preview refreshed and TreeTableView updated");
     }
 
     // Method to apply changes
@@ -154,9 +166,15 @@ public class RegexEditDialogController {
         String scope = scopeComboBox.getValue();
         String replaceTarget = replaceTargetComboBox.getValue();
 
+        logger.debug("Applying changes with pattern: {}, replacement: {}, scope: {}, target: {}",
+                pattern, replacement, scope, replaceTarget);
+
         processGroupedData(pattern, replacement, scope, replaceTarget, false);
 
+        logger.debug("Regrouping grouped data after applying regex changes");
         regroupGroupedData();
+
+        logger.debug("Refreshing main data tree table after changes");
         SortAndRefresher.refresh(mainController.getDataTreeTable(), mainController.getGroupedData());
 
         logger.info("Changes applied with pattern: {}, replacement: {}, scope: {}, target: {}",
@@ -176,6 +194,9 @@ public class RegexEditDialogController {
     private Map<String, List<DataItem>> processGroupedData(
             String pattern, String replacement, String scope, String replaceTarget, boolean previewMode
     ) {
+        logger.debug("Processing grouped data with pattern: {}, replacement: {}, scope: {}, replaceTarget: {}, previewMode: {}",
+                pattern, replacement, scope, replaceTarget, previewMode);
+
         Map<String, List<DataItem>> result = new LinkedHashMap<>();
 
         BiConsumer<DataItem, List<DataItem>> applier = (item, list) -> {
@@ -184,21 +205,32 @@ public class RegexEditDialogController {
                     : item;
 
             if (replaceTarget.equals(getLang("general.datatype.key"))) {
-                copy.setKey(safeReplace(copy.getKey(), pattern, replacement));
+                String before = copy.getKey();
+                String after = safeReplace(copy.getKey(), pattern, replacement);
+                logger.trace("Replacing key: '{}' -> '{}'", before, after);
+                copy.setKey(after);
             } else if (replaceTarget.equals(getLang("general.datatype.original_text"))) {
-                copy.setOriginalText(safeReplace(copy.getOriginalText(), pattern, replacement));
+                String before = copy.getOriginalText();
+                String after = safeReplace(copy.getOriginalText(), pattern, replacement);
+                logger.trace("Replacing originalText: '{}' -> '{}'", before, after);
+                copy.setOriginalText(after);
             } else if (replaceTarget.equals(getLang("general.datatype.translated_text"))) {
-                copy.setTranslatedText(safeReplace(copy.getTranslatedText(), pattern, replacement));
+                String before = copy.getTranslatedText();
+                String after = safeReplace(copy.getTranslatedText(), pattern, replacement);
+                logger.trace("Replacing translatedText: '{}' -> '{}'", before, after);
+                copy.setTranslatedText(after);
             }
             list.add(copy);
         };
 
         if (getLang("dialog.regex.scope.current").equals(scope) && targetCategory != null) {
+            logger.debug("Applying regex to current group: {}", targetCategory);
             List<DataItem> source = groupedData.getOrDefault(targetCategory, Collections.emptyList());
             List<DataItem> updated = new ArrayList<>();
             for (DataItem item : source) applier.accept(item, updated);
             result.put(targetCategory, updated);
         } else {
+            logger.debug("Applying regex to all groups");
             for (Map.Entry<String, List<DataItem>> entry : groupedData.entrySet()) {
                 List<DataItem> updated = new ArrayList<>();
                 for (DataItem item : entry.getValue()) applier.accept(item, updated);
@@ -206,6 +238,7 @@ public class RegexEditDialogController {
             }
         }
 
+        logger.debug("Grouped data processing complete. Result size: {}", result.size());
         return result;
     }
 

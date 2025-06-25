@@ -1,7 +1,7 @@
 package chiloven.xamlsorter.controllers.widgets;
 
-import chiloven.xamlsorter.modules.ClipboardManager;
 import chiloven.xamlsorter.entities.DataItem;
+import chiloven.xamlsorter.modules.ClipboardManager;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.SortAndRefresher;
 import javafx.fxml.FXML;
@@ -44,11 +44,15 @@ public class ContextMenuController {
     public void initializeMenu(Map<String, List<DataItem>> groupedData,
                                TreeTableView<DataItem> translationTreeTable,
                                DataItem targetItem) {
+        logger.info("Initializing context menu...");
         this.groupedData = groupedData;
         this.translationTreeTable = translationTreeTable;
 
         boolean hasTarget = targetItem != null;
         boolean hasClipboard = ClipboardManager.hasContent();
+
+        logger.debug("Target item present: {}", hasTarget);
+        logger.debug("Clipboard has content: {}", hasClipboard);
 
         copyEntry.setDisable(!hasTarget);
         cutEntry.setDisable(!hasTarget);

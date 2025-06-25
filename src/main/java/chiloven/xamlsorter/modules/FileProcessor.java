@@ -33,6 +33,7 @@ public class FileProcessor {
      */
     public static List<DataItem> parseXamlFile(File file, boolean isTranslation) {
         List<DataItem> items = new ArrayList<>();
+        logger.info("Parsing XAML file: {} (isTranslation={})", file.getAbsolutePath(), isTranslation);
         try {
             // Create a DocumentBuilderFactory and configure it for namespace awareness
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -44,6 +45,7 @@ public class FileProcessor {
             // Get all child nodes of the document element
             NodeList allNodes = doc.getDocumentElement().getChildNodes();
             int total = allNodes.getLength();
+            logger.debug("Found {} child nodes in document element.", total);
 
             // Iterate through all nodes and extract String elements
             for (int i = 0; i < total; i++) {
@@ -58,15 +60,19 @@ public class FileProcessor {
                         String key = elem.getAttribute("x:Key");
 
                         // If the key is not set, use the element's text content as the key
-                        if (key.isEmpty()) key = "unnamed";
+                        if (key.isEmpty()) {
+                            logger.warn("Element at index {} has no x:Key attribute. Using 'unnamed' as key.", i);
+                            key = "unnamed";
+                        }
 
-                        // If the key is not a valid identifier, log a warning
                         String value = elem.getTextContent().trim();
                         String category = key.contains(".") ? key.split("\\.")[0] : getLang("page.main.tree_table.item.uncategorized");
                         items.add(new DataItem(category, key, isTranslation ? "" : value, isTranslation ? value : ""));
+                        logger.trace("Extracted DataItem: category='{}', key='{}', value='{}'", category, key, value);
                     }
                 }
             }
+            logger.info("Parsed {} DataItem(s) from file: {}", items.size(), file.getAbsolutePath());
         } catch (Exception e) {
             logger.error("Error parsing XAML file: {}", file.getAbsolutePath(), e);
         }
@@ -114,6 +120,8 @@ public class FileProcessor {
      * @param groupedData   data grouped by category
      */
     public static void exportToXamlFile(File file, String fieldToExport, boolean addComments, Map<String, List<DataItem>> groupedData) {
+        logger.info("Starting export to XAML file: {} with fieldToExport='{}', addComments={}, group count={}",
+                file.getAbsolutePath(), fieldToExport, addComments, groupedData.size());
         try (PrintWriter writer = new PrintWriter(file)) {
             writer.println("<!-- " + getLang("module.file_proc.export_xaml.credits_comments") + " -->");
             writer.println("<ResourceDictionary");
@@ -130,13 +138,17 @@ public class FileProcessor {
                         .sorted(Comparator.comparing(DataItem::getKey))
                         .toList();
 
+                logger.debug("Exporting category '{}', item count={}", category, sortedItems.size());
+
                 if (addComments) {
                     writer.printf("    <!-- %s -->%n", category);
+                    logger.trace("Added comment for category '{}'", category);
                 }
 
                 for (DataItem item : sortedItems) {
                     String value = getLang("general.datatype.original").equalsIgnoreCase(fieldToExport) ? item.getOriginalText() : item.getTranslatedText();
                     writer.printf("    <String x:Key=\"%s\">%s</String>%n", item.getKey(), escapeXml(value));
+                    logger.trace("Exported DataItem: key='{}', value='{}'", item.getKey(), value);
                 }
 
                 writer.println();

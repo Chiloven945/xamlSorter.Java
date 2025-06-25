@@ -2,11 +2,14 @@ package chiloven.xamlsorter.utils;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.List;
 
 public class CustomFileChooser {
+    private static final Logger logger = LogManager.getLogger(CustomFileChooser.class);
 
     /**
      * Open a file selection dialog, allowing the user to choose a file with specified extensions.
@@ -17,6 +20,7 @@ public class CustomFileChooser {
      * @return the selected file, or null if no file was selected
      */
     public static File showOpenFileDialog(Window owner, String title, String files, List<String> extensions) {
+        logger.debug("Opening file dialog with title: {}, files: {}, extensions: {}", title, files, extensions);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
 
@@ -27,7 +31,13 @@ public class CustomFileChooser {
         fileChooser.getExtensionFilters().add(extFilter);
 
         // Open the file selection dialog
-        return fileChooser.showOpenDialog(owner);
+        File selectedFile = fileChooser.showOpenDialog(owner);
+        if (selectedFile != null) {
+            logger.info("File selected: {}", selectedFile.getAbsolutePath());
+        } else {
+            logger.info("No file selected.");
+        }
+        return selectedFile;
     }
 
     /**
@@ -40,6 +50,7 @@ public class CustomFileChooser {
      * @return the selected file, or null if no file was selected
      */
     public static File showSaveFileDialog(Window owner, String title, String files, List<String> extensions, String defaultFileName) {
+        logger.debug("Opening save file dialog with title: {}, files: {}, extensions: {}, defaultFileName: {}", title, files, extensions, defaultFileName);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
 
@@ -55,7 +66,13 @@ public class CustomFileChooser {
         }
 
         // Open the file save dialog
-        return fileChooser.showSaveDialog(owner);
+        File selectedFile = fileChooser.showSaveDialog(owner);
+        if (selectedFile != null) {
+            logger.info("File to save selected: {}", selectedFile.getAbsolutePath());
+        } else {
+            logger.info("No file selected for saving.");
+        }
+        return selectedFile;
     }
 
 }

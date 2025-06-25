@@ -35,6 +35,7 @@ public class ProjectFileManager {
      * @param clipboardKeys the list of keys currently in the clipboard
      */
     public static void saveXsProject(File file, ProjectMeta meta, List<DataItem> items, List<String> clipboardKeys) {
+        logger.debug("Starting saveXsProject for file: {}", file.getAbsolutePath());
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = docFactory.newDocumentBuilder();
@@ -44,6 +45,7 @@ public class ProjectFileManager {
             doc.appendChild(root);
 
             // Meta
+            logger.debug("Writing project meta information.");
             Element metaNode = doc.createElement("Meta");
             Element nameNode = doc.createElement("Name");
             nameNode.setTextContent(meta.getName());
@@ -57,6 +59,7 @@ public class ProjectFileManager {
             root.appendChild(metaNode);
 
             // Clipboard (with full data)
+            logger.debug("Writing clipboard items. Clipboard size: {}", clipboardKeys.size());
             Element clipboardElem = doc.createElement("Clipboard");
             for (String key : clipboardKeys) {
                 DataItem found = items.stream().filter(i -> i.getKey().equals(key)).findFirst().orElse(null);
@@ -66,11 +69,15 @@ public class ProjectFileManager {
                     iElem.setAttribute("ot", found.getOriginalText());
                     iElem.setAttribute("tt", found.getTranslatedText());
                     clipboardElem.appendChild(iElem);
+                    logger.trace("Added clipboard item: key={}", found.getKey());
+                } else {
+                    logger.warn("Clipboard key '{}' not found in items list.", key);
                 }
             }
             root.appendChild(clipboardElem);
 
             // Data (grouped by category)
+            logger.debug("Grouping data items by category.");
             Element dataElem = doc.createElement("Data");
             // Group items by category
             Map<String, List<DataItem>> grouped = items.stream().collect(
@@ -79,17 +86,20 @@ public class ProjectFileManager {
             for (Map.Entry<String, List<DataItem>> entry : grouped.entrySet()) {
                 Element cElem = doc.createElement("C");
                 cElem.setAttribute("c", entry.getKey());
+                logger.trace("Writing category: {}", entry.getKey());
                 for (DataItem item : entry.getValue()) {
                     Element iElem = doc.createElement("I");
                     iElem.setAttribute("k", item.getKey());
                     iElem.setAttribute("ot", item.getOriginalText());
                     iElem.setAttribute("tt", item.getTranslatedText());
                     cElem.appendChild(iElem);
+                    logger.trace("Added data item: key={} category={}", item.getKey(), item.getCategory());
                 }
                 dataElem.appendChild(cElem);
             }
             root.appendChild(dataElem);
 
+            logger.debug("Transforming DOM to file: {}", file.getAbsolutePath());
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             DOMSource source = new DOMSource(doc);
@@ -110,7 +120,7 @@ public class ProjectFileManager {
                             e.getMessage()
                     )
             );
-            logger.error("Failed to save project to {}: {}", file.getAbsolutePath(), e.getMessage());
+            logger.error("Failed to save project to {}: {}", file.getAbsolutePath(), e.getMessage(), e);
         }
     }
 
@@ -121,11 +131,13 @@ public class ProjectFileManager {
      * @return LoadedProject containing the project name, items, and clipboard keys
      */
     public static LoadedProject loadXsProject(File file) {
+        logger.debug("Starting loadXsProject for file: {}", file.getAbsolutePath());
         try {
             List<DataItem> items = new ArrayList<>();
             List<DataItem> clipboardItems = new ArrayList<>();
             ProjectMeta meta = new ProjectMeta();
 
+            logger.trace("Creating DocumentBuilder and parsing XML file.");
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = builder.parse(file);
             doc.getDocumentElement().normalize();
@@ -133,15 +145,18 @@ public class ProjectFileManager {
             Element root = doc.getDocumentElement();
 
             // Parse meta info
+            logger.debug("Parsing project meta information.");
             NodeList metaList = root.getElementsByTagName("Meta");
             if (metaList.getLength() > 0) {
                 Element metaNode = (Element) metaList.item(0);
                 meta.setName(getElementText(metaNode, "Name"));
                 meta.setDescription(getElementText(metaNode, "Description"));
                 meta.setAuthor(getElementText(metaNode, "Author"));
+                logger.trace("Meta loaded: name={}, description={}, author={}", meta.getName(), meta.getDescription(), meta.getAuthor());
             }
 
             // Parse Clipboard: <Clipboard><I k="" ot="" tt=""/></Clipboard>
+            logger.debug("Parsing clipboard items.");
             NodeList clipboardList = root.getElementsByTagName("Clipboard");
             if (clipboardList.getLength() > 0) {
                 Element clipboardElem = (Element) clipboardList.item(0);
@@ -151,12 +166,13 @@ public class ProjectFileManager {
                     String key = iElem.getAttribute("k");
                     String original = iElem.getAttribute("ot");
                     String translated = iElem.getAttribute("tt");
-                    // 分组信息 Clipboard 无 category
                     clipboardItems.add(new DataItem("", key, original, translated));
+                    logger.trace("Loaded clipboard item: key={}", key);
                 }
             }
 
             // Parse Data: <Data><C c=""><I .../></C></Data>
+            logger.debug("Parsing data items by category.");
             NodeList dataList = root.getElementsByTagName("Data");
             if (dataList.getLength() > 0) {
                 Element dataElem = (Element) dataList.item(0);
@@ -164,6 +180,7 @@ public class ProjectFileManager {
                 for (int i = 0; i < cNodes.getLength(); i++) {
                     Element cElem = (Element) cNodes.item(i);
                     String category = cElem.getAttribute("c");
+                    logger.trace("Parsing category: {}", category);
                     NodeList iNodes = cElem.getElementsByTagName("I");
                     for (int j = 0; j < iNodes.getLength(); j++) {
                         Element iElem = (Element) iNodes.item(j);
@@ -171,6 +188,7 @@ public class ProjectFileManager {
                         String original = iElem.getAttribute("ot");
                         String translated = iElem.getAttribute("tt");
                         items.add(new DataItem(category, key, original, translated));
+                        logger.trace("Loaded data item: key={}, category={}", key, category);
                     }
                 }
             }
@@ -178,6 +196,7 @@ public class ProjectFileManager {
             // Returning clipboard keys as a list of strings
             List<String> clipboardKeys = clipboardItems.stream().map(DataItem::getKey).collect(java.util.stream.Collectors.toList());
 
+            logger.info("Project loaded successfully from {}", file.getAbsolutePath());
             return new LoadedProject(meta, items, clipboardKeys);
         } catch (Exception e) {
             ShowAlert.error(

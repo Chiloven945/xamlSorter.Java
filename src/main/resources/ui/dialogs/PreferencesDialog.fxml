@@ -5,7 +5,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import java.lang.*?>
-<DialogPane prefWidth="400" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="chiloven.xamlsorter.controllers.dialogs.PreferencesDialogController">
+<DialogPane xmlns:fx="http://javafx.com/fxml/1" prefWidth="400" xmlns="http://javafx.com/javafx/17.0.12"
+            fx:controller="chiloven.xamlsorter.controllers.dialogs.PreferencesDialogController">
     <content>
         <VBox alignment="CENTER_LEFT" prefHeight="115.0" prefWidth="268.0" spacing="14">
             <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="%dialog.pref.title"/>
@@ -14,20 +15,20 @@
                 <ComboBox fx:id="languageComboBox" prefHeight="23.0" prefWidth="100.0">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Ελληνικά (Ελλάδα)" />
-                            <String fx:value="English (United Kingdom)" />
-                            <String fx:value="English (US)" />
-                            <String fx:value="Español (España)" />
-                            <String fx:value="Français (France)" />
-                            <String fx:value="日本語（日本）" />
-                            <String fx:value="한국어（대한민국）" />
-                            <String fx:value="文言（華夏）" />
-                            <String fx:value="Русский (Россия)" />
-                            <String fx:value="Slovenčina (Slovensko)" />
-                            <String fx:value="简体中文（中国大陆）" />
-                            <String fx:value="繁體中文（香港特別行政區）" />
-                            <String fx:value="梗体中文（天朝）" />
-                            <String fx:value="繁體中文（台灣）" />
+                            <String fx:value="Ελληνικά (Ελλάδα)"/>
+                            <String fx:value="English (United Kingdom)"/>
+                            <String fx:value="English (US)"/>
+                            <String fx:value="Español (España)"/>
+                            <String fx:value="Français (France)"/>
+                            <String fx:value="日本語（日本）"/>
+                            <String fx:value="한국어（대한민국）"/>
+                            <String fx:value="文言（華夏）"/>
+                            <String fx:value="Русский (Россия)"/>
+                            <String fx:value="Slovenčina (Slovensko)"/>
+                            <String fx:value="简体中文（中国大陆）"/>
+                            <String fx:value="繁體中文（香港特別行政區）"/>
+                            <String fx:value="梗体中文（天朝）"/>
+                            <String fx:value="繁體中文（台灣）"/>
                         </FXCollections>
                     </items>
                 </ComboBox>

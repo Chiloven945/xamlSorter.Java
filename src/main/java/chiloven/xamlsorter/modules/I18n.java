@@ -160,6 +160,11 @@ public class I18n {
         return currentLocale;
     }
 
+    /**
+     * Applies the default font for the current locale to the given JavaFX scene.
+     *
+     * @param scene the JavaFX Scene to which the default font will be applied
+     */
     public static void applyDefaultFont(Scene scene) {
         Locale locale = getCurrentLocale();
         logger.debug("Current locale for font selection: {}", locale);

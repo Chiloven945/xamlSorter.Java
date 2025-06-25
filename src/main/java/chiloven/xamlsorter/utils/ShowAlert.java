@@ -7,6 +7,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
@@ -18,19 +20,22 @@ import static chiloven.xamlsorter.modules.I18n.getLang;
  * and handles long or multiline messages by displaying them in a TextArea.
  */
 public class ShowAlert {
+    private static final Logger logger = LogManager.getLogger(ShowAlert.class);
 
     private static final int LONG_MESSAGE_THRESHOLD = 200;  // 可自定义阈值
 
     /**
      * Show a JavaFX alert.
      *
-     * @param alertType the type of alert (e.g., Alert.AlertType.INFORMATION, Alert.AlertType.ERROR)
-     * @param header    the header text of the alert dialog
-     * @param title     the title of the alert dialog
-     * @param content   the content text of the alert dialog
+     * @param alertType  the type of alert (e.g., Alert.AlertType.INFORMATION, Alert.AlertType.ERROR)
+     * @param header     the header text of the alert dialog
+     * @param title      the title of the alert dialog
+     * @param content    the content text of the alert dialog
      * @param stacktrace the stack trace to display in the alert (optional, can be null or empty)
      */
     public static void showAlert(Alert.AlertType alertType, String title, String header, String content, Exception stacktrace) {
+        logger.info("Showing alert: type={}, title={}, header={}", alertType, title, header);
+
         Alert alert = new Alert(alertType);
 
         Scene scene = alert.getDialogPane().getScene();
@@ -40,6 +45,7 @@ public class ShowAlert {
         alert.setHeaderText(header);
 
         if (stacktrace != null) {
+            logger.debug("Alert with stacktrace");
             // Build a detailed message with stack trace
             StringBuilder sb = new StringBuilder();
             sb.append(stacktrace).append("\n");
@@ -73,6 +79,7 @@ public class ShowAlert {
             alert.getDialogPane().setContent(vbox);
 
         } else if (isLongMessage(content)) {
+            logger.debug("Alert with long/multiline content");
             TextArea textArea = new TextArea(content);
             textArea.setEditable(false);
             textArea.setWrapText(true);
@@ -80,6 +87,7 @@ public class ShowAlert {
             textArea.setMaxHeight(Double.MAX_VALUE);
             alert.getDialogPane().setContent(textArea);
         } else {
+            logger.debug("Alert with short content");
             alert.setContentText(content);
         }
 
@@ -158,9 +166,9 @@ public class ShowAlert {
     /**
      * Show an error alert with stacktrace.
      *
-     * @param title the title of the alert dialog
-     * @param header the header text of the alert dialog
-     * @param content the content text of the alert dialog
+     * @param title      the title of the alert dialog
+     * @param header     the header text of the alert dialog
+     * @param content    the content text of the alert dialog
      * @param stacktrace the stack trace to display in the alert
      * @see #showAlert(Alert.AlertType, String, String, String, Exception)
      */
@@ -205,14 +213,16 @@ public class ShowAlert {
     /**
      * Show a confirmation alert with custom buttons.
      *
-     * @param title the title of the alert dialog
-     * @param header the header text of the alert dialog
-     * @param content the content text of the alert dialog
+     * @param title         the title of the alert dialog
+     * @param header        the header text of the alert dialog
+     * @param content       the content text of the alert dialog
      * @param customButtons the custom buttons to display in the alert
      * @return an Optional containing the button type that was clicked, or empty if the dialog was closed without a selection
      */
     public static Optional<ButtonType> confirm(String title, String header, String content,
                                                ButtonType... customButtons) {
+        logger.info("Showing confirmation alert: title={}, header={}", title, header);
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 
         Scene scene = alert.getDialogPane().getScene();
@@ -222,6 +232,7 @@ public class ShowAlert {
         alert.setHeaderText(header);
 
         if (isLongMessage(content)) {
+            logger.debug("Confirmation alert with long/multiline content");
             TextArea textArea = new TextArea(content);
             textArea.setEditable(false);
             textArea.setWrapText(true);
@@ -229,11 +240,13 @@ public class ShowAlert {
             textArea.setMaxHeight(Double.MAX_VALUE);
             alert.getDialogPane().setContent(textArea);
         } else {
+            logger.debug("Confirmation alert with short content");
             alert.setContentText(content);
         }
 
         // Default buttons
         if (customButtons != null && customButtons.length > 0) {
+            logger.debug("Setting custom buttons for confirmation alert");
             alert.getButtonTypes().setAll(customButtons);
         }
 

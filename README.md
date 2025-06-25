@@ -8,7 +8,8 @@
 ![GitHub Release](https://img.shields.io/github/v/release/Chiloven945/xamlSorter.Java?logo=github&label=Release)
 </div>
 
-An JavaFX application to sort XAML language files, create for the PCL i18n Project. It is currently in development and is not yet ready for production use.
+An JavaFX application to sort XAML language files, create for the PCL i18n Project. It is currently in development and
+is not yet ready for production use.
 
 Additionally, this application is developed using Java 21 and JavaFX 21, and is built using Maven.
 

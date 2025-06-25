@@ -47,7 +47,7 @@ public class PreferencesManager {
     /**
      * Get a preference value by key.
      *
-     * @param key the preference key
+     * @param key          the preference key
      * @param defaultValue the default value to return if the key is not found
      * @return the preference value, or the default value if the key is not found
      */
@@ -58,7 +58,7 @@ public class PreferencesManager {
     /**
      * Set a preference value by key.
      *
-     * @param key the preference key
+     * @param key   the preference key
      * @param value the value to set for the key
      */
     public static void set(String key, String value) {

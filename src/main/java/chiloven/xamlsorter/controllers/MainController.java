@@ -80,12 +80,15 @@ public class MainController {
 
     @FXML
     public void initialize() {
+        logger.debug("Initializing MainController...");
 
         // =========================
         // 1️⃣ Display the welcome overlay
         // =========================
 
+        logger.trace("Showing welcome overlay.");
         showWelcome();
+        logger.trace("Setting main controller for topMenuBarController and DataOperationHelper.");
         topMenuBarController.setMainController(this);
         DataOperationHelper.setMainController(this);
 
@@ -93,6 +96,7 @@ public class MainController {
         // 2️⃣ Configure the TreeTableView columns
         // =========================
 
+        logger.trace("Configuring TreeTableView columns.");
         translationTreeTable.setPlaceholder(new Label(getLang("page.main.tree_table.placeholder")));
 
         keyColumn.setCellValueFactory(param -> param.getValue().getValue().getKeyProperty());
@@ -108,6 +112,7 @@ public class MainController {
         // 3️⃣ Configure the TreeTableView and enable editing
         // =========================
 
+        logger.trace("Enabling editing and configuring cell factories.");
         translationTreeTable.setEditable(true);
         translationTreeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -115,6 +120,7 @@ public class MainController {
         keyColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
         keyColumn.setOnEditCommit(event -> {
             DataItem item = event.getRowValue().getValue();
+            logger.debug("Key column edit commit: oldValue='{}', newValue='{}'", item.getKey(), event.getNewValue());
             handleCellEdit(
                     event.getNewValue(),
                     item::getKey, key -> key.endsWith("..."), item::setKey);
@@ -124,6 +130,7 @@ public class MainController {
         originalColumn.setCellFactory(param -> new MultiLineTreeTableCell<>());
         originalColumn.setOnEditCommit(event -> {
             DataItem item = event.getRowValue().getValue();
+            logger.debug("Original column edit commit: oldValue='{}', newValue='{}'", item.getOriginalText(), event.getNewValue());
             handleCellEdit(
                     event.getNewValue(),
                     item::getOriginalText, "-"::equals, item::setOriginalText);
@@ -133,6 +140,7 @@ public class MainController {
         translatedColumn.setCellFactory(param -> new MultiLineTreeTableCell<>());
         translatedColumn.setOnEditCommit(event -> {
             DataItem item = event.getRowValue().getValue();
+            logger.debug("Translated column edit commit: oldValue='{}', newValue='{}'", item.getTranslatedText(), event.getNewValue());
             handleCellEdit(
                     event.getNewValue(),
                     item::getTranslatedText, "-"::equals, item::setTranslatedText);
@@ -142,6 +150,7 @@ public class MainController {
         // 4️⃣ Configure the context menu for the TreeTableView (rows and empty area)
         // =========================
 
+        logger.trace("Configuring context menu for TreeTableView rows.");
         translationTreeTable.setRowFactory(tv -> {
             TreeTableRow<DataItem> row = new TreeTableRow<>();
             row.setOnContextMenuRequested(event -> {
@@ -149,6 +158,7 @@ public class MainController {
                         ? row.getTreeItem().getValue()
                         : null;
                 try {
+                    logger.debug("Context menu requested for row: {}", targetItem);
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/widgets/ContextMenu.fxml"));
                     loader.setResources(getBundle());
                     ContextMenu menu = loader.load();
@@ -169,8 +179,10 @@ public class MainController {
             return row;
         });
 
+        logger.trace("Configuring context menu for TreeTableView empty area.");
         translationTreeTable.setOnContextMenuRequested(event -> {
             try {
+                logger.debug("Context menu requested for empty area.");
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/widgets/ContextMenu.fxml"));
                 loader.setResources(getBundle());
                 ContextMenu menu = loader.load();
@@ -193,6 +205,7 @@ public class MainController {
         // 5️⃣ Initialize the TreeTableView with an empty root item
         // =========================
 
+        logger.trace("Initializing TreeTableView with empty root item.");
         translationTreeTable.setRoot(new TreeItem<>(new DataItem("", "", "", "")));
         translationTreeTable.setShowRoot(false);
 
@@ -251,12 +264,15 @@ public class MainController {
 
     // Welcome and Editor View Management
     public void showWelcome() {
+        logger.debug("Switching to welcome view.");
         if (welcomeOverlay != null) {
             welcomeOverlay.setVisible(true);
             welcomeOverlay.setManaged(true);
+            logger.trace("Welcome overlay shown.");
         }
         editorBox.setVisible(false);
         editorBox.setManaged(false);
+        logger.trace("Editor box hidden.");
     }
 
     // Update the window title based on the current project metadata and modification status
@@ -264,8 +280,10 @@ public class MainController {
         String projectName = (currentProjectMeta != null ? currentProjectMeta.getName() : getLang("page.main.title.proj_name.untitled"));
         String modified = projectModified ? "*" : "";
         String title = getLang("page.main.title.editing", projectName, modified);
+        logger.debug("Updating window title to: {}", title);
         Stage stage = (Stage) rootPane.getScene().getWindow();
         stage.setTitle(title);
+        logger.trace("Window title set successfully.");
     }
 
     // Set the modified status of the project and update the window title accordingly
@@ -276,14 +294,18 @@ public class MainController {
 
     // Show the editor view and hide the welcome overlay
     public void showEditor() {
+        logger.debug("Switching to editor view.");
         if (welcomeOverlay != null) {
             welcomeOverlay.setVisible(false);
             welcomeOverlay.setManaged(false);
+            logger.trace("Welcome overlay hidden.");
         }
         editorBox.setVisible(true);
         editorBox.setManaged(true);
+        logger.trace("Editor box shown.");
         updateWindowTitle();
         SortAndRefresher.refresh(translationTreeTable, groupedData);
+        logger.debug("Editor view displayed and data refreshed.");
     }
 
     /**
@@ -292,7 +314,10 @@ public class MainController {
      * @return true if the user chose to save or if there are no unsaved changes,
      */
     public boolean promptSaveIfNeeded() {
-        if (!projectModified) return true;
+        if (!projectModified) {
+            logger.debug("No unsaved changes detected, skipping save prompt.");
+            return true;
+        }
 
         ButtonType saveBtn = new ButtonType(getLang("page.main.save.confirm.button.save"));
         ButtonType dontSaveBtn = new ButtonType(getLang("page.main.save.confirm.button.do_not_save"));
@@ -307,9 +332,18 @@ public class MainController {
 
         if (result.isPresent()) {
             if (result.get() == saveBtn) {
+                logger.info("User chose to save changes.");
                 ProjectManager.saveProject(this);
+                logger.debug("Project saved. Modified status: {}", projectModified);
                 return !projectModified;
-            } else return result.get() == dontSaveBtn;
+            } else if (result.get() == dontSaveBtn) {
+                logger.info("User chose not to save changes.");
+                return true;
+            } else {
+                logger.info("User cancelled the save prompt.");
+            }
+        } else {
+            logger.info("Save prompt dismissed without selection.");
         }
         return false;
     }

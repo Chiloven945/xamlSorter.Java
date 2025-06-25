@@ -167,7 +167,7 @@ public class TopMenuBarController {
                 "Documentation",
                 "WIP...",
                 "The documentation is currently a work in progress. Please check back later for updates. :("
-                );
+        );
     }
 
     @FXML
