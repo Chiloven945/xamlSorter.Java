@@ -12,31 +12,31 @@ public class I18n {
 
     private static final String BASE_PATH = "assets.languages.messages";
     private static final Map<String, Locale> NAME_TO_LOCALE = Map.ofEntries(
-            Map.entry("Ελληνικά (Ελλάδα)", new Locale("el", "GR")),
-            Map.entry("English (United Kingdom)", new Locale("en", "GB")),
+            Map.entry("Ελληνικά (Ελλάδα)", Locale.of("el", "GR")),
+            Map.entry("English (United Kingdom)", Locale.of("en", "GB")),
             Map.entry("English (US)", Locale.US),
-            Map.entry("Español (España)", new Locale("es", "ES")),
+            Map.entry("Español (España)", Locale.of("es", "ES")),
             Map.entry("Français (France)", Locale.FRANCE),
             Map.entry("日本語（日本）", Locale.JAPAN),
-            Map.entry("한국어（대한민국）", new Locale("ko", "KR")),
-            Map.entry("文言（華夏）", new Locale("lzh", "Hant", "CN")), // 这里用ISO代码, 视资源文件实际而定
-            Map.entry("Русский (Россия)", new Locale("ru", "RU")),
-            Map.entry("Slovenčina (Slovensko)", new Locale("sk", "SK")),
+            Map.entry("한국어（대한민국）", Locale.of("ko", "KR")),
+            Map.entry("文言（華夏）", Locale.of("lzh", "Hant", "CN")), // 这里用ISO代码, 视资源文件实际而定
+            Map.entry("Русский (Россия)", Locale.of("ru", "RU")),
+            Map.entry("Slovenčina (Slovensko)", Locale.of("sk", "SK")),
             Map.entry("简体中文（中国大陆）", Locale.SIMPLIFIED_CHINESE),
-            Map.entry("繁體中文（香港特別行政區）", new Locale("zh", "HK")),
-            Map.entry("梗体中文（天朝）", new Locale("zh", "CN", "MEME")), // 仅示例，如需自定义资源包
-            Map.entry("繁體中文（台灣）", new Locale("zh", "TW"))
+            Map.entry("繁體中文（香港特別行政區）", Locale.of("zh", "HK")),
+            Map.entry("梗体中文（天朝）", Locale.of("zh", "CN", "MEME")), // 仅示例，如需自定义资源包
+            Map.entry("繁體中文（台灣）", Locale.of("zh", "TW"))
     );
     private static final Map<Locale, List<String>> LOCALE_FONT_LIST_MAP = Map.ofEntries(
             Map.entry(Locale.SIMPLIFIED_CHINESE,
                     List.of("Microsoft Yahei UI", "SF Pro SC", "PingFang SC", "Noto Sans SC", "Segoe UI", "Arial")),
             Map.entry(Locale.TRADITIONAL_CHINESE,
                     List.of("Microsoft Jhenghei UI", "SF Pro TC", "PingFang TC", "Noto Sans TC", "Microsoft Yahei UI", "Segoe UI", "Arial")),
-            Map.entry(new Locale("zh", "HK"),
+            Map.entry(Locale.of("zh", "HK"),
                     List.of("Microsoft Jhenghei UI", "SF Pro HK", "PingFang HK", "Noto Sans HK", "Microsoft Yahei UI", "Segoe UI", "Arial")),
             Map.entry(Locale.JAPAN,
                     List.of("Yu Gothic UI", "SF Pro JP", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Microsoft Yahei UI", "Segoe UI", "Arial")),
-            Map.entry(new Locale("ko", "KR"),
+            Map.entry(Locale.of("ko", "KR"),
                     List.of("Malgun Gothic", "SF Pro KR", "Apple SD Gothic Neo", "Noto Sans KR", "Microsoft Yahei UI", "Segoe UI", "Arial")),
             Map.entry(Locale.US,
                     List.of("Segoe UI", "San Francisco", "Noto Sans SC", "Arial")),
@@ -44,15 +44,15 @@ public class I18n {
                     List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
             Map.entry(Locale.ENGLISH,
                     List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(new Locale("es", "ES"),
+            Map.entry(Locale.of("es", "ES"),
                     List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(new Locale("fr", "FR"),
+            Map.entry(Locale.of("fr", "FR"),
                     List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(new Locale("ru", "RU"),
+            Map.entry(Locale.of("ru", "RU"),
                     List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(new Locale("sk", "SK"),
+            Map.entry(Locale.of("sk", "SK"),
                     List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(new Locale("el", "GR"),
+            Map.entry(Locale.of("el", "GR"),
                     List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial"))
     );
     private static Locale currentLocale = Locale.getDefault();
