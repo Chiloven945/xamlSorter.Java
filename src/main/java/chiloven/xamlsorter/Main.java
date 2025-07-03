@@ -22,7 +22,7 @@ public class Main extends Application {
 
     private static final Logger logger = LogManager.getLogger(Main.class);
     public static Stage primaryStage;
-    public static String version = "Release.0.2.0";
+    public static String version = "Beta.0.2.1";
     private MainController mainController;
 
     public static void main(String[] args) {
