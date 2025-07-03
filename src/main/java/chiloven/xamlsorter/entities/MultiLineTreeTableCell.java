@@ -22,7 +22,6 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
         textArea.setWrapText(true);
         textArea.setPrefRowCount(3);
         textArea.setMaxHeight(200);
-        logger.debug("TextArea initialized with wrapText, prefRowCount=3, maxHeight=200");
 
         // Double click to edit
         this.setOnMouseClicked(event -> {
@@ -108,22 +107,18 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
     // Override updateItem to handle empty items and set the correct display
     @Override
     protected void updateItem(String item, boolean empty) {
-        logger.debug("updateItem called for cell at row: {}, empty: {}, item: {}", getIndex(), empty, item);
         super.updateItem(item, empty);
 
         // If the item is empty or null, clear the cell
         if (empty || item == null) {
-            logger.trace("Clearing cell at row: {}", getIndex());
             setText(null);
             setGraphic(null);
         } else {
             if (isEditing()) {
-                logger.trace("Cell at row: {} is editing, setting textArea", getIndex());
                 textArea.setText(item);
                 setGraphic(textArea);
                 setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             } else {
-                logger.trace("Cell at row: {} is displaying label", getIndex());
                 updateDisplay(item);
             }
         }
@@ -135,7 +130,6 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
      * @param item the item to display in the cell
      */
     private void updateDisplay(String item) {
-        logger.trace("Updating display for cell at row: {}, item: {}", getIndex(), item);
         label.setText(item != null ? item : "");
         setGraphic(label);
         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
