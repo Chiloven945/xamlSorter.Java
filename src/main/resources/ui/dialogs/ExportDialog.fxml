@@ -35,8 +35,8 @@
             <CheckBox fx:id="commentCheckBox" text="%dialog.export.top_level_comments.checkbox" selected="true"/>
 
             <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button text="%general.button.cancel" onAction="#handleCancel"/>
                 <Button text="%dialog.export.button.export" onAction="#handleExport" defaultButton="true"/>
+                <Button text="%general.button.cancel" onAction="#handleCancel"/>
             </HBox>
         </VBox>
     </content>
