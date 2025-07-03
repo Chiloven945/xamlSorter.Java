@@ -4,7 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" prefHeight="600.0" prefWidth="800.0"
-           xmlns="http://javafx.com/javafx/17.0.12" fx:controller="chiloven.xamlsorter.controllers.MainController">
+           stylesheets="@../styles/startpane-temp.css" xmlns="http://javafx.com/javafx/17.0.12"
+           fx:controller="chiloven.xamlsorter.controllers.MainController">
     <VBox>
         <fx:include fx:id="topMenuBar" source="/ui/widgets/TopMenuBar.fxml"/>
         <VBox fx:id="editorBox" VBox.vgrow="ALWAYS">
@@ -30,14 +31,10 @@
     </VBox>
 
     <!-- Overlay -->
-    <StackPane fx:id="welcomeOverlay" pickOnBounds="false" style="-fx-background-color: transparent;">
-        <!-- Transparent background -->
-        <Pane prefHeight="9999" prefWidth="9999" style="-fx-background-color: rgba(0,0,0,0.28);"
-              StackPane.alignment="CENTER"/>
-        <!-- Welcome box -->
-        <VBox alignment="CENTER" maxHeight="350" maxWidth="370" spacing="18.0"
-              style="-fx-background-color: white; -fx-background-radius: 8px; -fx-padding: 40 50;">
-            <Label style="-fx-font-size:28px; -fx-font-weight:bold;" text="%general.application.name"/>
+    <StackPane fx:id="welcomeOverlay" pickOnBounds="false" styleClass="welcome-overlay">
+        <Pane prefHeight="9999" prefWidth="9999" StackPane.alignment="CENTER" styleClass="overlay-background"/>
+        <VBox alignment="CENTER" maxHeight="350" maxWidth="370" spacing="18.0" styleClass="welcome-box">
+            <Label styleClass="welcome-title" text="%general.application.name"/>
             <Separator prefWidth="200.0"/>
             <VBox spacing="18.0">
                 <children>

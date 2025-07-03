@@ -38,6 +38,13 @@
             <artifactId>log4j-core</artifactId>
             <version>2.24.3</version>
         </dependency>
+
+        <!-- AtlantaFX -->
+        <dependency>
+            <groupId>io.github.mkpaz</groupId>
+            <artifactId>atlantafx-base</artifactId>
+            <version>2.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

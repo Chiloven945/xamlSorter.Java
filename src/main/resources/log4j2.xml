@@ -3,15 +3,17 @@
     <Appenders>
 
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%d{HH:mm:ss.SSS}] [%replace{%t}{^JavaFX Application Thread$}{JFX App Thread}/%replace{%logger}{^chiloven\.xamlsorter\.}{}/%highlight{%level}]: %msg%n"
-                           disableAnsi="false" noConsoleNoAnsi="false"/>
+            <PatternLayout
+                    pattern="[%d{HH:mm:ss.SSS}] [%replace{%t}{^JavaFX Application Thread$}{JFX App Thread}/%replace{%logger}{^chiloven\.xamlsorter\.}{}/%highlight{%level}]: %msg%n"
+                    disableAnsi="false" noConsoleNoAnsi="false"/>
         </Console>
 
         <RollingFile name="RollingFile"
                      fileName="logs/latest.log"
                      filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz"
                      append="true">
-            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%replace{%t}{^JavaFX Application Thread$}{JFX App Thread}/%replace{%logger}{^chiloven\.xamlsorter\.}{}/%highlight{%level}]: %msg%n"/>
+            <PatternLayout
+                    pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%replace{%t}{^JavaFX Application Thread$}{JFX App Thread}/%replace{%logger}{^chiloven\.xamlsorter\.}{}/%highlight{%level}]: %msg%n"/>
             <Filters>
                 <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>

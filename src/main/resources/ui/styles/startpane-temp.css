@@ -1,0 +1,20 @@
+.welcome-overlay {
+    -fx-background-color: transparent;
+}
+
+.overlay-background {
+    -fx-background-color: rgba(0, 0, 0, 0.28);
+}
+
+.welcome-box {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-padding: 40 50;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 2);
+}
+
+.welcome-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}

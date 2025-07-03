@@ -1,5 +1,7 @@
 package chiloven.xamlsorter;
 
+import atlantafx.base.theme.CupertinoDark;
+import atlantafx.base.theme.CupertinoLight;
 import chiloven.xamlsorter.controllers.MainController;
 import chiloven.xamlsorter.modules.I18n;
 import chiloven.xamlsorter.modules.PreferencesManager;
@@ -39,6 +41,9 @@ public class Main extends Application {
         try {
             logger.info("Starting xamlSorter.Java application");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/pages/MainPage.fxml"));
+
+            Application.setUserAgentStylesheet(new CupertinoLight().getUserAgentStylesheet());
+//            Application.setUserAgentStylesheet(new CupertinoDark().getUserAgentStylesheet());
 
             PreferencesManager.reload();
             String lang = PreferencesManager.get("language", "en");
