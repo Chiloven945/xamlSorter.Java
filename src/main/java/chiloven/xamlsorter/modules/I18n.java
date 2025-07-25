@@ -9,8 +9,11 @@ import java.util.*;
 
 public class I18n {
     private static final Logger logger = LogManager.getLogger(I18n.class);
-
     private static final String BASE_PATH = "assets.languages.messages";
+
+    private static final List<String> DEFAULT_FONT_LIST =
+            List.of("Segoe UI", "San Francisco", "Noto Sans SC", "Arial");
+
     private static final Map<String, Locale> NAME_TO_LOCALE = Map.ofEntries(
             Map.entry("Ελληνικά (Ελλάδα)", Locale.of("el", "GR")),
             Map.entry("English (United Kingdom)", Locale.of("en", "GB")),
@@ -19,12 +22,12 @@ public class I18n {
             Map.entry("Français (France)", Locale.FRANCE),
             Map.entry("日本語（日本）", Locale.JAPAN),
             Map.entry("한국어（대한민국）", Locale.of("ko", "KR")),
-            Map.entry("文言（華夏）", Locale.of("lzh", "Hant", "CN")), // 这里用ISO代码, 视资源文件实际而定
+            Map.entry("文言（華夏）", Locale.of("lzh", "Hant", "CN")),
             Map.entry("Русский (Россия)", Locale.of("ru", "RU")),
             Map.entry("Slovenčina (Slovensko)", Locale.of("sk", "SK")),
             Map.entry("简体中文（中国大陆）", Locale.SIMPLIFIED_CHINESE),
             Map.entry("繁體中文（香港特別行政區）", Locale.of("zh", "HK")),
-            Map.entry("梗体中文（天朝）", Locale.of("zh", "CN", "MEME")), // 仅示例，如需自定义资源包
+            Map.entry("梗体中文（天朝）", Locale.of("zh", "CN", "MEME")),
             Map.entry("繁體中文（台灣）", Locale.of("zh", "TW"))
     );
     private static final Map<Locale, List<String>> LOCALE_FONT_LIST_MAP = Map.ofEntries(
@@ -38,40 +41,52 @@ public class I18n {
                     List.of("Yu Gothic UI", "SF Pro JP", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Microsoft Yahei UI", "Segoe UI", "Arial")),
             Map.entry(Locale.of("ko", "KR"),
                     List.of("Malgun Gothic", "SF Pro KR", "Apple SD Gothic Neo", "Noto Sans KR", "Microsoft Yahei UI", "Segoe UI", "Arial")),
-            Map.entry(Locale.US,
-                    List.of("Segoe UI", "San Francisco", "Noto Sans SC", "Arial")),
-            Map.entry(Locale.UK,
-                    List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(Locale.ENGLISH,
-                    List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(Locale.of("es", "ES"),
-                    List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(Locale.of("fr", "FR"),
-                    List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(Locale.of("ru", "RU"),
-                    List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(Locale.of("sk", "SK"),
-                    List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial")),
-            Map.entry(Locale.of("el", "GR"),
-                    List.of("Segoe UI", "San Francisco", "Noto Sans", "Arial"))
+            Map.entry(Locale.US, DEFAULT_FONT_LIST),
+            Map.entry(Locale.UK, DEFAULT_FONT_LIST),
+            Map.entry(Locale.of("es", "ES"), DEFAULT_FONT_LIST),
+            Map.entry(Locale.of("fr", "FR"), DEFAULT_FONT_LIST),
+            Map.entry(Locale.of("ru", "RU"), DEFAULT_FONT_LIST),
+            Map.entry(Locale.of("sk", "SK"), DEFAULT_FONT_LIST),
+            Map.entry(Locale.of("el", "GR"), DEFAULT_FONT_LIST)
     );
-    private static Locale currentLocale = Locale.getDefault();
-    private static ResourceBundle bundle = loadBundle(currentLocale);
+
+    private static Locale currentLocale;
+    private static ResourceBundle bundle;
+
+    static {
+        // 设置默认区域为 US
+        Locale.setDefault(Locale.US);
+        currentLocale = Locale.US;
+        bundle = loadBundle(currentLocale);
+    }
 
     /**
-     * Load the ResourceBundle for the specified locale, falling back to English if not found.
+     * Load the ResourceBundle for the specified locale, falling back to US if not found.
      *
      * @param locale target Locale
      * @return ResourceBundle for the specified locale
      */
     private static ResourceBundle loadBundle(Locale locale) {
         try {
-            ResourceBundle bundle = ResourceBundle.getBundle(BASE_PATH, locale);
+            // 使用 Control 来自定义资源包加载行为
+            ResourceBundle.Control control = new ResourceBundle.Control() {
+                @Override
+                public List<Locale> getCandidateLocales(String baseName, Locale locale) {
+                    List<Locale> candidateLocales = super.getCandidateLocales(baseName, locale);
+                    // 如果是 US 区域，将默认的 messages.properties 与 en_US 关联
+                    if (locale.equals(Locale.US)) {
+                        return Arrays.asList(locale, Locale.ROOT);
+                    }
+                    return candidateLocales;
+                }
+            };
+
+            ResourceBundle bundle = ResourceBundle.getBundle(BASE_PATH, locale, control);
             logger.info("Loaded ResourceBundle for locale: {}", locale);
             return bundle;
         } catch (MissingResourceException e) {
-            logger.warn("ResourceBundle not found for locale: {}, falling back to English", locale);
-            return ResourceBundle.getBundle(BASE_PATH, Locale.ENGLISH);
+            logger.warn("ResourceBundle not found for locale: {}, falling back to US", locale);
+            return ResourceBundle.getBundle(BASE_PATH, Locale.US);
         }
     }
 
@@ -94,19 +109,14 @@ public class I18n {
      * @param localeStr the locale string to set
      */
     public static void setLocale(String localeStr) {
-        logger.info("Setting locale from string: {}", localeStr);
-
         if (localeStr == null || localeStr.isBlank()) {
-            logger.warn("Locale string is null or blank, defaulting to English");
-            setLocale(Locale.ENGLISH);
+            logger.warn("Locale string is null or blank, defaulting to US");
+            setLocale(Locale.US);
             return;
         }
 
         Locale locale = NAME_TO_LOCALE.get(localeStr);
-        Locale resolvedLocale = locale != null ? locale : Locale.ENGLISH;
-        setLocale(resolvedLocale);
-
-        logger.info("Resolved locale: {}", resolvedLocale);
+        setLocale(locale != null ? locale : Locale.US);
     }
 
     /**
@@ -170,23 +180,18 @@ public class I18n {
         logger.debug("Current locale for font selection: {}", locale);
 
         List<String> fontCandidates = LOCALE_FONT_LIST_MAP.get(locale);
-        logger.debug("Font candidates from strict locale match: {}", fontCandidates);
 
         if (fontCandidates == null) {
-            logger.debug("No strict match found, trying language-only match for: {}", locale.getLanguage());
             fontCandidates = LOCALE_FONT_LIST_MAP.entrySet().stream()
                     .filter(e -> e.getKey().getLanguage().equals(locale.getLanguage()))
                     .map(Map.Entry::getValue)
                     .findFirst()
-                    .orElse(LOCALE_FONT_LIST_MAP.getOrDefault(Locale.ENGLISH, List.of("Segoe UI", "Arial")));
-            logger.debug("Font candidates from language match: {}", fontCandidates);
+                    .orElse(DEFAULT_FONT_LIST);
         }
 
         String font = pickAvailableFont(fontCandidates);
-        logger.debug("Selected font: {}", font);
-
-        logger.debug("Applying default font '{}' for locale: {}", font, locale);
         scene.getRoot().setStyle("-fx-font-family: '" + font + "';");
+        logger.info("Applied font '{}' for locale: {}", font, locale);
     }
 
     /**
@@ -198,17 +203,17 @@ public class I18n {
      */
     private static String pickAvailableFont(List<String> preferredFonts) {
         List<String> installed = javafx.scene.text.Font.getFontNames();
-        logger.debug("Installed system fonts: {}", installed);
+
         for (String fontFamily : preferredFonts) {
-            logger.debug("Checking preferred font: {}", fontFamily);
             for (String sysFont : installed) {
                 if (sysFont.equals(fontFamily) || sysFont.startsWith(fontFamily + " ")) {
-                    logger.info("Font '{}' found and selected.", fontFamily);
+                    logger.debug("Font '{}' found and selected.", fontFamily);
                     return fontFamily;
                 }
             }
         }
-        logger.warn("No preferred fonts found. Falling back to 'System'.");
+
+        logger.info("No preferred fonts found. Falling back to 'System'.");
         return "System";
     }
 
