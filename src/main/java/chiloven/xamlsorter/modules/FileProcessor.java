@@ -2,6 +2,9 @@ package chiloven.xamlsorter.modules;
 
 import chiloven.xamlsorter.entities.DataItem;
 import chiloven.xamlsorter.utils.ShowAlert;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -97,8 +100,8 @@ public class FileProcessor {
         try {
             switch (fileType.toLowerCase()) {
                 case ".xaml" -> exportToXamlFile(file, fieldToExport, addComments, groupedData);
-                // case "json" -> exportToJsonFile(...);  // For future
-                // case "resx" -> exportToResxFile(...);
+                case ".json" -> exportToJsonFile(file, fieldToExport, addComments, groupedData);
+                // case ".resx" -> exportToResxFile(...);
                 default -> throw new IllegalArgumentException("Unsupported file type: " + fileType);
             }
         } catch (IllegalArgumentException e) {
@@ -189,4 +192,66 @@ public class FileProcessor {
                 .replace("'", "&apos;");
     }
 
+    /**
+     * Exports the grouped data to a JSON file with optional comments.
+     *
+     * @param file          target file
+     * @param fieldToExport "Original" or "Translated"
+     * @param addComments   whether to include top-level category comments
+     * @param groupedData   data grouped by category
+     */
+    public static void exportToJsonFile(File file, String fieldToExport, boolean addComments, Map<String, List<DataItem>> groupedData) {
+        logger.info("Starting export to JSON file: {} with fieldToExport='{}', addComments={}, group count={}",
+                file.getAbsolutePath(), fieldToExport, addComments, groupedData.size());
+        try (PrintWriter writer = new PrintWriter(file)) {
+            JsonObject rootObject = new JsonObject();
+            
+            // 创建扁平结构的JSON，不按类别分组
+            Map<String, List<DataItem>> sortedGroups = new TreeMap<>(groupedData);
+            for (Map.Entry<String, List<DataItem>> entry : sortedGroups.entrySet()) {
+                String category = entry.getKey();
+                List<DataItem> sortedItems = entry.getValue().stream()
+                        .sorted(Comparator.comparing(DataItem::getKey))
+                        .toList();
+                
+                logger.debug("Exporting category '{}', item count={}", category, sortedItems.size());
+                
+                for (DataItem item : sortedItems) {
+                    String value = getLang("general.datatype.original").equalsIgnoreCase(fieldToExport)
+                            ? item.getOriginalText()
+                            : item.getTranslatedText();
+                    
+                    // 保留完整的键名
+                    String key = item.getKey();
+                    
+                    rootObject.addProperty(key, value);
+                    logger.trace("Exported DataItem to JSON: key='{}', value='{}'", key, value);
+                }
+            }
+            
+            Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .disableHtmlEscaping()
+                    .create();
+            
+            writer.write(gson.toJson(rootObject));
+            
+            logger.info("Exported JSON to: {}", file.getAbsolutePath());
+            ShowAlert.info(
+                    getLang("module.file_proc.export.success.alert.title"),
+                    getLang("module.file_proc.export.success.alert.content")
+            );
+            
+        } catch (Exception e) {
+            logger.error("Failed to export JSON file: {}", file.getAbsolutePath(), e);
+            ShowAlert.error(
+                    getLang("general.alert.error"),
+                    getLang("module.file_proc.export_json.exception.alert.header"),
+                    getLang("module.file_proc.export_json.exception.alert.content",
+                            file.getAbsolutePath(),
+                            e.getMessage()
+                    )
+            );
+        }
+    }
 }
