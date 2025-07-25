@@ -21,7 +21,7 @@ public class Main extends Application {
 
     private static final Logger logger = LogManager.getLogger(Main.class);
     public static Stage primaryStage;
-    public static String version = "Beta.0.2.1";
+    public static String version = "Beta.0.3.0";
 
     public static void main(String[] args) {
         launch(args);
