@@ -14,6 +14,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -21,10 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static chiloven.xamlsorter.modules.I18n.getBundle;
 import static chiloven.xamlsorter.modules.I18n.getLang;
@@ -33,6 +32,7 @@ public class MainController {
     private static final Logger logger = LogManager.getLogger(MainController.class);
     private static ProjectMeta currentProjectMeta;
     private final Map<String, List<DataItem>> groupedData = new HashMap<>();
+
 
     @FXML
     private TreeTableView<DataItem> translationTreeTable;
@@ -49,8 +49,10 @@ public class MainController {
     @FXML
     private StackPane welcomeOverlay;
     @FXML
-
     private TopMenuBarController topMenuBarController;
+    @FXML
+    private ImageView appIconView;
+
     private File currentProjectFile = null;
     private boolean projectModified = false;
 
@@ -91,6 +93,9 @@ public class MainController {
         logger.trace("Setting main controller for topMenuBarController and DataOperationHelper.");
         topMenuBarController.setMainController(this);
         DataOperationHelper.setMainController(this);
+
+        Image iconImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-about.png")));
+        appIconView.setImage(iconImage);
 
         // =========================
         // 2️⃣ Configure the TreeTableView columns
