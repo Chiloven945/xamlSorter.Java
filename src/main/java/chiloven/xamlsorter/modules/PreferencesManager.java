@@ -1,6 +1,9 @@
 package chiloven.xamlsorter.modules;
 
+import chiloven.xamlsorter.modules.preferences.Language;
+import chiloven.xamlsorter.modules.preferences.ThemeMode;
 import chiloven.xamlsorter.utils.ShowAlert;
+import com.jthemedetecor.OsThemeDetector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,6 +23,7 @@ public class PreferencesManager {
     private static final String CONFIG_DIR = System.getProperty("user.dir") + File.separator + "config";
     private static final String CONFIG_FILE = CONFIG_DIR + File.separator + "preferences.properties";
     private static final Properties props = new Properties();
+    private static final OsThemeDetector themeDetector = OsThemeDetector.getDetector();
 
     static {
         // Automatically create the config directory and load existing preferences
@@ -96,4 +100,101 @@ public class PreferencesManager {
             logger.warn("Failed to reload preferences, using defaults", e);
         }
     }
+
+    /**
+     * Get the current theme mode setting.
+     * This will return SYSTEM if the mode is not set or invalid.
+     *
+     * @return the current ThemeMode, defaults to SYSTEM if not set or invalid
+     */
+    public static ThemeMode getThemeMode() {
+        String mode = get("theme.mode", "SYSTEM");
+        try {
+            return ThemeMode.valueOf(mode);
+        } catch (IllegalArgumentException e) {
+            return ThemeMode.SYSTEM;
+        }
+    }
+
+    /**
+     * Set the theme mode preference.
+     *
+     * @param mode the ThemeMode to set
+     */
+    public static void setThemeMode(ThemeMode mode) {
+        set("theme.mode", mode.name());
+        save();
+    }
+
+    /**
+     * Check if the current theme mode is dark.
+     *
+     * @return true if the theme is dark, false otherwise
+     */
+    public static boolean isDarkMode() {
+        ThemeMode mode = getThemeMode();
+        if (mode == ThemeMode.SYSTEM) {
+            try {
+                return themeDetector.isDark();
+            } catch (Exception e) {
+                logger.warn("Failed to detect system theme, defaulting to light theme", e);
+                return false;
+            }
+        }
+        return mode == ThemeMode.DARK;
+    }
+
+    /**
+     * Add a system theme change listener
+     *
+     * @param listener the theme change listener
+     */
+    public static void addThemeChangeListener(Runnable listener) {
+        if (getThemeMode() == ThemeMode.SYSTEM) {
+            themeDetector.registerListener(isDark -> {
+                logger.debug("System theme changed: {}", isDark ? "dark" : "light");
+                listener.run();
+            });
+        }
+    }
+
+    /**
+     * Remove a system theme change listener
+     *
+     * @param listener the theme change listener to remove
+     */
+    public static void removeThemeChangeListener(Runnable listener) {
+        if (getThemeMode() == ThemeMode.SYSTEM) {
+            themeDetector.removeListener(isDark -> listener.run());
+        }
+    }
+
+    /**
+     * Get the current language setting
+     *
+     * @return the current language, defaults to English (US) if not set
+     */
+    public static Language getLanguage() {
+        String langStr = get("language", Language.ENGLISH_US.name());
+        try {
+            return Language.valueOf(langStr);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid language setting: {}, defaulting to English (US)", langStr);
+            return Language.ENGLISH_US;
+        }
+    }
+
+    /**
+     * Set the language preference
+     *
+     * @param language the language to set
+     */
+    public static void setLanguage(Language language) {
+        if (language != null) {
+            set("language", language.name());
+            save();
+            logger.info("Language preference saved: {}", language.getDisplayName());
+        }
+    }
+
 }

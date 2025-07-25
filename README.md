@@ -17,25 +17,24 @@ Additionally, this application is developed using Java 21 and JavaFX 21, and is 
 ## To-Dos
 
 - **Core Features**
-  - [x] Batch RegEx editor
-  - [x] Context menu
-  - [x] Data operating (Delete, Copy, Paste, etc.)
-  - [x] i18n support (en_us, zh_tw, etc.)
-  - [x] Project management
-  - [x] Tiles sorting
+    - [x] Batch RegEx editor
+    - [x] Context menu
+    - [x] Data operating (Delete, Copy, Paste, etc.)
+    - [x] i18n support (en_us, zh_tw, etc.)
+    - [x] Project management
+    - [x] Tiles sorting
 
 - **XAML Support**
-  - [x] XAML file importing
-  - [x] XAML file parsing
+    - [x] XAML file importing
+    - [x] XAML file parsing
 
 - **Data Interchange**
-  - [ ] Data exporting / importing
-    - [ ] JSON
-    - [ ] Properties
-    - [ ] CSV
-    - [ ] XLIFF
+    - [ ] Data exporting / importing
+        - [ ] JSON
+        - [ ] Properties
+        - [ ] CSV
+        - [ ] XLIFF
 
 - **UI/UX**
-  - [ ] Modern UI design
-    - [ ] Dark mode
-    - [ ] Color
+    - [x] Modern UI design
+        - [x] Dark mode

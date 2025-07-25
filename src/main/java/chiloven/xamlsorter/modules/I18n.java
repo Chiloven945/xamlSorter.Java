@@ -14,22 +14,7 @@ public class I18n {
     private static final List<String> DEFAULT_FONT_LIST =
             List.of("Segoe UI", "San Francisco", "Noto Sans SC", "Arial");
 
-    private static final Map<String, Locale> NAME_TO_LOCALE = Map.ofEntries(
-            Map.entry("Ελληνικά (Ελλάδα)", Locale.of("el", "GR")),
-            Map.entry("English (United Kingdom)", Locale.of("en", "GB")),
-            Map.entry("English (US)", Locale.US),
-            Map.entry("Español (España)", Locale.of("es", "ES")),
-            Map.entry("Français (France)", Locale.FRANCE),
-            Map.entry("日本語（日本）", Locale.JAPAN),
-            Map.entry("한국어（대한민국）", Locale.of("ko", "KR")),
-            Map.entry("文言（華夏）", Locale.of("lzh", "Hant", "CN")),
-            Map.entry("Русский (Россия)", Locale.of("ru", "RU")),
-            Map.entry("Slovenčina (Slovensko)", Locale.of("sk", "SK")),
-            Map.entry("简体中文（中国大陆）", Locale.SIMPLIFIED_CHINESE),
-            Map.entry("繁體中文（香港特別行政區）", Locale.of("zh", "HK")),
-            Map.entry("梗体中文（天朝）", Locale.of("zh", "CN", "MEME")),
-            Map.entry("繁體中文（台灣）", Locale.of("zh", "TW"))
-    );
+    // Remove NAME_TO_LOCALE Map, use Language enum instead
     private static final Map<Locale, List<String>> LOCALE_FONT_LIST_MAP = Map.ofEntries(
             Map.entry(Locale.SIMPLIFIED_CHINESE,
                     List.of("Microsoft Yahei UI", "SF Pro SC", "PingFang SC", "Noto Sans SC", "Segoe UI", "Arial")),
@@ -54,7 +39,7 @@ public class I18n {
     private static ResourceBundle bundle;
 
     static {
-        // 设置默认区域为 US
+        // Set default locale to US
         Locale.setDefault(Locale.US);
         currentLocale = Locale.US;
         bundle = loadBundle(currentLocale);
@@ -68,24 +53,11 @@ public class I18n {
      */
     private static ResourceBundle loadBundle(Locale locale) {
         try {
-            // 使用 Control 来自定义资源包加载行为
-            ResourceBundle.Control control = new ResourceBundle.Control() {
-                @Override
-                public List<Locale> getCandidateLocales(String baseName, Locale locale) {
-                    List<Locale> candidateLocales = super.getCandidateLocales(baseName, locale);
-                    // 如果是 US 区域，将默认的 messages.properties 与 en_US 关联
-                    if (locale.equals(Locale.US)) {
-                        return Arrays.asList(locale, Locale.ROOT);
-                    }
-                    return candidateLocales;
-                }
-            };
-
-            ResourceBundle bundle = ResourceBundle.getBundle(BASE_PATH, locale, control);
-            logger.info("Loaded ResourceBundle for locale: {}", locale);
+            ResourceBundle bundle = ResourceBundle.getBundle(BASE_PATH, locale);
+            logger.debug("Loaded resource bundle for locale: {}", locale);
             return bundle;
         } catch (MissingResourceException e) {
-            logger.warn("ResourceBundle not found for locale: {}, falling back to US", locale);
+            logger.warn("Resource bundle not found for locale: {}, falling back to English", locale);
             return ResourceBundle.getBundle(BASE_PATH, Locale.US);
         }
     }
@@ -96,27 +68,25 @@ public class I18n {
      * @param locale the new Locale to set
      */
     public static void setLocale(Locale locale) {
-        currentLocale = locale;
-        bundle = loadBundle(locale);
-
-        logger.info("Locale set to: {}", locale);
-    }
-
-    /**
-     * Set the current locale using a locale string (e.g., "en", "en_US", "fr-FR").
-     * The string is parsed into a Locale object, and the ResourceBundle is reloaded.
-     *
-     * @param localeStr the locale string to set
-     */
-    public static void setLocale(String localeStr) {
-        if (localeStr == null || localeStr.isBlank()) {
-            logger.warn("Locale string is null or blank, defaulting to US");
-            setLocale(Locale.US);
-            return;
+        if (locale == null) {
+            logger.warn("Provided locale is null, defaulting to US English");
+            locale = Locale.US;
         }
 
-        Locale locale = NAME_TO_LOCALE.get(localeStr);
-        setLocale(locale != null ? locale : Locale.US);
+        Locale oldLocale = currentLocale;
+        
+        try {
+            currentLocale = locale;
+            Locale.setDefault(locale);  // Set JVM default locale
+            bundle = loadBundle(locale);
+            logger.info("Locale changed from {} to {}", oldLocale, locale);
+        } catch (Exception e) {
+            logger.error("Error setting locale: {}", e.getMessage());
+            // Rollback changes
+            currentLocale = oldLocale;
+            Locale.setDefault(oldLocale);
+            bundle = loadBundle(oldLocale);
+        }
     }
 
     /**
@@ -176,22 +146,19 @@ public class I18n {
      * @param scene the JavaFX Scene to which the default font will be applied
      */
     public static void applyDefaultFont(Scene scene) {
+        if (scene == null) {
+            logger.warn("Cannot apply font to null scene");
+            return;
+        }
+
         Locale locale = getCurrentLocale();
         logger.debug("Current locale for font selection: {}", locale);
 
-        List<String> fontCandidates = LOCALE_FONT_LIST_MAP.get(locale);
-
-        if (fontCandidates == null) {
-            fontCandidates = LOCALE_FONT_LIST_MAP.entrySet().stream()
-                    .filter(e -> e.getKey().getLanguage().equals(locale.getLanguage()))
-                    .map(Map.Entry::getValue)
-                    .findFirst()
-                    .orElse(DEFAULT_FONT_LIST);
-        }
-
-        String font = pickAvailableFont(fontCandidates);
-        scene.getRoot().setStyle("-fx-font-family: '" + font + "';");
-        logger.info("Applied font '{}' for locale: {}", font, locale);
+        List<String> fontCandidates = LOCALE_FONT_LIST_MAP.getOrDefault(locale, DEFAULT_FONT_LIST);
+        String selectedFont = pickAvailableFont(fontCandidates);
+        
+        scene.getRoot().setStyle(String.format("-fx-font-family: '%s';", selectedFont));
+        logger.info("Applied font '{}' for locale: {}", selectedFont, locale);
     }
 
     /**

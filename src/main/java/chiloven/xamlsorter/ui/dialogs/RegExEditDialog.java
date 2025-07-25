@@ -1,15 +1,19 @@
-package chiloven.xamlsorter.controllers.dialogs;
+package chiloven.xamlsorter.ui.dialogs;
 
-import chiloven.xamlsorter.controllers.MainController;
 import chiloven.xamlsorter.entities.DataItem;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.I18n;
 import chiloven.xamlsorter.modules.SortAndRefresher;
+import chiloven.xamlsorter.ui.MainPage;
 import chiloven.xamlsorter.utils.ShowAlert;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,127 +21,190 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-import static chiloven.xamlsorter.modules.I18n.getBundle;
 import static chiloven.xamlsorter.modules.I18n.getLang;
 
-public class RegexEditDialogController {
-    private static final Logger logger = LogManager.getLogger(RegexEditDialogController.class);
-    private MainController mainController;
+public class RegExEditDialog extends Dialog<ButtonType> {
+    private static final Logger logger = LogManager.getLogger(RegExEditDialog.class);
 
-    @FXML
-    private TextField patternField;
-    @FXML
-    private TextField replacementField;
-    @FXML
-    private ComboBox<String> scopeComboBox;
-    @FXML
-    private ComboBox<String> replaceTargetComboBox;
-    @FXML
-    private TreeTableView<DataItem> previewTreeTable;
-    @FXML
-    private TreeTableColumn<DataItem, String> keyColumn;
-    @FXML
-    private TreeTableColumn<DataItem, String> originalTextColumn;
-    @FXML
-    private TreeTableColumn<DataItem, String> translatedTextColumn;
+    private final MainPage mainPage;
+    private final TextField patternField;
+    private final TextField replacementField;
+    private final ComboBox<String> scopeComboBox;
+    private final ComboBox<String> replaceTargetComboBox;
+    private final TreeTableView<DataItem> previewTreeTable;
+    private final TreeTableColumn<DataItem, String> keyColumn;
+    private final TreeTableColumn<DataItem, String> originalTextColumn;
+    private final TreeTableColumn<DataItem, String> translatedTextColumn;
 
-    private Map<String, List<DataItem>> groupedData;
-    private String targetCategory;
+    private final Map<String, List<DataItem>> groupedData;
+    private final String targetCategory;
 
-    /**
-     * Show the Regex Edit dialog and handle the grouped data.
-     *
-     * @param groupedData data grouped by categories
-     */
-    public static void showAndHandleRegexEdit(Map<String, List<DataItem>> groupedData, MainController mainController) {
-        logger.debug("Opening Regex Edit dialog");
+    public RegExEditDialog(MainPage mainPage, Map<String, List<DataItem>> groupedData, String targetCategory) {
+        this.mainPage = mainPage;
+        this.groupedData = groupedData;
+        this.targetCategory = targetCategory;
+
+        // 初始化组件
+        this.patternField = new TextField();
+        this.replacementField = new TextField();
+        this.scopeComboBox = new ComboBox<>();
+        this.replaceTargetComboBox = new ComboBox<>();
+        this.previewTreeTable = new TreeTableView<>();
+        this.keyColumn = new TreeTableColumn<>(getLang("general.datatype.key"));
+        this.originalTextColumn = new TreeTableColumn<>(getLang("general.datatype.original_text"));
+        this.translatedTextColumn = new TreeTableColumn<>(getLang("general.datatype.translated_text"));
+
         try {
-            FXMLLoader loader = new FXMLLoader(RegexEditDialogController.class.getResource("/ui/dialogs/RegexEditDialog.fxml"));
-            loader.setResources(getBundle());
-            DialogPane dialogPane = loader.load();
-
-            RegexEditDialogController controller = loader.getController();
-            controller.setMainController(mainController);
-            controller.setData(groupedData, null);
-
-            Dialog<ButtonType> dialog = new Dialog<>();
-            dialog.setDialogPane(dialogPane);
-
-            Scene scene = dialog.getDialogPane().getScene();
-            I18n.applyDefaultFont(scene);
-
-            dialog.setTitle(getLang("dialog.regex.title"));
-            dialog.getDialogPane().getButtonTypes().setAll(ButtonType.APPLY, ButtonType.CANCEL);
-
-            Optional<ButtonType> result = dialog.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.APPLY) {
-                logger.info("User applied changes in Regex Edit dialog");
-                controller.applyChanges();
-            } else {
-                logger.info("User cancelled Regex Edit dialog");
-            }
+            setupDialog();
+            initializeControls();
+            setupLayout();
         } catch (Exception e) {
-            logger.error("Exception occurred while showing Regex Edit dialog", e);
+            logger.error("Failed to create Regex Edit dialog", e);
             ShowAlert.error(
                     getLang("general.alert.error"),
                     getLang("dialog.regex.exception.alert.header"),
-                    e.getMessage(),
+                    getLang("dialog.regex.exception.alert.content"),
                     e
             );
         }
     }
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
+    public static void show(MainPage mainPage, Map<String, List<DataItem>> groupedData, String targetCategory) {
+        logger.debug("Opening Regex Edit dialog");
+        try {
+            RegExEditDialog dialog = new RegExEditDialog(mainPage, groupedData, targetCategory);
+            dialog.showAndWait().ifPresent(buttonType -> {
+                if (buttonType.getButtonData() == ButtonBar.ButtonData.APPLY) {
+                    logger.info("User applied changes in Regex Edit dialog");
+                } else {
+                    logger.info("User cancelled Regex Edit dialog");
+                }
+            });
+        } catch (Exception e) {
+            logger.error("Failed to show Regex Edit dialog", e);
+            ShowAlert.error(
+                    getLang("general.alert.error"),
+                    getLang("dialog.regex.exception.alert.header"),
+                    getLang("dialog.regex.exception.alert.content"),
+                    e
+            );
+        }
     }
 
-    @FXML
-    public void initialize() {
-        logger.debug("Initializing RegexEditDialogController");
+    private void setupDialog() {
+        setTitle(getLang("dialog.regex.title"));
+        initModality(Modality.WINDOW_MODAL);
+        initOwner(mainPage.getDataTreeTable().getScene().getWindow());
+
+        ButtonType applyButton = new ButtonType(getLang("general.button.apply"),
+                ButtonBar.ButtonData.APPLY);
+        ButtonType cancelButton = new ButtonType(getLang("general.button.cancel"),
+                ButtonBar.ButtonData.CANCEL_CLOSE);
+        getDialogPane().getButtonTypes().addAll(applyButton, cancelButton);
+
+        setResultConverter(buttonType -> {
+            if (buttonType.getButtonData() == ButtonBar.ButtonData.APPLY) {
+                applyChanges();
+            }
+            return buttonType;
+        });
+    }
+
+    private void initializeControls() {
+        // 配置作用域选择框
         scopeComboBox.getItems().addAll(
                 getLang("dialog.regex.scope.current"),
                 getLang("dialog.regex.scope.all")
         );
+        scopeComboBox.setPrefHeight(23.0);
+        scopeComboBox.setPrefWidth(158.0);
+        scopeComboBox.getSelectionModel().selectFirst();
+
+        // 配置目标选择框
         replaceTargetComboBox.getItems().addAll(
                 getLang("general.datatype.translated_text"),
                 getLang("general.datatype.original_text"),
                 getLang("general.datatype.key")
         );
-
-        scopeComboBox.getSelectionModel().selectFirst();
+        replaceTargetComboBox.setPrefHeight(23.0);
+        replaceTargetComboBox.setPrefWidth(188.0);
         replaceTargetComboBox.getSelectionModel().selectFirst();
-        initializeTable();
-        logger.debug("Initialization complete");
-    }
 
-    /**
-     * Set the data for the dialog.
-     *
-     * @param groupedData    the data grouped by categories
-     * @param targetCategory the category to target for replacements, or null for all categories
-     */
-    public void setData(Map<String, List<DataItem>> groupedData, String targetCategory) {
-        this.groupedData = groupedData;
-        this.targetCategory = targetCategory;
-        refreshPreview();
-    }
+        // 配置预览表格
+        keyColumn.setPrefWidth(150.0);
+        originalTextColumn.setPrefWidth(150.0);
+        translatedTextColumn.setPrefWidth(150.0);
 
-    private void initializeTable() {
         keyColumn.setCellValueFactory(param -> param.getValue().getValue().getKeyProperty());
         originalTextColumn.setCellValueFactory(param -> param.getValue().getValue().getOriginalTextProperty());
         translatedTextColumn.setCellValueFactory(param -> param.getValue().getValue().getTranslatedTextProperty());
+
+        previewTreeTable.getColumns().addAll(keyColumn, originalTextColumn, translatedTextColumn);
         previewTreeTable.setShowRoot(false);
+        previewTreeTable.setPrefHeight(489.0);
+        previewTreeTable.setPrefWidth(440.0);
+        VBox.setMargin(previewTreeTable, new Insets(10, 0, 0, 0));
     }
 
-    // Method to handle the preview button click
-    @FXML
-    private void handlePreview() {
-        refreshPreview();
+    private void setupLayout() {
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(10));
+        content.setPrefWidth(480.0);
+        content.setPrefHeight(640.0);
+
+        // 模式输入区域
+        Label patternLabel = new Label(getLang("dialog.regex.pattern.label"));
+        content.getChildren().addAll(patternLabel, patternField);
+
+        // 替换文本区域
+        Label replacementLabel = new Label(getLang("dialog.regex.replacement.label"));
+        content.getChildren().addAll(replacementLabel, replacementField);
+
+        // 选项区域
+        HBox optionsBox = new HBox(10);
+        optionsBox.setPrefHeight(44.0);
+        optionsBox.setPrefWidth(440.0);
+
+        // 作用域选择
+        VBox scopeBox = new VBox(10);
+        scopeBox.setPrefHeight(49.0);
+        scopeBox.setPrefWidth(163.0);
+        Label scopeLabel = new Label(getLang("dialog.regex.scope.label"));
+        scopeBox.getChildren().addAll(scopeLabel, scopeComboBox);
+        HBox.setHgrow(scopeBox, Priority.ALWAYS);
+
+        // 目标选择
+        VBox targetBox = new VBox(10);
+        targetBox.setPrefHeight(49.0);
+        targetBox.setPrefWidth(162.0);
+        Label targetLabel = new Label(getLang("dialog.regex.target.label"));
+        targetBox.getChildren().addAll(targetLabel, replaceTargetComboBox);
+        HBox.setHgrow(targetBox, Priority.ALWAYS);
+
+        // 预览按钮
+        VBox previewBox = new VBox();
+        previewBox.setPrefHeight(49.0);
+        previewBox.setPrefWidth(152.0);
+        previewBox.setAlignment(Pos.BOTTOM_RIGHT);
+        Button previewButton = new Button(getLang("dialog.regex.button.preview"));
+        previewButton.setPrefHeight(23.0);
+        previewButton.setPrefWidth(147.0);
+        previewButton.setOnAction(e -> refreshPreview());
+        previewBox.getChildren().add(previewButton);
+        HBox.setHgrow(previewBox, Priority.ALWAYS);
+
+        optionsBox.getChildren().addAll(scopeBox, targetBox, previewBox);
+        content.getChildren().addAll(optionsBox, previewTreeTable);
+
+        getDialogPane().setContent(content);
+
+        // 应用默认字体
+        Scene scene = getDialogPane().getScene();
+        I18n.applyDefaultFont(scene);
     }
 
-    // Method to handle the refresh action
     private void refreshPreview() {
-        logger.debug("Refreshing preview in RegexEditDialogController");
+        logger.debug("Refreshing preview in RegExEditDialog");
         String pattern = patternField.getText();
         String replacement = replacementField.getText();
         String scope = scopeComboBox.getValue();
@@ -159,10 +226,21 @@ public class RegexEditDialogController {
         logger.debug("Preview refreshed and TreeTableView updated");
     }
 
-    // Method to apply changes
     public void applyChanges() {
         String pattern = patternField.getText();
         String replacement = replacementField.getText();
+
+        // 添加验证
+        if (pattern == null || pattern.trim().isEmpty()) {
+            logger.warn("Empty pattern, changes not applied");
+            ShowAlert.warn(
+                    getLang("general.alert.warning"),
+                    getLang("dialog.regex.warning.empty_pattern.header"),
+                    getLang("dialog.regex.warning.empty_pattern.content")
+            );
+            return;
+        }
+
         String scope = scopeComboBox.getValue();
         String replaceTarget = replaceTargetComboBox.getValue();
 
@@ -175,7 +253,7 @@ public class RegexEditDialogController {
         regroupGroupedData();
 
         logger.debug("Refreshing main data tree table after changes");
-        SortAndRefresher.refresh(mainController.getDataTreeTable(), mainController.getGroupedData());
+        SortAndRefresher.refresh(mainPage.getDataTreeTable(), mainPage.getGroupedData());
 
         logger.info("Changes applied with pattern: {}, replacement: {}, scope: {}, target: {}",
                 pattern, replacement, scope, replaceTarget);
@@ -252,8 +330,11 @@ public class RegexEditDialogController {
      */
     private String safeReplace(String input, String regex, String replacement) {
         try {
-            return input == null ? "" : input.replaceAll(regex, replacement);
+            if (input == null) return "";
+            if (regex == null || regex.isEmpty()) return input;
+            return input.replaceAll(regex, replacement != null ? replacement : "");
         } catch (Exception e) {
+            logger.warn("Failed to replace text with regex: {}", regex, e);
             return input;
         }
     }

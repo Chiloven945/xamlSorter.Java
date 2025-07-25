@@ -1,41 +1,36 @@
 package chiloven.xamlsorter.modules;
 
-import chiloven.xamlsorter.controllers.MainController;
-import chiloven.xamlsorter.controllers.dialogs.NewProjectDialogController;
 import chiloven.xamlsorter.entities.DataItem;
 import chiloven.xamlsorter.entities.ProjectMeta;
+import chiloven.xamlsorter.ui.MainPage;
+import chiloven.xamlsorter.ui.dialogs.NewProjectDialog;
 import chiloven.xamlsorter.utils.CustomFileChooser;
 import chiloven.xamlsorter.utils.ShowAlert;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.List;
-import java.util.Optional;
 
-import static chiloven.xamlsorter.modules.I18n.getBundle;
 import static chiloven.xamlsorter.modules.I18n.getLang;
 
 public class ProjectManager {
     private static final Logger logger = LogManager.getLogger(ProjectManager.class);
 
     /**
-     * Open an existing project file (.xsproject), load data and update the main controller.
+     * Open an existing project file (.xsproject), load data and update the main page.
      *
-     * @param mainController the MainController instance to update
+     * @param mainPage the MainPage instance to update
      */
-    public static void openProject(MainController mainController) {
+    public static void openProject(MainPage mainPage) {
         logger.debug("Attempting to open a project...");
-        if (!mainController.promptSaveIfNeeded()) {
+        if (!mainPage.promptSaveIfNeeded()) {
             logger.debug("User cancelled save prompt before opening project.");
             return;
         }
 
         File file = CustomFileChooser.showOpenFileDialog(
-                mainController.getRootPane().getScene().getWindow(),
+                mainPage.getRootPane().getScene().getWindow(),
                 getLang("module.proj_manager.open.title"),
                 getLang("general.files.xsproject"),
                 List.of("xsproject")
@@ -55,19 +50,19 @@ public class ProjectManager {
         }
 
         logger.debug("Loaded project meta: {}", loaded.meta());
-        mainController.setCurrentProjectMeta(loaded.meta());
-        mainController.getGroupedData().clear();
+        mainPage.setCurrentProjectMeta(loaded.meta());
+        mainPage.getGroupedData().clear();
         loaded.items().stream()
                 .collect(java.util.stream.Collectors.groupingBy(DataItem::getCategory))
-                .forEach((k, v) -> mainController.getGroupedData().put(k, v));
+                .forEach((k, v) -> mainPage.getGroupedData().put(k, v));
 
         logger.debug("Clipboard and grouped data updated.");
         ClipboardManager.clear();
         ClipboardManager.setClipboardKeys(loaded.clipboard(), loaded.items());
 
-        mainController.setCurrentProjectFile(file);
-        mainController.setModified(false);
-        mainController.showEditor();
+        mainPage.setCurrentProjectFile(file);
+        mainPage.setModified(false);
+        mainPage.showEditor();
 
         logger.info("Project opened: {}", file.getAbsolutePath());
     }
@@ -75,36 +70,36 @@ public class ProjectManager {
     /**
      * Save the current project to its file if it exists, otherwise prompt to save as.
      *
-     * @param mainController the MainController instance to access grouped data and project meta
+     * @param mainPage the MainPage instance to access grouped data and project meta
      */
-    public static void saveProject(MainController mainController) {
-        File file = mainController.getCurrentProjectFile();
+    public static void saveProject(MainPage mainPage) {
+        File file = mainPage.getCurrentProjectFile();
         if (file == null) {
-            saveProjectAs(mainController);
+            saveProjectAs(mainPage);
             return;
         }
-        doSave(mainController, file);
+        doSave(mainPage, file);
     }
 
     /**
      * Prompt the user to save the current project to a new file.
      *
-     * @param mainController the MainController instance to access grouped data and project meta
+     * @param mainPage the MainPage instance to access grouped data and project meta
      */
-    public static void saveProjectAs(MainController mainController) {
+    public static void saveProjectAs(MainPage mainPage) {
         logger.debug("Prompting user to save project as a new file...");
         File file = CustomFileChooser.showSaveFileDialog(
-                mainController.getRootPane().getScene().getWindow(),
+                mainPage.getRootPane().getScene().getWindow(),
                 getLang("module.proj_manager.save_as.title"),
                 getLang("general.files.xsproject"),
                 List.of("xsproject"),
-                MainController.getCurrentProjectMeta().getName() + ".xsproject"
+                MainPage.getCurrentProjectMeta().getName() + ".xsproject"
         );
 
         if (file != null) {
             logger.debug("User selected file to save project as: {}", file.getAbsolutePath());
-            doSave(mainController, file);
-            mainController.setCurrentProjectFile(file);
+            doSave(mainPage, file);
+            mainPage.setCurrentProjectFile(file);
             logger.info("Project saved as new file: {}", file.getAbsolutePath());
         } else {
             logger.info("Save project as operation cancelled by user.");
@@ -114,20 +109,20 @@ public class ProjectManager {
     /**
      * Save the current project to the specified file.
      *
-     * @param mainController the MainController instance to access grouped data and project meta
-     * @param file           the file to save the project to
+     * @param mainPage the MainPage instance to access grouped data and project meta
+     * @param file     the file to save the project to
      */
-    private static void doSave(MainController mainController, File file) {
+    private static void doSave(MainPage mainPage, File file) {
         logger.debug("Saving project to file: {}", file.getAbsolutePath());
-        List<DataItem> items = mainController.getGroupedData().values().stream()
+        List<DataItem> items = mainPage.getGroupedData().values().stream()
                 .flatMap(List::stream)
                 .collect(java.util.stream.Collectors.toList());
         List<String> clipboardKeys = ClipboardManager.getClipboard().stream()
                 .map(DataItem::getKey)
                 .collect(java.util.stream.Collectors.toList());
         try {
-            ProjectFileManager.saveXsProject(file, MainController.getCurrentProjectMeta(), items, clipboardKeys);
-            mainController.setModified(false); // 标记已保存
+            ProjectFileManager.saveXsProject(file, MainPage.getCurrentProjectMeta(), items, clipboardKeys);
+            mainPage.setModified(false); // 标记已保存
             logger.info("Project saved successfully to: {}", file.getAbsolutePath());
         } catch (Exception e) {
             logger.error("Failed to save project to file: {}", file.getAbsolutePath(), e);
@@ -140,58 +135,28 @@ public class ProjectManager {
     }
 
     /**
-     * Create a new project dialog and set the current project meta in the main controller.
+     * Create a new project dialog and set the current project meta in the main page.
      *
-     * @param mainController the MainController instance to update the UI
+     * @param mainPage the MainPage instance to update the UI
      * @return true if the project was created successfully, false otherwise
      */
-    public static boolean createProject(MainController mainController) {
+    public static boolean createProject(MainPage mainPage) {
         logger.debug("Starting createProject...");
-        if (!mainController.promptSaveIfNeeded()) {
+        if (!mainPage.promptSaveIfNeeded()) {
             logger.debug("User cancelled save prompt before creating new project.");
             return false;
         }
+
         try {
-            logger.debug("Loading NewProjectDialog FXML...");
-            FXMLLoader loader = new FXMLLoader(ProjectManager.class.getResource("/ui/dialogs/NewProjectDialog.fxml"));
-            loader.setResources(getBundle());
-            DialogPane dialogPane = loader.load();
+            ProjectMeta meta = NewProjectDialog.show(mainPage.getScene().getWindow());
 
-            Dialog<ButtonType> dialog = new Dialog<>();
-            dialog.setDialogPane(dialogPane);
-
-            Scene scene = dialog.getDialogPane().getScene();
-            I18n.applyDefaultFont(scene);
-
-            dialog.setTitle(getLang("general.proj.new"));
-            dialog.initOwner(mainController.getRootPane().getScene().getWindow());
-
-            logger.info("Opening new project dialog.");
-
-            Button okButton = dialog.getDialogPane().getButtonTypes().stream()
-                    .filter(bt -> bt.getButtonData() == ButtonBar.ButtonData.OK_DONE)
-                    .findFirst()
-                    .map(bt -> (Button) dialog.getDialogPane().lookupButton(bt))
-                    .orElse(null);
-
-            NewProjectDialogController controller = loader.getController();
-            logger.debug("Dialog controller loaded.");
-            okButton.setDisable(controller.getProjectNameField().getText().trim().isEmpty());
-            controller.getProjectNameField().textProperty().addListener(
-                    (obs, o, n) -> okButton.setDisable(n.trim().isEmpty())
-            );
-
-            logger.debug("Showing new project dialog and waiting for result...");
-            Optional<ButtonType> result = dialog.showAndWait();
-            if (result.isPresent() && result.get().getButtonData().isDefaultButton()) {
-                ProjectMeta meta = controller.getProjectMeta();
+            if (meta != null) {
                 logger.debug("User confirmed new project creation: {}", meta.getName());
-                mainController.setCurrentProjectMeta(meta);
-                mainController.getGroupedData().clear();
+                mainPage.setCurrentProjectMeta(meta);
+                mainPage.getGroupedData().clear();
                 ClipboardManager.clear();
-                mainController.showEditor();
-
-                mainController.setModified(true);
+                mainPage.showEditor();
+                mainPage.setModified(true);
 
                 logger.info("New project created: {}", meta.getName());
                 return true;
@@ -200,7 +165,14 @@ public class ProjectManager {
             }
         } catch (Exception e) {
             logger.error("Failed to create new project", e);
+            ShowAlert.error(
+                    getLang("general.alert.error"),
+                    getLang("dialog.new_proj.exception.alert.header"),
+                    getLang("dialog.new_proj.exception.alert.content"),
+                    e
+            );
         }
+
         logger.info("New project creation cancelled by user.");
         return false;
     }
@@ -208,13 +180,13 @@ public class ProjectManager {
     /**
      * Import a XAML file into the current project.
      *
-     * @param controller   the MainController instance to access grouped data
+     * @param mainPage   the MainPage instance to access grouped data
      * @param isTranslated true if importing a translation XAML file, false for an original XAML file
      */
-    public static void importXaml(MainController controller, boolean isTranslated) {
+    public static void importXaml(MainPage mainPage, boolean isTranslated) {
         logger.debug("Starting importXaml. isTranslated: {}", isTranslated);
         File file = CustomFileChooser.showOpenFileDialog(
-                controller.getRootPane().getScene().getWindow(),
+                mainPage.getRootPane().getScene().getWindow(),
                 getLang("module.proj_manager.import.%s.title".formatted(isTranslated ? "original" : "translated")),
                 getLang("general.files.xaml"),
                 List.of("xaml", "xml")
@@ -226,10 +198,10 @@ public class ProjectManager {
                 List<DataItem> items = FileProcessor.parseXamlFile(file, isTranslated);
                 logger.debug("Parsed {} items from XAML file.", items.size());
                 String column = isTranslated ? "translated" : "original";
-                DataOperationHelper.applyColumnUpdates(items, controller.getGroupedData(), column);
+                DataOperationHelper.applyColumnUpdates(items, mainPage.getGroupedData(), column);
                 logger.debug("Applied column updates to grouped data. Column: {}", column);
 
-                SortAndRefresher.refresh(controller.getDataTreeTable(), controller.getGroupedData());
+                SortAndRefresher.refresh(mainPage.getDataTreeTable(), mainPage.getGroupedData());
                 logger.debug("Refreshed data tree table.");
                 ShowAlert.info(
                         getLang("general.alert.success"),
@@ -254,14 +226,14 @@ public class ProjectManager {
     /**
      * Create a new project from a XAML file.
      *
-     * @param controller   the MainController instance to access grouped data
+     * @param mainPage   the MainPage instance to access grouped data
      * @param isTranslated true if importing a translation XAML file, false for an original XAML file
-     * @see #createProject(MainController)
-     * @see #importXaml(MainController, boolean)
+     * @see #createProject(MainPage)
+     * @see #importXaml(MainPage, boolean)
      */
-    public static void createFromXaml(MainController controller, boolean isTranslated) {
-        if (createProject(controller)) {
-            importXaml(controller, isTranslated);
+    public static void createFromXaml(MainPage mainPage, boolean isTranslated) {
+        if (createProject(mainPage)) {
+            importXaml(mainPage, isTranslated);
             return;
         }
         logger.info("Create project from XAML cancelled by user.");

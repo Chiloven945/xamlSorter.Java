@@ -1,7 +1,7 @@
 package chiloven.xamlsorter.modules;
 
-import chiloven.xamlsorter.controllers.MainController;
 import chiloven.xamlsorter.entities.DataItem;
+import chiloven.xamlsorter.ui.MainPage;
 import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.scene.Scene;
 import javafx.scene.control.TextInputDialog;
@@ -17,10 +17,10 @@ import static chiloven.xamlsorter.modules.I18n.getLang;
 
 public class DataOperationHelper {
     private static final Logger logger = LogManager.getLogger(DataOperationHelper.class);
-    private static MainController mainController = new MainController();
+    private static MainPage mainPage = new MainPage();
 
-    public static void setMainController(MainController controller) {
-        mainController = controller;
+    public static void setMainPage(MainPage page) {
+        mainPage = page;
     }
 
     /**
@@ -62,7 +62,7 @@ public class DataOperationHelper {
                 grouped.computeIfAbsent(update.getCategory(), k -> new ArrayList<>()).add(newItem);
             }
         }
-        mainController.setModified(true);
+        mainPage.setModified(true);
         logger.info("Column updates applied for column: {}", column);
     }
 
@@ -140,8 +140,8 @@ public class DataOperationHelper {
             groupedData.computeIfAbsent(category, k -> new ArrayList<>()).add(newItem);
             logger.debug("Added new DataItem to groupedData under category '{}'", category);
 
-            SortAndRefresher.refresh(mainController.getDataTreeTable(), mainController.getGroupedData());
-            mainController.setModified(true);
+            SortAndRefresher.refresh(mainPage.getDataTreeTable(), mainPage.getGroupedData());
+            mainPage.setModified(true);
 
             logger.info("Added new entry with key: {}", newKey);
         });
@@ -214,7 +214,7 @@ public class DataOperationHelper {
                 }
             }
             SortAndRefresher.refresh(table, groupedData);
-            mainController.setModified(true);
+            mainPage.setModified(true);
             logger.info("Deleted {} entries.", selected.size());
         } else {
             logger.debug("No items selected for delete.");
@@ -254,7 +254,7 @@ public class DataOperationHelper {
                 }
             }
             SortAndRefresher.refresh(table, groupedData);
-            mainController.setModified(true);
+            mainPage.setModified(true);
             logger.info("Pasted {} entries.", clipboardItems.size());
         } else {
             logger.debug("No clipboard items to paste.");
