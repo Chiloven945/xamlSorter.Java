@@ -123,6 +123,9 @@ public class TopMenuBar extends MenuBar {
         MenuItem preferences = new MenuItem(getLang("widget.menu_bar.edit.preferences"));
         preferences.setOnAction(e -> PreferencesDialog.show(mainPage.getRootPane().getScene().getWindow()));
 
+        MenuItem editProjectMeta = new MenuItem(getLang("widget.menu_bar.edit.project_meta"));
+        editProjectMeta.setOnAction(e -> ProjectManager.editProjectMeta(mainPage));
+
         menu.getItems().addAll(
                 undo,
                 redo,
@@ -137,6 +140,7 @@ public class TopMenuBar extends MenuBar {
                 selectAll,
                 unselectAll,
                 new SeparatorMenuItem(),
+                editProjectMeta,
                 preferences
         );
 

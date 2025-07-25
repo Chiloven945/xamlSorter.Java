@@ -18,6 +18,39 @@ public class ProjectManager {
     private static final Logger logger = LogManager.getLogger(ProjectManager.class);
 
     /**
+     * Edit the current project metadata.
+     *
+     * @param mainPage the MainPage instance to update
+     */
+    public static void editProjectMeta(MainPage mainPage) {
+        logger.debug("Opening project metadata edit dialog...");
+        try {
+            ProjectMeta currentMeta = MainPage.getCurrentProjectMeta();
+            ProjectMeta updatedMeta = chiloven.xamlsorter.ui.dialogs.ProjectMetaEditDialog.show(
+                    mainPage.getRootPane().getScene().getWindow(),
+                    currentMeta
+            );
+
+            if (updatedMeta != null) {
+                logger.debug("User confirmed project metadata edit: {}", updatedMeta.getName());
+                mainPage.setCurrentProjectMeta(updatedMeta);
+                mainPage.setModified(true);
+                logger.info("Project metadata updated: {}", updatedMeta.getName());
+            } else {
+                logger.debug("User cancelled project metadata edit dialog.");
+            }
+        } catch (Exception e) {
+            logger.error("Failed to edit project metadata", e);
+            ShowAlert.error(
+                    getLang("general.alert.error"),
+                    getLang("dialog.edit_proj.exception.alert.header"),
+                    getLang("dialog.edit_proj.exception.alert.content"),
+                    e
+            );
+        }
+    }
+
+    /**
      * Open an existing project file (.xsproject), load data and update the main page.
      *
      * @param mainPage the MainPage instance to update
@@ -180,7 +213,7 @@ public class ProjectManager {
     /**
      * Import a XAML file into the current project.
      *
-     * @param mainPage   the MainPage instance to access grouped data
+     * @param mainPage     the MainPage instance to access grouped data
      * @param isTranslated true if importing a translation XAML file, false for an original XAML file
      */
     public static void importXaml(MainPage mainPage, boolean isTranslated) {
@@ -226,7 +259,7 @@ public class ProjectManager {
     /**
      * Create a new project from a XAML file.
      *
-     * @param mainPage   the MainPage instance to access grouped data
+     * @param mainPage     the MainPage instance to access grouped data
      * @param isTranslated true if importing a translation XAML file, false for an original XAML file
      * @see #createProject(MainPage)
      * @see #importXaml(MainPage, boolean)
