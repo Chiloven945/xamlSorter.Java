@@ -22,12 +22,24 @@ public enum Language {
     private final String localeTag;
     private final Locale locale;
 
+    /**
+     * Create a new Language enum instance.
+     *
+     * @param displayName the display name of the language
+     * @param localeTag the locale tag (e.g., "en-US")
+     * @param locale the Locale object representing the language
+     */
     Language(String displayName, String localeTag, Locale locale) {
         this.displayName = displayName;
         this.localeTag = localeTag;
         this.locale = locale;
     }
 
+    /**
+     * Get the display name of the language.
+     *
+     * @return the display name of the language
+     */
     public String getDisplayName() {
         return displayName;
     }
