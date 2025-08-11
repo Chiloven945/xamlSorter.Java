@@ -5,10 +5,11 @@ import atlantafx.base.theme.CupertinoLight;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.I18n;
 import chiloven.xamlsorter.modules.PreferencesManager;
-import chiloven.xamlsorter.utils.TaskExecutorService;
 import chiloven.xamlsorter.modules.preferences.Language;
 import chiloven.xamlsorter.ui.MainPage;
+import chiloven.xamlsorter.utils.RestartHelper;
 import chiloven.xamlsorter.utils.ShowAlert;
+import chiloven.xamlsorter.utils.TaskExecutorService;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -25,6 +26,8 @@ public class Main extends Application {
     public static Stage primaryStage;
     public static final String version = "Beta.0.3.0";
 
+    private static volatile boolean restartRequested = false;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -33,6 +36,12 @@ public class Main extends Application {
         if (primaryStage != null) {
             primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));
         }
+    }
+
+    public static void safeRestart() {
+        logger.info("Safe restart requested.");
+        restartRequested = true;
+        safeClose();
     }
 
     public static void applyTheme() {
@@ -83,6 +92,7 @@ public class Main extends Application {
                 boolean canExit = mainPage.promptSaveIfNeeded();
                 if (!canExit) {
                     logger.info("Exit cancelled by user.");
+                    restartRequested = false;
                     event.consume();
                 } else {
                     PreferencesManager.removeThemeChangeListener(Main::applyTheme);
@@ -101,7 +111,6 @@ public class Main extends Application {
 
             primaryStage.setScene(scene);
             primaryStage.show();
-
             logger.info("Application UI loaded successfully");
         } catch (Exception e) {
             logger.fatal("Error loading UI", e);
@@ -118,6 +127,17 @@ public class Main extends Application {
     public void stop() {
         logger.info("Stopping xamlSorter.Java application");
         TaskExecutorService.shutdown();
+
+        if (restartRequested) {
+            logger.info("Relaunching application...");
+            try {
+                RestartHelper.relaunchCurrentApp();
+                logger.info("Relaunch command issued successfully.");
+            } catch (Exception ex) {
+                logger.error("Failed to relaunch application.", ex);
+            }
+        }
+
         logger.info("Application stopped successfully");
     }
 
