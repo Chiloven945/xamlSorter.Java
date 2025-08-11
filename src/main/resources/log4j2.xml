@@ -4,7 +4,7 @@
 
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout
-                    pattern="[%d{HH:mm:ss.SSS}] [%replace{%t}{^JavaFX Application Thread$}{JFX App Thread}/%replace{%logger}{^chiloven\.xamlsorter\.}{}/%highlight{%level}]: %msg%n"
+                    pattern="[%d{HH:mm:ss.SSS}] [%replace{%t}{^JavaFX Application Thread$}{JFX-App}/%replace{%logger}{}{}/%highlight{%level}]: %msg%n"
                     disableAnsi="false" noConsoleNoAnsi="false"/>
         </Console>
 
@@ -13,7 +13,7 @@
                      filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz"
                      append="true">
             <PatternLayout
-                    pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%replace{%t}{^JavaFX Application Thread$}{JFX App Thread}/%replace{%logger}{^chiloven\.xamlsorter\.}{}/%highlight{%level}]: %msg%n"/>
+                    pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%replace{%t}{^JavaFX Application Thread$}{JFX-App}/%replace{%logger}{^chiloven\.xamlsorter\.}{}/%highlight{%level}]: %msg%n"/>
             <Filters>
                 <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
