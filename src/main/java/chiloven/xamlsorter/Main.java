@@ -24,7 +24,7 @@ public class Main extends Application {
 
     private static final Logger logger = LogManager.getLogger(Main.class);
     public static Stage primaryStage;
-    public static final String version = "Beta.0.3.0";
+    public static final String version = "Beta.0.3.1";
 
     private static volatile boolean restartRequested = false;
 
