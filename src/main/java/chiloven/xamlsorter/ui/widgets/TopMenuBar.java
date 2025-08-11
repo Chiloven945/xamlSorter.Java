@@ -120,11 +120,11 @@ public class TopMenuBar extends MenuBar {
         MenuItem unselectAll = new MenuItem(getLang("widget.context_menu.unselect_all"));
         unselectAll.setOnAction(e -> DataOperationHelper.unselectAll(mainPage.getDataTreeTable()));
 
-        MenuItem preferences = new MenuItem(getLang("widget.menu_bar.edit.preferences"));
-        preferences.setOnAction(e -> PreferencesDialog.show(mainPage.getRootPane().getScene().getWindow()));
-
         MenuItem editProjectMeta = new MenuItem(getLang("widget.menu_bar.edit.project_meta"));
         editProjectMeta.setOnAction(e -> ProjectManager.editProjectMeta(mainPage));
+
+        MenuItem preferences = new MenuItem(getLang("widget.menu_bar.edit.preferences"));
+        preferences.setOnAction(e -> PreferencesDialog.show(mainPage.getRootPane().getScene().getWindow()));
 
         menu.getItems().addAll(
                 undo,
