@@ -7,6 +7,7 @@ import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.ProjectManager;
 import chiloven.xamlsorter.modules.SortAndRefresher;
 import chiloven.xamlsorter.ui.dialogs.AboutDialog;
+import chiloven.xamlsorter.ui.dialogs.PreferencesDialog;
 import chiloven.xamlsorter.ui.widgets.ContextMenu;
 import chiloven.xamlsorter.ui.widgets.TopMenuBar;
 import chiloven.xamlsorter.utils.ShowAlert;
@@ -117,10 +118,10 @@ public class MainPage extends StackPane {
         leftContent.setMinHeight(USE_PREF_SIZE);
 
         setupAppIcon();
-        
+
         Label titleLabel = new Label(getLang("general.application.name"));
         titleLabel.getStyleClass().add("welcome-title");
-        
+
         Label descLabel = new Label(getLang("dialog.about.text.description.1"));
         descLabel.setStyle("-fx-font-size: 13px;");
         descLabel.setWrapText(true);
@@ -142,6 +143,7 @@ public class MainPage extends StackPane {
                 createWelcomeButton("general.proj.new", this::handleCreateProject),
                 createWelcomeButton("general.button.proj.new.original", () -> handleCreateFromXaml(false)),
                 createWelcomeButton("general.button.proj.new.translated", () -> handleCreateFromXaml(true)),
+                createWelcomeButton("widget.menu_bar.edit.preferences", () -> PreferencesDialog.show(this.getRootPane().getScene().getWindow())),
                 createWelcomeButton("general.button.about", () -> AboutDialog.show(getScene().getWindow()))
         );
 
@@ -171,13 +173,13 @@ public class MainPage extends StackPane {
     private Button createWelcomeButton(String textKey, Runnable action) {
         Button button = new Button(getLang(textKey));
         button.setOnAction(e -> action.run());
-        
+
         button.setMinHeight(32);
         button.setAlignment(Pos.CENTER);
         button.setPadding(new Insets(0, 15, 0, 15));
-        
+
         button.getStyleClass().add("welcome-button");
-        
+
         return button;
     }
 
@@ -274,10 +276,10 @@ public class MainPage extends StackPane {
     /**
      * Handles cell edit events for the TreeTableView.
      *
-     * @param newValue the new value entered by the user
+     * @param newValue             the new value entered by the user
      * @param forbiddenValueGetter a supplier that provides the current value to check against
-     * @param forbidPredicate a predicate that determines if the new value is forbidden
-     * @param valueSetter a consumer that sets the new value if valid
+     * @param forbidPredicate      a predicate that determines if the new value is forbidden
+     * @param valueSetter          a consumer that sets the new value if valid
      */
     private void handleCellEdit(String newValue,
                                 java.util.function.Supplier<String> forbiddenValueGetter,
