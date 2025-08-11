@@ -4,6 +4,7 @@ import chiloven.xamlsorter.entities.ProjectMeta;
 import chiloven.xamlsorter.modules.I18n;
 import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -40,7 +41,7 @@ public class NewProjectDialog extends Dialog<ProjectMeta> {
     }
 
     public static ProjectMeta show(Window owner) {
-        logger.debug("Opening New Project dialog");
+        logger.info("Opening New Project dialog");
         try {
             NewProjectDialog dialog = new NewProjectDialog(owner);
             return dialog.showAndWait().orElse(null);
@@ -68,7 +69,7 @@ public class NewProjectDialog extends Dialog<ProjectMeta> {
         content.setPrefWidth(320.0);
 
         // 创建标题标签
-        Label titleLabel = new Label(getLang("dialog.new_proj.title.label"));
+        Label titleLabel = new Label(getLang("dialog.new_proj.title"));
         titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         // 配置输入字段
@@ -91,6 +92,24 @@ public class NewProjectDialog extends Dialog<ProjectMeta> {
         ButtonType cancelButton = new ButtonType(getLang("general.button.cancel"),
                 ButtonBar.ButtonData.CANCEL_CLOSE);
         getDialogPane().getButtonTypes().addAll(createButton, cancelButton);
+
+        // 获取创建按钮的 Node 引用
+        Node createBtnNode = getDialogPane().lookupButton(createButton);
+        createBtnNode.setDisable(true); // 默认禁用
+
+        // 定义非法字符正则
+        String forbiddenPattern = "[\\\\/:*?\"<>|]";
+
+        // 监听输入框变化
+        projectNameField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String trimmed = newVal.trim();
+            boolean invalid = trimmed.isEmpty()
+                    || trimmed.matches(".*" + forbiddenPattern + ".*")
+                    || trimmed.endsWith(".")
+                    || trimmed.endsWith(" ");
+
+            createBtnNode.setDisable(invalid);
+        });
 
         // 设置对话框内容和内边距
         getDialogPane().setContent(content);

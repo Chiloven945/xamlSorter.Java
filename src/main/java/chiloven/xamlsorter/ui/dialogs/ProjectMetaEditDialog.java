@@ -4,6 +4,7 @@ import chiloven.xamlsorter.entities.ProjectMeta;
 import chiloven.xamlsorter.modules.I18n;
 import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -40,7 +41,7 @@ public class ProjectMetaEditDialog extends Dialog<ProjectMeta> {
     }
 
     public static ProjectMeta show(Window owner, ProjectMeta currentMeta) {
-        logger.debug("Opening Project Meta Edit dialog");
+        logger.info("Opening Project Meta Edit dialog");
         try {
             ProjectMetaEditDialog dialog = new ProjectMetaEditDialog(owner, currentMeta);
             return dialog.showAndWait().orElse(null);
@@ -65,7 +66,7 @@ public class ProjectMetaEditDialog extends Dialog<ProjectMeta> {
         content.setPrefHeight(160.0);
         content.setPrefWidth(320.0);
 
-        Label titleLabel = new Label(getLang("dialog.edit_proj.title.label"));
+        Label titleLabel = new Label(getLang("dialog.edit_proj.title"));
         titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         projectNameField.setPromptText(getLang("dialog.new_proj.name.label"));
@@ -85,6 +86,20 @@ public class ProjectMetaEditDialog extends Dialog<ProjectMeta> {
         ButtonType cancelButton = new ButtonType(getLang("general.button.cancel"),
                 ButtonBar.ButtonData.CANCEL_CLOSE);
         getDialogPane().getButtonTypes().addAll(saveButton, cancelButton);
+
+        Node saveBtnNode = getDialogPane().lookupButton(saveButton);
+        saveBtnNode.setDisable(true);
+
+        String forbiddenPattern = "[\\\\/:*?\"<>|]";
+
+        projectNameField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String trimmed = newVal.trim();
+            boolean invalid = trimmed.isEmpty()
+                    || trimmed.matches(".*" + forbiddenPattern + ".*")
+                    || trimmed.endsWith(".")
+                    || trimmed.endsWith(" ");
+            saveBtnNode.setDisable(invalid);
+        });
 
         getDialogPane().setContent(content);
         getDialogPane().setPadding(new Insets(10));
