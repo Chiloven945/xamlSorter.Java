@@ -2,8 +2,10 @@ package chiloven.xamlsorter;
 
 import atlantafx.base.theme.CupertinoDark;
 import atlantafx.base.theme.CupertinoLight;
+import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.I18n;
 import chiloven.xamlsorter.modules.PreferencesManager;
+import chiloven.xamlsorter.modules.TaskExecutorService;
 import chiloven.xamlsorter.modules.preferences.Language;
 import chiloven.xamlsorter.ui.MainPage;
 import chiloven.xamlsorter.utils.ShowAlert;
@@ -35,9 +37,10 @@ public class Main extends Application {
 
     public static void applyTheme() {
         boolean isDark = PreferencesManager.isDarkMode();
+        logger.info("Applying {} theme", isDark ? "dark" : "light");
         Application.setUserAgentStylesheet(
-            isDark ? new CupertinoDark().getUserAgentStylesheet() 
-                  : new CupertinoLight().getUserAgentStylesheet()
+                isDark ? new CupertinoDark().getUserAgentStylesheet()
+                        : new CupertinoLight().getUserAgentStylesheet()
         );
     }
 
@@ -47,17 +50,23 @@ public class Main extends Application {
         try {
             logger.info("Starting xamlSorter.Java application");
 
+            logger.info("Loading application preferences");
             PreferencesManager.reload();
-            
+
+            logger.info("Setting application language");
             Language language = PreferencesManager.getLanguage();
             I18n.setLocale(language.getLocale());
-            logger.info("应用程序语言设置为: {}", language.getDisplayName());
+            logger.info("Application language set as: {}", language.getDisplayName());
 
+            logger.info("Setting application theme");
             applyTheme();
 
             MainPage mainPage = new MainPage();
             Scene scene = new Scene(mainPage);
             I18n.applyDefaultFont(scene);
+
+            DataOperationHelper.setMainPage(mainPage);
+            logger.debug("MainPage instance set in DataOperationHelper");
 
             primaryStage.setTitle("xamlSorter.Java");
 
@@ -66,7 +75,7 @@ public class Main extends Application {
             primaryStage.setWidth(800);
             primaryStage.setHeight(600);
             primaryStage.centerOnScreen();
-            
+
             PreferencesManager.addThemeChangeListener(Main::applyTheme);
 
             primaryStage.setOnCloseRequest(event -> {
@@ -88,6 +97,7 @@ public class Main extends Application {
                     new Image(getClass().getResourceAsStream("/assets/icons/application/application-192x192.png")),
                     new Image(getClass().getResourceAsStream("/assets/icons/application/application-256x256.png"))
             );
+            logger.info("Application icons loaded successfully");
 
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -107,6 +117,7 @@ public class Main extends Application {
     @Override
     public void stop() {
         logger.info("Stopping xamlSorter.Java application");
+        TaskExecutorService.shutdown();
         logger.info("Application stopped successfully");
     }
 

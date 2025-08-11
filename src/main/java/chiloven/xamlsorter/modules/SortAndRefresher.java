@@ -15,39 +15,50 @@ public class SortAndRefresher {
 
     /**
      * Refreshes the TreeTableView with the given grouped data.
+     * This method processes data in a background thread and updates the UI in the JavaFX application thread.
      *
      * @param table       the TreeTableView to refresh
      * @param groupedData the data grouped by category
      */
     public static void refresh(TreeTableView<DataItem> table, Map<String, List<DataItem>> groupedData) {
         logger.debug("Starting refresh for table: {}", table.getId());
-        TreeItem<DataItem> root = new TreeItem<>(new DataItem("", "", "", ""));
-        root.setExpanded(true);
 
-        Map<String, List<DataItem>> sortedGroupedData = new TreeMap<>(groupedData);
-        logger.debug("Grouped data sorted. Categories: {}", sortedGroupedData.keySet());
+        TaskExecutorService.executeTask(
+                "TableRefresh",
+                () -> {
+                    TreeItem<DataItem> root = new TreeItem<>(new DataItem("", "", "", ""));
+                    root.setExpanded(true);
 
-        for (Map.Entry<String, List<DataItem>> entry : sortedGroupedData.entrySet()) {
-            String category = entry.getKey();
-            List<DataItem> items = entry.getValue();
+                    Map<String, List<DataItem>> sortedGroupedData = new TreeMap<>(groupedData);
+                    logger.debug("Grouped data sorted. Categories: {}", sortedGroupedData.keySet());
 
-            logger.debug("Processing category: {} with {} items", category, items.size());
+                    for (Map.Entry<String, List<DataItem>> entry : sortedGroupedData.entrySet()) {
+                        String category = entry.getKey();
+                        List<DataItem> items = entry.getValue();
 
-            DataItem categoryItem = new DataItem(category, category + "...", "-", "-");
-            TreeItem<DataItem> categoryNode = new TreeItem<>(categoryItem);
-            categoryNode.setExpanded(true);
+                        logger.debug("Processing category: {} with {} items", category, items.size());
 
-            for (DataItem item : items) {
-                logger.trace("Adding item to category '{}': {}", category, item);
-                categoryNode.getChildren().add(new TreeItem<>(item));
-            }
+                        DataItem categoryItem = new DataItem(category, category + "...", "-", "-");
+                        TreeItem<DataItem> categoryNode = new TreeItem<>(categoryItem);
+                        categoryNode.setExpanded(true);
 
-            root.getChildren().add(categoryNode);
-        }
+                        for (DataItem item : items) {
+                            categoryNode.getChildren().add(new TreeItem<>(item));
+                        }
 
-        table.setRoot(root);
-        table.setShowRoot(false);
-        logger.info("Sorted and refreshed {}.", table.getId());
+                        root.getChildren().add(categoryNode);
+                    }
+
+                    return root;
+                },
+                root -> {
+                    table.setRoot(root);
+                    table.setShowRoot(false);
+                    logger.info("Sorted and refreshed.");
+                },
+                error -> {
+                    logger.error("Error refreshing table: ", error);
+                }
+        );
     }
-
 }
