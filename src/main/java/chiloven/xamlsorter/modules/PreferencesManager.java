@@ -13,7 +13,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import static chiloven.xamlsorter.modules.I18n.getLang;
 
@@ -24,6 +27,8 @@ public class PreferencesManager {
     private static final String CONFIG_FILE = CONFIG_DIR + File.separator + "preferences.properties";
     private static final Properties props = new Properties();
     private static final OsThemeDetector themeDetector = OsThemeDetector.getDetector();
+
+    private static final Map<Runnable, Consumer<Boolean>> THEME_LISTENERS = new ConcurrentHashMap<>();
 
     static {
         // Automatically create the config directory and load existing preferences
@@ -145,27 +150,59 @@ public class PreferencesManager {
     }
 
     /**
-     * Add a system theme change listener
+     * Register a listener for system theme changes.
      *
-     * @param listener the theme change listener
+     * @param listener the listener to be notified when the system theme changes
      */
     public static void addThemeChangeListener(Runnable listener) {
-        if (getThemeMode() == ThemeMode.SYSTEM) {
-            themeDetector.registerListener(isDark -> {
-                logger.debug("System theme changed: {}", isDark ? "dark" : "light");
+        if (listener == null) return;
+        if (getThemeMode() != ThemeMode.SYSTEM) {
+            logger.debug("Theme mode is not SYSTEM; skip registering theme listener.");
+            return;
+        }
+        if (THEME_LISTENERS.containsKey(listener)) {
+            logger.debug("Theme listener already registered; skip.");
+            return;
+        }
+
+        Consumer<Boolean> consumer = isDark -> {
+            logger.debug("System theme changed: {}", isDark ? "dark" : "light");
+            try {
                 listener.run();
-            });
+            } catch (Throwable t) {
+                logger.error("Theme listener threw an exception.", t);
+            }
+        };
+
+        try {
+            themeDetector.registerListener(consumer);
+            THEME_LISTENERS.put(listener, consumer);
+            logger.info("Theme change listener registered (total = {}).", THEME_LISTENERS.size());
+        } catch (RuntimeException ex) {
+            logger.warn("Failed to register theme change listener (platform/DE may not support live detection).", ex);
         }
     }
 
     /**
-     * Remove a system theme change listener
+     * Remove a previously registered theme change listener.
      *
-     * @param listener the theme change listener to remove
+     * @param listener the listener to be removed
      */
     public static void removeThemeChangeListener(Runnable listener) {
-        if (getThemeMode() == ThemeMode.SYSTEM) {
-            themeDetector.removeListener(isDark -> listener.run());
+        if (listener == null) return;
+        if (getThemeMode() != ThemeMode.SYSTEM) return;
+
+        Consumer<Boolean> consumer = THEME_LISTENERS.remove(listener);
+        if (consumer == null) {
+            logger.debug("Theme listener not registered or already removed; skip.");
+            return;
+        }
+
+        try {
+            themeDetector.removeListener(consumer);
+            logger.info("Theme change listener removed (remaining = {}).", THEME_LISTENERS.size());
+        } catch (RuntimeException ex) {
+            logger.warn("Failed to remove theme change listener safely.", ex);
         }
     }
 
