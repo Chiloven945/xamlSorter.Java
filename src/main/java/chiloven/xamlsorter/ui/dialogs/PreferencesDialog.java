@@ -184,7 +184,7 @@ public class PreferencesDialog extends Dialog<ButtonType> {
         );
         if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
             logger.info("User chose to restart the application after language change.");
-            Main.safeClose();
+            Main.safeRestart();
         } else {
             logger.info("User cancelled the restart after language change.");
         }
