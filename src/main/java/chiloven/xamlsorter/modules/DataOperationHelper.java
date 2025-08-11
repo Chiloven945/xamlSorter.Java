@@ -3,6 +3,7 @@ package chiloven.xamlsorter.modules;
 import chiloven.xamlsorter.entities.DataItem;
 import chiloven.xamlsorter.ui.MainPage;
 import chiloven.xamlsorter.utils.ShowAlert;
+import chiloven.xamlsorter.utils.TaskExecutorService;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.TextInputDialog;
@@ -18,7 +19,7 @@ import static chiloven.xamlsorter.modules.I18n.getLang;
 
 public class DataOperationHelper {
     private static final Logger logger = LogManager.getLogger(DataOperationHelper.class);
-    private static MainPage mainPage;                      // 保持为 null
+    private static MainPage mainPage;
 
     public static void setMainPage(MainPage page) {
         mainPage = page;

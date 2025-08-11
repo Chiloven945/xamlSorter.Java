@@ -1,4 +1,4 @@
-package chiloven.xamlsorter.modules;
+package chiloven.xamlsorter.utils;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;

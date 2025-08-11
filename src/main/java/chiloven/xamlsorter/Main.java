@@ -5,7 +5,7 @@ import atlantafx.base.theme.CupertinoLight;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.I18n;
 import chiloven.xamlsorter.modules.PreferencesManager;
-import chiloven.xamlsorter.modules.TaskExecutorService;
+import chiloven.xamlsorter.utils.TaskExecutorService;
 import chiloven.xamlsorter.modules.preferences.Language;
 import chiloven.xamlsorter.ui.MainPage;
 import chiloven.xamlsorter.utils.ShowAlert;

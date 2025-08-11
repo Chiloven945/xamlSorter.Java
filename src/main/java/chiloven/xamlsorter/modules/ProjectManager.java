@@ -6,6 +6,7 @@ import chiloven.xamlsorter.ui.MainPage;
 import chiloven.xamlsorter.ui.dialogs.NewProjectDialog;
 import chiloven.xamlsorter.utils.CustomFileChooser;
 import chiloven.xamlsorter.utils.ShowAlert;
+import chiloven.xamlsorter.utils.TaskExecutorService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
