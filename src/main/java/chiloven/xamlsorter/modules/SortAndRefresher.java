@@ -56,9 +56,7 @@ public class SortAndRefresher {
                     table.setShowRoot(false);
                     logger.info("Sorted and refreshed.");
                 },
-                error -> {
-                    logger.error("Error refreshing table: ", error);
-                }
+                error -> logger.error("Error refreshing table: ", error)
         );
     }
 }

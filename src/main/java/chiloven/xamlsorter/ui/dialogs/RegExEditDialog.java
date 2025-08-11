@@ -234,9 +234,9 @@ public class RegExEditDialog extends Dialog<ButtonType> {
         if (pattern == null || pattern.trim().isEmpty()) {
             logger.warn("Empty pattern, changes not applied");
             ShowAlert.warn(
-                    getLang("general.alert.warning"),
-                    getLang("dialog.regex.warning.empty_pattern.header"),
-                    getLang("dialog.regex.warning.empty_pattern.content")
+                    getLang("general.alert.warn"),
+                    getLang("dialog.regex.exception.empty_pattern.header"),
+                    getLang("dialog.regex.exception.empty_pattern.content")
             );
             return;
         }

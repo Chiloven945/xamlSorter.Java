@@ -128,56 +128,54 @@ public class DataOperationHelper {
         logger.info("User input for new key: {}", result.orElse("No input provided"));
 
         // Check if the user provided a key
-        result.ifPresent(newKey -> {
-            TaskExecutorService.executeTask(
-                    "AddEntry-" + newKey,
-                    () -> {
-                        logger.debug("Processing new key: {}", newKey);
-                        String category = newKey.contains(".") ? newKey.split("\\.")[0] : getLang("page.main.tree_table.item.uncategorized");
-                        logger.debug("Determined category: {}", category);
+        result.ifPresent(newKey -> TaskExecutorService.executeTask(
+                "AddEntry-" + newKey,
+                () -> {
+                    logger.debug("Processing new key: {}", newKey);
+                    String category = newKey.contains(".") ? newKey.split("\\.")[0] : getLang("page.main.tree_table.item.uncategorized");
+                    logger.debug("Determined category: {}", category);
 
-                        // Check if the key already exists in the grouped data
-                        boolean exists = groupedData.values().stream()
-                                .flatMap(List::stream)
-                                .anyMatch(item -> item.getKey().equals(newKey));
-                        logger.debug("Key '{}' exists: {}", newKey, exists);
+                    // Check if the key already exists in the grouped data
+                    boolean exists = groupedData.values().stream()
+                            .flatMap(List::stream)
+                            .anyMatch(item -> item.getKey().equals(newKey));
+                    logger.debug("Key '{}' exists: {}", newKey, exists);
 
-                        return new Object[]{exists, category, newKey};
-                    },
-                    result1 -> {
-                        boolean exists = (boolean) ((Object[]) result1)[0];
-                        String category = (String) ((Object[]) result1)[1];
-                        String key = (String) ((Object[]) result1)[2];
+                    return new Object[]{exists, category, newKey};
+                },
+                result1 -> {
+                    boolean exists = (boolean) ((Object[]) result1)[0];
+                    String category = (String) ((Object[]) result1)[1];
+                    String key = (String) ((Object[]) result1)[2];
 
-                        // If the key already exists, show a warning and return
-                        if (exists) {
-                            ShowAlert.warn(
-                                    getLang("general.alert.warn"),
-                                    getLang("module.data_op.add_entry.exception.alert.header"),
-                                    getLang("module.data_op.add_entry.exception.alert.content", key)
-                            );
-                            logger.warn("Attempted to add duplicate entry with key: {}", key);
-                            return;
-                        }
-
-                        // If the key does not exist, create a new DataItem and add it to the grouped data
-                        DataItem newItem = new DataItem(
-                                category, key,
-                                getLang("module.data_op.add_entry.default.original"),
-                                getLang("module.data_op.add_entry.default.translated")
+                    // If the key already exists, show a warning and return
+                    if (exists) {
+                        ShowAlert.warn(
+                                getLang("general.alert.warn"),
+                                getLang("module.data_op.add_entry.exception.alert.header"),
+                                getLang("module.data_op.add_entry.exception.alert.content", key)
                         );
-                        logger.debug("Created new DataItem: {}", newItem);
-                        groupedData.computeIfAbsent(category, k -> new ArrayList<>()).add(newItem);
-                        logger.debug("Added new DataItem to groupedData under category '{}'", category);
+                        logger.warn("Attempted to add duplicate entry with key: {}", key);
+                        return;
+                    }
 
-                        SortAndRefresher.refresh(mainPage.getDataTreeTable(), mainPage.getGroupedData());
-                        mainPage.setModified(true);
+                    // If the key does not exist, create a new DataItem and add it to the grouped data
+                    DataItem newItem = new DataItem(
+                            category, key,
+                            getLang("module.data_op.add_entry.default.original"),
+                            getLang("module.data_op.add_entry.default.translated")
+                    );
+                    logger.debug("Created new DataItem: {}", newItem);
+                    groupedData.computeIfAbsent(category, k -> new ArrayList<>()).add(newItem);
+                    logger.debug("Added new DataItem to groupedData under category '{}'", category);
 
-                        logger.info("Added new entry with key: {}", key);
-                    },
-                    error -> logger.error("Error adding entry with key: {}", newKey, error)
-            );
-        });
+                    SortAndRefresher.refresh(mainPage.getDataTreeTable(), mainPage.getGroupedData());
+                    mainPage.setModified(true);
+
+                    logger.info("Added new entry with key: {}", key);
+                },
+                error -> logger.error("Error adding entry with key: {}", newKey, error)
+        ));
         logger.debug("addEntry finished");
     }
 
@@ -220,9 +218,7 @@ public class DataOperationHelper {
                         logger.info("Cut finished (copied and deleted selected entries).");
                     }
                 },
-                error -> {
-                    logger.error("Error during cut operation", error);
-                }
+                error -> logger.error("Error during cut operation", error)
         );
     }
 
@@ -260,9 +256,7 @@ public class DataOperationHelper {
                         logger.info("Copied {} entries.", count);
                     }
                 },
-                error -> {
-                    logger.error("Error during copy operation", error);
-                }
+                error -> logger.error("Error during copy operation", error)
         );
     }
 
@@ -309,15 +303,13 @@ public class DataOperationHelper {
                     return count;
                 },
                 count -> {
-                    if ((int) count > 0) {
+                    if (count > 0) {
                         SortAndRefresher.refresh(table, groupedData);
                         mainPage.setModified(true);
                         logger.info("Deleted {} entries.", count);
                     }
                 },
-                error -> {
-                    logger.error("Error during delete operation", error);
-                }
+                error -> logger.error("Error during delete operation", error)
         );
     }
 
@@ -367,15 +359,13 @@ public class DataOperationHelper {
                     return clipboardItems.size();
                 },
                 count -> {
-                    if ((int) count > 0) {
+                    if (count > 0) {
                         SortAndRefresher.refresh(table, groupedData);
                         mainPage.setModified(true);
                         logger.info("Pasted {} entries.", count);
                     }
                 },
-                error -> {
-                    logger.error("Error during paste operation", error);
-                }
+                error -> logger.error("Error during paste operation", error)
         );
     }
 
@@ -406,16 +396,13 @@ public class DataOperationHelper {
                     logger.trace("Cleared previous selections.");
 
                     // Select all collected rows
-                    List<Integer> rows = (List<Integer>) rowsToSelect;
-                    for (Integer row : rows) {
+                    for (Integer row : rowsToSelect) {
                         table.getSelectionModel().select(row);
                     }
 
                     logger.info("Selected all entries in the TreeTableView.");
                 },
-                error -> {
-                    logger.error("Error during select all operation", error);
-                }
+                error -> logger.error("Error during select all operation", error)
         );
     }
 

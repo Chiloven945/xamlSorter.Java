@@ -18,7 +18,7 @@ public class TaskExecutorService {
             r -> {
                 Thread t = new Thread(r);
                 t.setDaemon(true);
-                t.setName("XSW-" + t.getId());
+                t.setName("XSW-" + t.threadId());
                 return t;
             }
     );
@@ -42,7 +42,7 @@ public class TaskExecutorService {
 
         Task<T> task = new Task<>() {
             @Override
-            protected T call() throws Exception {
+            protected T call() {
                 Thread.currentThread().setName("XST-" + taskName);
                 logger.debug("Execute the task: {}", taskName);
                 return backgroundTask.get();
