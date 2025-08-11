@@ -47,7 +47,7 @@ public class PreferencesDialog extends Dialog<ButtonType> {
     }
 
     public static void show(Window owner) {
-        logger.debug("Opening Preferences dialog");
+        logger.info("Opening Preferences dialog");
         try {
             PreferencesDialog dialog = new PreferencesDialog(owner);
             dialog.showAndWait().ifPresent(buttonType -> {
@@ -89,9 +89,9 @@ public class PreferencesDialog extends Dialog<ButtonType> {
         languageComboBox.setPrefHeight(23.0);
         languageComboBox.setPrefWidth(200.0);  // 增加宽度以适应长文本
         languageComboBox.getItems().addAll(
-            Arrays.stream(Language.values())
-                .map(Language::getDisplayName)
-                .toList()
+                Arrays.stream(Language.values())
+                        .map(Language::getDisplayName)
+                        .toList()
         );
         languageBox.getChildren().addAll(languageLabel, languageComboBox);
 
@@ -131,7 +131,7 @@ public class PreferencesDialog extends Dialog<ButtonType> {
         // 设置当前语言值
         Language currentLang = PreferencesManager.getLanguage();
         languageComboBox.setValue(currentLang.getDisplayName());
-        
+
         // 设置当前主题值
         ThemeMode currentTheme = PreferencesManager.getThemeMode();
         switch (currentTheme) {
@@ -143,11 +143,11 @@ public class PreferencesDialog extends Dialog<ButtonType> {
 
     private void savePreferences() {
         logger.debug("Saving preferences...");
-        
+
         // 处理语言变更
         Language oldLang = PreferencesManager.getLanguage();
         Language newLang = Language.fromDisplayName(languageComboBox.getValue());
-        
+
         // 处理主题变更
         ThemeMode oldTheme = PreferencesManager.getThemeMode();
         ThemeMode newTheme = getSelectedThemeMode();
@@ -174,13 +174,13 @@ public class PreferencesDialog extends Dialog<ButtonType> {
     private void handleLanguageChange(Language oldLang, Language newLang) {
         logger.info("Language preference changed from '{}' to '{}'", oldLang, newLang);
         Optional<ButtonType> result = ShowAlert.confirm(
-            getLang("general.alert.info"),
-            getLang("dialog.pref.lang.info.header"),
-            getLang("dialog.pref.lang.info.content"),
-            new ButtonType(getLang("dialog.pref.lang.info.button.restart"),
-                ButtonBar.ButtonData.OK_DONE),
-            new ButtonType(getLang("general.button.cancel"),
-                ButtonBar.ButtonData.CANCEL_CLOSE)
+                getLang("general.alert.info"),
+                getLang("dialog.pref.lang.info.header"),
+                getLang("dialog.pref.lang.info.content"),
+                new ButtonType(getLang("dialog.pref.lang.info.button.restart"),
+                        ButtonBar.ButtonData.OK_DONE),
+                new ButtonType(getLang("general.button.cancel"),
+                        ButtonBar.ButtonData.CANCEL_CLOSE)
         );
         if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
             logger.info("User chose to restart the application after language change.");

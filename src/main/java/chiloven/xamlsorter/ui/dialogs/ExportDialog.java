@@ -49,7 +49,7 @@ public class ExportDialog extends Dialog<Void> {
     }
 
     public static void show(MainPage mainPage) {
-        logger.debug("Opening Export dialog");
+        logger.info("Opening Export dialog");
         try {
             ExportDialog dialog = new ExportDialog(mainPage);
             dialog.showAndWait();

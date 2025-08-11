@@ -38,7 +38,7 @@ public class AboutDialog extends Dialog<Void> {
     }
 
     public static void show(Window owner) {
-        logger.debug("Opening About dialog");
+        logger.info("Opening About dialog");
         try {
             AboutDialog dialog = new AboutDialog(owner);
             dialog.showAndWait();

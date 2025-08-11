@@ -20,7 +20,7 @@ public class CustomFileChooser {
      * @return the selected file, or null if no file was selected
      */
     public static File showOpenFileDialog(Window owner, String title, String files, List<String> extensions) {
-        logger.debug("Opening file dialog with title: {}, files: {}, extensions: {}", title, files, extensions);
+        logger.info("Opening file dialog with title: {}, files: {}, extensions: {}", title, files, extensions);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
 
@@ -50,7 +50,7 @@ public class CustomFileChooser {
      * @return the selected file, or null if no file was selected
      */
     public static File showSaveFileDialog(Window owner, String title, String files, List<String> extensions, String defaultFileName) {
-        logger.debug("Opening save file dialog with title: {}, files: {}, extensions: {}, defaultFileName: {}", title, files, extensions, defaultFileName);
+        logger.info("Opening save file dialog with title: {}, files: {}, extensions: {}, defaultFileName: {}", title, files, extensions, defaultFileName);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
 

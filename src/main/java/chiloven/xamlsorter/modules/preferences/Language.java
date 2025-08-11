@@ -26,30 +26,13 @@ public enum Language {
      * Create a new Language enum instance.
      *
      * @param displayName the display name of the language
-     * @param localeTag the locale tag (e.g., "en-US")
-     * @param locale the Locale object representing the language
+     * @param localeTag   the locale tag (e.g., "en-US")
+     * @param locale      the Locale object representing the language
      */
     Language(String displayName, String localeTag, Locale locale) {
         this.displayName = displayName;
         this.localeTag = localeTag;
         this.locale = locale;
-    }
-
-    /**
-     * Get the display name of the language.
-     *
-     * @return the display name of the language
-     */
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getLocaleTag() {
-        return localeTag;
-    }
-
-    public Locale getLocale() {
-        return locale;
     }
 
     public static Language fromDisplayName(String displayName) {
@@ -68,5 +51,27 @@ public enum Language {
             }
         }
         return ENGLISH_US;
+    }
+
+    /**
+     * Get the display name of the language.
+     *
+     * @return the display name of the language
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public String getLocaleTag() {
+        return localeTag;
+    }
+
+    /**
+     * Get the Locale object representing the language.
+     *
+     * @return the Locale object for the language
+     */
+    public Locale getLocale() {
+        return locale;
     }
 }

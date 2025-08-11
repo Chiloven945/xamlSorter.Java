@@ -61,7 +61,7 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
     // Override startEdit to initialize the text area with the current item
     @Override
     public void startEdit() {
-        logger.debug("startEdit called for cell at row: {}", getIndex());
+        logger.info("startEdit called for cell at row: {}", getIndex());
         super.startEdit();
         textArea.setText(getItem());
         setGraphic(textArea);

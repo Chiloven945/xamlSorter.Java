@@ -70,7 +70,7 @@ public class RegExEditDialog extends Dialog<ButtonType> {
     }
 
     public static void show(MainPage mainPage, Map<String, List<DataItem>> groupedData, String targetCategory) {
-        logger.debug("Opening Regex Edit dialog");
+        logger.info("Opening Regex Edit dialog");
         try {
             RegExEditDialog dialog = new RegExEditDialog(mainPage, groupedData, targetCategory);
             dialog.showAndWait().ifPresent(buttonType -> {

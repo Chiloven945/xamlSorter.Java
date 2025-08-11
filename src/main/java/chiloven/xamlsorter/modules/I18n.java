@@ -74,7 +74,7 @@ public class I18n {
         }
 
         Locale oldLocale = currentLocale;
-        
+
         try {
             currentLocale = locale;
             Locale.setDefault(locale);  // Set JVM default locale
@@ -156,7 +156,7 @@ public class I18n {
 
         List<String> fontCandidates = LOCALE_FONT_LIST_MAP.getOrDefault(locale, DEFAULT_FONT_LIST);
         String selectedFont = pickAvailableFont(fontCandidates);
-        
+
         scene.getRoot().setStyle(String.format("-fx-font-family: '%s';", selectedFont));
         logger.info("Applied font '{}' for locale: {}", selectedFont, locale);
     }
