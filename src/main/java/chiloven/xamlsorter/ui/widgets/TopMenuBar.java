@@ -3,10 +3,7 @@ package chiloven.xamlsorter.ui.widgets;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.ProjectManager;
 import chiloven.xamlsorter.ui.MainPage;
-import chiloven.xamlsorter.ui.dialogs.AboutDialog;
-import chiloven.xamlsorter.ui.dialogs.ExportDialog;
-import chiloven.xamlsorter.ui.dialogs.PreferencesDialog;
-import chiloven.xamlsorter.ui.dialogs.RegExEditDialog;
+import chiloven.xamlsorter.ui.dialogs.*;
 import chiloven.xamlsorter.utils.BrowserUtil;
 import chiloven.xamlsorter.utils.ShowAlert;
 import javafx.scene.control.Menu;
@@ -165,14 +162,7 @@ public class TopMenuBar extends MenuBar {
         about.setOnAction(e -> AboutDialog.show(mainPage.getDataTreeTable().getScene().getWindow()));
 
         MenuItem license = new MenuItem(getLang("widget.menu_bar.help.license"));
-        license.setOnAction(e -> {
-            ShowAlert.info(
-                    getLang("widget.menu_bar.help.license.title"),
-                    getLang("widget.menu_bar.help.license.header"),
-                    getLang("widget.menu_bar.help.license.content")
-            );
-            logger.info("License information displayed to the user.");
-        });
+        license.setOnAction(e -> LicenseDialog.show(mainPage.getDataTreeTable().getScene().getWindow()));
 
         MenuItem documentation = new MenuItem(getLang("widget.menu_bar.help.documentation"));
         documentation.setOnAction(e -> ShowAlert.info(
