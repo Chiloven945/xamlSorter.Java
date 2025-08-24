@@ -23,10 +23,6 @@ import static chiloven.xamlsorter.utils.BrowserUtil.openWebpage;
 public class LicenseDialog extends Dialog<Void> {
     private static final Logger logger = LogManager.getLogger(LicenseDialog.class);
 
-    private static final String APP_LICENSE_NAME = "GNU General Public License v3.0 (GPL-3.0)";
-    private static final String APP_LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.en.html";
-    private static final String COPYRIGHT_HOLDER = "Chiloven945";
-
     public LicenseDialog(Window owner) {
         try {
             setupDialog(owner);
@@ -88,51 +84,47 @@ public class LicenseDialog extends Dialog<Void> {
                 "GPL v2 with Classpath Exception",
                 "https://openjdk.org/legal/gplv2+ce.html",
                 "https://openjfx.io/"));
-        list.add(new LicenseEntry("OpenJFX: javafx-fxml", javafxVersion,
-                "GPL v2 with Classpath Exception",
-                "https://openjdk.org/legal/gplv2+ce.html",
-                "https://openjfx.io/"));
 
         // Log4j (Apache-2.0)
         list.add(new LicenseEntry("Apache Log4j Core", "2.25.0",
                 "Apache License 2.0",
-                "https://www.apache.org/licenses/LICENSE-2.0",
+                "https://github.com/apache/logging-log4j2/blob/2.x/LICENSE.txt",
                 "https://logging.apache.org/log4j/2.x/"));
         list.add(new LicenseEntry("Log4j SLF4J 2.x Binding", "2.25.1",
                 "Apache License 2.0",
-                "https://www.apache.org/licenses/LICENSE-2.0",
+                "https://github.com/apache/logging-log4j2/blob/2.x/LICENSE.txt",
                 "https://logging.apache.org/log4j/2.x/"));
 
         // AtlantaFX (Apache-2.0)
         list.add(new LicenseEntry("AtlantaFX", "2.0.1",
-                "Apache License 2.0",
-                "https://www.apache.org/licenses/LICENSE-2.0",
+                "MIT License",
+                "https://github.com/mkpaz/atlantafx/blob/master/LICENSE",
                 "https://github.com/mkpaz/atlantafx"));
 
         // Ikonli (Apache-2.0)
         list.add(new LicenseEntry("Ikonli Core", ikonliVersion,
                 "Apache License 2.0",
-                "https://www.apache.org/licenses/LICENSE-2.0",
-                "https://kordamp.org/ikonli/"));
+                "https://github.com/kordamp/ikonli/blob/master/LICENSE",
+                "https://github.com/kordamp/ikonli"));
         list.add(new LicenseEntry("Ikonli JavaFX", ikonliVersion,
                 "Apache License 2.0",
-                "https://www.apache.org/licenses/LICENSE-2.0",
-                "https://kordamp.org/ikonli/"));
+                "https://github.com/kordamp/ikonli/blob/master/LICENSE",
+                "https://github.com/kordamp/ikonli"));
         list.add(new LicenseEntry("Ikonli Material Design Pack", ikonliVersion,
                 "Apache License 2.0",
-                "https://www.apache.org/licenses/LICENSE-2.0",
-                "https://kordamp.org/ikonli/"));
+                "https://github.com/kordamp/ikonli/blob/master/LICENSE",
+                "https://github.com/kordamp/ikonli"));
 
         // jSystemThemeDetector (MIT)
         list.add(new LicenseEntry("jSystemThemeDetector", "3.9.1",
-                "MIT License",
-                "https://opensource.org/licenses/MIT",
+                "Apache License 2.0",
+                "https://github.com/Dansoftowner/jSystemThemeDetector/blob/master/LICENSE",
                 "https://github.com/Dansoftowner/jSystemThemeDetector"));
 
         // Gson (Apache-2.0)
         list.add(new LicenseEntry("Google Gson", "2.10.1",
                 "Apache License 2.0",
-                "https://www.apache.org/licenses/LICENSE-2.0",
+                "https://github.com/google/gson/blob/main/LICENSE",
                 "https://github.com/google/gson"));
 
         return list;
@@ -154,9 +146,11 @@ public class LicenseDialog extends Dialog<Void> {
                 new Label(getLang("general.license.licensed_under"));
 
         Button btnAppLicense = new Button(getLang("dialog.license.button.open_license"));
-        btnAppLicense.setOnAction(e -> openWebpage(APP_LICENSE_URL));
+        btnAppLicense.setOnAction(e -> openWebpage("https://github.com/Chiloven945/xamlSorter.Java/blob/master/LICENCE"));
 
         HBox licenseLine = new HBox(8.0, licensed, btnAppLicense);
+        licenseLine.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
         header.getChildren().addAll(nameLabel, copyright, licenseLine);
 
         // Middle: Dependencies entries
@@ -180,10 +174,9 @@ public class LicenseDialog extends Dialog<Void> {
             btnLicense.setDisable(isBlank(en.licenseUrl));
             btnLicense.setOnAction(ev -> openWebpage(en.licenseUrl));
 
-            Region spacer = new Region();
-            HBox.setHgrow(spacer, Priority.ALWAYS);
-
-            HBox actions = new HBox(8.0, btnHomepage, btnLicense, spacer);
+            Region spacerRow = new Region();
+            HBox.setHgrow(spacerRow, Priority.ALWAYS);
+            HBox actions = new HBox(8.0, btnHomepage, btnLicense, spacerRow);
 
             item.getChildren().addAll(lib, lic, actions);
             item.setPadding(new Insets(8));
@@ -196,25 +189,17 @@ public class LicenseDialog extends Dialog<Void> {
         scroll.setFitToWidth(true);
         scroll.setPrefViewportHeight(380);
 
-        // Bottom: Source website button and Close button
+        // Bottom: use DialogPane's built-in button bar
         ButtonType closeBtnType = new ButtonType(getLang("general.button.close"), ButtonBar.ButtonData.CANCEL_CLOSE);
         getDialogPane().getButtonTypes().setAll(closeBtnType);
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        HBox footer = new HBox(10.0, spacer,
-                getDialogPane().lookupButton(closeBtnType));
-        footer.setPadding(new Insets(8, 0, 0, 0));
 
         // Main container
         VBox root = new VBox(12.0,
                 header,
                 new Separator(),
-                scroll,
-                new Separator(),
-                footer
+                scroll
         );
-        root.setPadding(new Insets(20.0));
+        root.setPadding(new Insets(20.0, 20.0, 8.0, 20.0));
 
         getDialogPane().setContent(root);
 
@@ -222,7 +207,7 @@ public class LicenseDialog extends Dialog<Void> {
         Scene scene = getDialogPane().getScene();
         I18n.applyDefaultFont(scene);
 
-        logger.debug("License dialog initialized (buttons for each entry).");
+        logger.debug("License dialog initialized.");
     }
 
     /**
