@@ -285,17 +285,14 @@ public class RegExEditDialog extends Dialog<ButtonType> {
             if (replaceTarget.equals(getLang("general.datatype.key"))) {
                 String before = copy.getKey();
                 String after = safeReplace(copy.getKey(), pattern, replacement);
-                logger.trace("Replacing key: '{}' -> '{}'", before, after);
                 copy.setKey(after);
             } else if (replaceTarget.equals(getLang("general.datatype.original_text"))) {
                 String before = copy.getOriginalText();
                 String after = safeReplace(copy.getOriginalText(), pattern, replacement);
-                logger.trace("Replacing originalText: '{}' -> '{}'", before, after);
                 copy.setOriginalText(after);
             } else if (replaceTarget.equals(getLang("general.datatype.translated_text"))) {
                 String before = copy.getTranslatedText();
                 String after = safeReplace(copy.getTranslatedText(), pattern, replacement);
-                logger.trace("Replacing translatedText: '{}' -> '{}'", before, after);
                 copy.setTranslatedText(after);
             }
             list.add(copy);

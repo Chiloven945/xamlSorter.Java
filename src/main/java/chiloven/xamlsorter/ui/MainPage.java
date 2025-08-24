@@ -379,7 +379,7 @@ public class MainPage extends StackPane {
             return true;
         }
 
-        ButtonType saveBtn = new ButtonType(getLang("page.main.save.confirm.button.save"));
+        ButtonType saveBtn = new ButtonType(getLang("general.button.save"));
         ButtonType dontSaveBtn = new ButtonType(getLang("page.main.save.confirm.button.do_not_save"));
         ButtonType cancelBtn = new ButtonType(getLang("general.button.cancel"),
                 ButtonBar.ButtonData.CANCEL_CLOSE);
