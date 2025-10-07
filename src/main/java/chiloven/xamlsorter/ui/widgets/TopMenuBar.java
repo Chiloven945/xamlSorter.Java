@@ -10,6 +10,9 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,11 +93,21 @@ public class TopMenuBar extends MenuBar {
     private Menu createEditMenu() {
         Menu menu = new Menu(getLang("widget.menu_bar.edit"));
 
-        MenuItem undo = new MenuItem(getLang("widget.menu_bar.edit.undo"));
-        undo.setDisable(true); // 待实现
+        var um = mainPage.getUndoManager();
 
-        MenuItem redo = new MenuItem(getLang("widget.menu_bar.edit.redo"));
-        redo.setDisable(true); // 待实现
+        MenuItem undo = new MenuItem();
+        undo.textProperty().bind(um.undoTextProperty());
+        undo.disableProperty().bind(um.canUndoProperty().not());
+        undo.setOnAction(e -> um.undo());
+        undo.setAccelerator(new KeyCodeCombination(
+                KeyCode.Z, KeyCombination.CONTROL_DOWN));
+
+        MenuItem redo = new MenuItem();
+        redo.textProperty().bind(um.redoTextProperty());
+        redo.disableProperty().bind(um.canRedoProperty().not());
+        redo.setOnAction(e -> um.redo());
+        redo.setAccelerator(new KeyCodeCombination(
+                KeyCode.Y, KeyCodeCombination.CONTROL_DOWN));
 
         MenuItem cut = new MenuItem(getLang("widget.context_menu.cut"));
         cut.setOnAction(e -> DataOperationHelper.cut(mainPage.getDataTreeTable(), mainPage.getGroupedData()));

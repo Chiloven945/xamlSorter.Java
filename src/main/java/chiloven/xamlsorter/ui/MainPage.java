@@ -6,6 +6,8 @@ import chiloven.xamlsorter.entities.ProjectMeta;
 import chiloven.xamlsorter.modules.DataOperationHelper;
 import chiloven.xamlsorter.modules.ProjectManager;
 import chiloven.xamlsorter.modules.SortAndRefresher;
+import chiloven.xamlsorter.modules.undo.SetDataItemFieldCommand;
+import chiloven.xamlsorter.modules.undo.UndoManager;
 import chiloven.xamlsorter.ui.dialogs.AboutDialog;
 import chiloven.xamlsorter.ui.dialogs.PreferencesDialog;
 import chiloven.xamlsorter.ui.widgets.ContextMenu;
@@ -33,7 +35,7 @@ public class MainPage extends StackPane {
     private static final Logger logger = LogManager.getLogger(MainPage.class);
     private static ProjectMeta currentProjectMeta;
     private final Map<String, List<DataItem>> groupedData = new HashMap<>();
-
+    private final UndoManager undoManager = new UndoManager();
     private final TreeTableView<DataItem> translationTreeTable;
     private final TreeTableColumn<DataItem, String> keyColumn;
     private final TreeTableColumn<DataItem, String> originalColumn;
@@ -43,7 +45,6 @@ public class MainPage extends StackPane {
     private final TopMenuBar menuBar;
     private final Button addEntryButton;
     private final ImageView appIconView;
-
     private File currentProjectFile = null;
     private boolean projectModified = false;
 
@@ -74,6 +75,10 @@ public class MainPage extends StackPane {
 
     public void setCurrentProjectMeta(ProjectMeta meta) {
         currentProjectMeta = meta;
+    }
+
+    public chiloven.xamlsorter.modules.undo.UndoManager getUndoManager() {
+        return undoManager;
     }
 
     private void setupLayout() {
@@ -138,20 +143,9 @@ public class MainPage extends StackPane {
         VBox rightContent = new VBox(18);
         rightContent.setAlignment(Pos.CENTER_LEFT);
 
-        rightContent.getChildren().addAll(
-                createWelcomeButton("general.proj.open", this::handleOpenProject),
-                createWelcomeButton("general.proj.new", this::handleCreateProject),
-                createWelcomeButton("general.button.proj.new.original", () -> handleCreateFromXaml(false)),
-                createWelcomeButton("general.button.proj.new.translated", () -> handleCreateFromXaml(true)),
-                createWelcomeButton("widget.menu_bar.edit.preferences", () -> PreferencesDialog.show(this.getRootPane().getScene().getWindow())),
-                createWelcomeButton("general.button.about", () -> AboutDialog.show(getScene().getWindow()))
-        );
+        rightContent.getChildren().addAll(createWelcomeButton("general.proj.open", this::handleOpenProject), createWelcomeButton("general.proj.new", this::handleCreateProject), createWelcomeButton("general.button.proj.new.original", () -> handleCreateFromXaml(false)), createWelcomeButton("general.button.proj.new.translated", () -> handleCreateFromXaml(true)), createWelcomeButton("widget.menu_bar.edit.preferences", () -> PreferencesDialog.show(this.getRootPane().getScene().getWindow())), createWelcomeButton("general.button.about", () -> AboutDialog.show(getScene().getWindow())));
 
-        welcomeBox.getChildren().addAll(
-                leftContent,
-                new Separator(Orientation.VERTICAL),
-                rightContent
-        );
+        welcomeBox.getChildren().addAll(leftContent, new Separator(Orientation.VERTICAL), rightContent);
 
         return welcomeBox;
     }
@@ -162,8 +156,7 @@ public class MainPage extends StackPane {
         appIconView.setPickOnBounds(true);
         appIconView.setPreserveRatio(true);
         try {
-            Image iconImage = new Image(Objects.requireNonNull(
-                    getClass().getResourceAsStream("/assets/icons/application/application-about.png")));
+            Image iconImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-about.png")));
             appIconView.setImage(iconImage);
         } catch (Exception e) {
             logger.error("Failed to load application icon", e);
@@ -223,24 +216,70 @@ public class MainPage extends StackPane {
         keyColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
         keyColumn.setOnEditCommit(event -> {
             DataItem item = event.getRowValue().getValue();
-            handleCellEdit(event.getNewValue(),
-                    item::getKey, key -> key.endsWith("..."), item::setKey);
+            if (item == null) return;
+            // 原有校验逻辑（禁止编辑分类占位等）
+            if ((item.getKey()).endsWith("...")) {
+                ShowAlert.error(getLang("general.alert.error"),
+                        getLang("page.main.tree_table.cell.exception.category_edit.header"),
+                        getLang("page.main.tree_table.cell.exception.category_edit.content"));
+                SortAndRefresher.refresh(translationTreeTable, groupedData);
+                return;
+            }
+            String oldVal = item.getKey();
+            String newVal = event.getNewValue();
+            if (!java.util.Objects.equals(oldVal, newVal)) {
+                undoManager.execute(new SetDataItemFieldCommand(
+                        getLang("general.datatype.key"),
+                        item::getKey, item::setKey, newVal
+                ));
+                setModified(true);
+            }
         });
 
         originalColumn.setCellValueFactory(param -> param.getValue().getValue().getOriginalTextProperty());
         originalColumn.setCellFactory(param -> new MultiLineTreeTableCell<>());
         originalColumn.setOnEditCommit(event -> {
             DataItem item = event.getRowValue().getValue();
-            handleCellEdit(event.getNewValue(),
-                    item::getOriginalText, "-"::equals, item::setOriginalText);
+            if (item == null) return;
+            if ("-".equals(item.getOriginalText())) {
+                ShowAlert.error(getLang("general.alert.error"),
+                        getLang("page.main.tree_table.cell.exception.category_edit.header"),
+                        getLang("page.main.tree_table.cell.exception.category_edit.content"));
+                SortAndRefresher.refresh(translationTreeTable, groupedData);
+                return;
+            }
+            String oldVal = item.getOriginalText();
+            String newVal = event.getNewValue();
+            if (!java.util.Objects.equals(oldVal, newVal)) {
+                undoManager.execute(new SetDataItemFieldCommand(
+                        getLang("general.datatype.original_text"),
+                        item::getOriginalText, item::setOriginalText, newVal
+                ));
+                setModified(true);
+            }
         });
 
         translatedColumn.setCellValueFactory(param -> param.getValue().getValue().getTranslatedTextProperty());
         translatedColumn.setCellFactory(param -> new MultiLineTreeTableCell<>());
         translatedColumn.setOnEditCommit(event -> {
             DataItem item = event.getRowValue().getValue();
-            handleCellEdit(event.getNewValue(),
-                    item::getTranslatedText, "-"::equals, item::setTranslatedText);
+            if (item == null) return;
+            if ("-".equals(item.getTranslatedText())) {
+                ShowAlert.error(getLang("general.alert.error"),
+                        getLang("page.main.tree_table.cell.exception.category_edit.header"),
+                        getLang("page.main.tree_table.cell.exception.category_edit.content"));
+                SortAndRefresher.refresh(translationTreeTable, groupedData);
+                return;
+            }
+            String oldVal = item.getTranslatedText();
+            String newVal = event.getNewValue();
+            if (!java.util.Objects.equals(oldVal, newVal)) {
+                undoManager.execute(new SetDataItemFieldCommand(
+                        getLang("general.datatype.translated_text"),
+                        item::getTranslatedText, item::setTranslatedText, newVal
+                ));
+                setModified(true);
+            }
         });
     }
 
@@ -248,9 +287,7 @@ public class MainPage extends StackPane {
         translationTreeTable.setRowFactory(tv -> {
             TreeTableRow<DataItem> row = new TreeTableRow<>();
             row.setOnContextMenuRequested(event -> {
-                DataItem targetItem = (row.getTreeItem() != null && row.getTreeItem().getValue() != null)
-                        ? row.getTreeItem().getValue()
-                        : null;
+                DataItem targetItem = (row.getTreeItem() != null && row.getTreeItem().getValue() != null) ? row.getTreeItem().getValue() : null;
                 showContextMenu(targetItem, row, event.getScreenX(), event.getScreenY());
                 event.consume();
             });
@@ -281,16 +318,9 @@ public class MainPage extends StackPane {
      * @param forbidPredicate      a predicate that determines if the new value is forbidden
      * @param valueSetter          a consumer that sets the new value if valid
      */
-    private void handleCellEdit(String newValue,
-                                java.util.function.Supplier<String> forbiddenValueGetter,
-                                java.util.function.Predicate<String> forbidPredicate,
-                                java.util.function.Consumer<String> valueSetter) {
+    private void handleCellEdit(String newValue, java.util.function.Supplier<String> forbiddenValueGetter, java.util.function.Predicate<String> forbidPredicate, java.util.function.Consumer<String> valueSetter) {
         if (forbidPredicate.test(forbiddenValueGetter.get())) {
-            ShowAlert.error(
-                    getLang("general.alert.error"),
-                    getLang("page.main.tree_table.cell.exception.category_edit.header"),
-                    getLang("page.main.tree_table.cell.exception.category_edit.content")
-            );
+            ShowAlert.error(getLang("general.alert.error"), getLang("page.main.tree_table.cell.exception.category_edit.header"), getLang("page.main.tree_table.cell.exception.category_edit.content"));
             SortAndRefresher.refresh(translationTreeTable, groupedData);
             return;
         }
@@ -333,8 +363,7 @@ public class MainPage extends StackPane {
     }
 
     private void updateWindowTitle() {
-        String projectName = (currentProjectMeta != null ? currentProjectMeta.getName()
-                : getLang("page.main.title.proj_name.untitled"));
+        String projectName = (currentProjectMeta != null ? currentProjectMeta.getName() : getLang("page.main.title.proj_name.untitled"));
         String modified = projectModified ? "*" : "";
         String title = getLang("page.main.title.editing", projectName, modified);
         ((Stage) getScene().getWindow()).setTitle(title);
@@ -381,15 +410,9 @@ public class MainPage extends StackPane {
 
         ButtonType saveBtn = new ButtonType(getLang("general.button.save"));
         ButtonType dontSaveBtn = new ButtonType(getLang("page.main.save.confirm.button.do_not_save"));
-        ButtonType cancelBtn = new ButtonType(getLang("general.button.cancel"),
-                ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType cancelBtn = new ButtonType(getLang("general.button.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        Optional<ButtonType> result = ShowAlert.confirm(
-                getLang("page.main.save.confirm.title"),
-                getLang("page.main.save.confirm.header"),
-                getLang("page.main.save.confirm.content"),
-                saveBtn, dontSaveBtn, cancelBtn
-        );
+        Optional<ButtonType> result = ShowAlert.confirm(getLang("page.main.save.confirm.title"), getLang("page.main.save.confirm.header"), getLang("page.main.save.confirm.content"), saveBtn, dontSaveBtn, cancelBtn);
 
         if (result.isPresent()) {
             if (result.get() == saveBtn) {
@@ -415,20 +438,17 @@ public class MainPage extends StackPane {
     }
 
     private void setupEventHandlers() {
-        translationTreeTable.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    if (newValue != null) {
-                        logger.debug("Selected item changed: {}",
-                                newValue.getValue().getKey());
-                    }
-                });
+        translationTreeTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                logger.debug("Selected item changed: {}", newValue.getValue().getKey());
+            }
+        });
 
-        translationTreeTable.focusedProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    if (newValue) {
-                        logger.debug("TreeTableView gained focus");
-                    }
-                });
+        translationTreeTable.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                logger.debug("TreeTableView gained focus");
+            }
+        });
 
         setOnKeyPressed(event -> {
             switch (event.getCode()) {

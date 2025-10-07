@@ -82,24 +82,7 @@ public class MultiLineTreeTableCell<S> extends TreeTableCell<S, String> {
     public void commitEdit(String newValue) {
         logger.debug("commitEdit called for cell at row: {}, newValue: {}", getIndex(), newValue);
         super.commitEdit(newValue);
-
-        // Write the new value back to the DataItem if applicable
-        if (getTableRow() != null && getTableRow().getItem() != null) {
-            S rowItem = getTableRow().getItem();
-            if (rowItem instanceof DataItem dataItem) {
-                if (getTableColumn().getText().equals("Original Text")) {
-                    logger.info("Updating Original Text for row {}: {}", getIndex(), newValue);
-                    dataItem.setOriginalText(newValue);
-                } else if (getTableColumn().getText().equals("Translated Text")) {
-                    logger.info("Updating Translated Text for row {}: {}", getIndex(), newValue);
-                    dataItem.setTranslatedText(newValue);
-                } else if (getTableColumn().getText().equals("Key")) {
-                    logger.info("Updating Key for row {}: {}", getIndex(), newValue);
-                    dataItem.setKey(newValue);
-                }
-            }
-        }
-
+        // ⚠️ 移除：这里不再写回 DataItem，统一由列的 onEditCommit 处理并入栈
         updateDisplay(newValue);
         logger.debug("commitEdit finished for cell at row: {}", getIndex());
     }

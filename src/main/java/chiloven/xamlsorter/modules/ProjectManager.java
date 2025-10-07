@@ -124,6 +124,8 @@ public class ProjectManager {
 
                         mainPage.setCurrentProjectFile(selectedFile);
                         mainPage.setModified(false);
+                        mainPage.getUndoManager().clear();
+                        mainPage.getUndoManager().markSavePoint();
                         mainPage.showEditor();
 
                         logger.info("Project opened: {}", selectedFile.getAbsolutePath());
@@ -225,7 +227,8 @@ public class ProjectManager {
                     }
                 },
                 success -> {
-                    mainPage.setModified(false); // 标记已保存
+                    mainPage.setModified(false);
+                    mainPage.getUndoManager().markSavePoint();
                     logger.info("Project saved successfully to: {}", file.getAbsolutePath());
                 },
                 error -> {
