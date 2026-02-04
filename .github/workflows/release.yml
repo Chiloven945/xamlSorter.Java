@@ -5,6 +5,9 @@ on:
     types: [ published ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,17 +15,17 @@ jobs:
       mvn_version: ${{ steps.mvn_version.outputs.mvn_version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: 21
           java-package: jdk+fx
 
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -44,7 +47,7 @@ jobs:
           xamlSorter.Java-${{ steps.mvn_version.outputs.mvn_version }}.jar
 
       - name: Upload JAR as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: xamlSorter.Java-jar
           path: xamlSorter.Java-${{ steps.mvn_version.outputs.mvn_version }}.jar
@@ -54,15 +57,15 @@ jobs:
     runs-on: windows-latest
     needs: build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: xamlSorter.Java-jar
           path: ./app
 
       - name: Set up JDK (for jpackage)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: 21
@@ -86,7 +89,7 @@ jobs:
           powershell Compress-Archive -Path dist\xamlSorter.Java\* -DestinationPath xamlSorter.Java-${{ needs.build.outputs.mvn_version }}-windows.zip
 
       - name: Upload Windows zip
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: xamlSorter.Java-windows-zip
           path: xamlSorter.Java-${{ needs.build.outputs.mvn_version }}-windows.zip
@@ -95,9 +98,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: xamlSorter.Java-jar
           path: ./app
@@ -106,7 +109,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libfreetype6 libfontconfig1
 
       - name: Set up JDK (for jpackage)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: 21
@@ -129,7 +132,7 @@ jobs:
           cd dist && zip -r ../xamlSorter.Java-${{ needs.build.outputs.mvn_version }}-linux.zip xamlSorter.Java
 
       - name: Upload Linux zip
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: xamlSorter.Java-linux-zip
           path: xamlSorter.Java-${{ needs.build.outputs.mvn_version }}-linux.zip
@@ -138,15 +141,15 @@ jobs:
     runs-on: macos-latest
     needs: build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: xamlSorter.Java-jar
           path: ./app
 
       - name: Set up JDK (for jpackage)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: 21
@@ -170,35 +173,38 @@ jobs:
           zip -r ../xamlSorter.Java-${{ needs.build.outputs.mvn_version }}-macos.zip xamlSorter.Java.app
 
       - name: Upload macOS zip
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: xamlSorter.Java-macos-zip
           path: xamlSorter.Java-${{ needs.build.outputs.mvn_version }}-macos.zip
 
   release:
+    permissions:
+      contents: write
+
     needs: [ build, package-windows, package-linux, package-macos ]
     runs-on: ubuntu-latest
     steps:
       - name: Download JAR
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: xamlSorter.Java-jar
           path: ./artifact
 
       - name: Download Windows Zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: xamlSorter.Java-windows-zip
           path: ./artifact
 
       - name: Download Linux Zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: xamlSorter.Java-linux-zip
           path: ./artifact
 
       - name: Download macOS Zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: xamlSorter.Java-macos-zip
           path: ./artifact
