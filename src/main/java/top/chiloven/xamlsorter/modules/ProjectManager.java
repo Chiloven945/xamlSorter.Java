@@ -314,6 +314,7 @@ public class ProjectManager {
      * @param mainPage     the MainPage instance to access grouped data
      * @param isTranslated true if importing a translation XAML file, false for an original XAML file
      */
+    @SuppressWarnings("unchecked")
     public static void importXaml(MainPage mainPage, boolean isTranslated) {
         logger.debug("Starting importXaml. isTranslated: {}", isTranslated);
         File file = CustomFileChooser.showOpenFileDialog(

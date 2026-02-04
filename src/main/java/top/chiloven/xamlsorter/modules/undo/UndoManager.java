@@ -25,7 +25,7 @@ public class UndoManager {
     public void execute(UndoableCommand cmd) {
         ensureFx();
         if (index < history.size() - 1) history.subList(index + 1, history.size()).clear();
-        if (!history.isEmpty() && history.get(history.size() - 1).mergeWith(cmd)) {
+        if (!history.isEmpty() && history.getLast().mergeWith(cmd)) {
             refresh();
             return;
         }
@@ -99,7 +99,7 @@ public class UndoManager {
         if (history.size() <= limit) return;
         int remove = history.size() - limit;
         for (int i = 0; i < remove; i++) {
-            history.remove(0);
+            history.removeFirst();
             index--;
             savePointer--;
         }

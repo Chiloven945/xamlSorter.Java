@@ -18,6 +18,8 @@ import javafx.stage.WindowEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Objects;
+
 import static top.chiloven.xamlsorter.modules.I18n.getLang;
 
 public class Main extends Application {
@@ -28,7 +30,7 @@ public class Main extends Application {
 
     private static volatile boolean restartRequested = false;
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         launch(args);
     }
 
@@ -100,12 +102,12 @@ public class Main extends Application {
             });
 
             primaryStage.getIcons().addAll(
-                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-16x16.png")),
-                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-32x32.png")),
-                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-64x64.png")),
-                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-128x128.png")),
-                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-192x192.png")),
-                    new Image(getClass().getResourceAsStream("/assets/icons/application/application-256x256.png"))
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-16x16.png"))),
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-32x32.png"))),
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-64x64.png"))),
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-128x128.png"))),
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-192x192.png"))),
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/icons/application/application-256x256.png")))
             );
             logger.info("Application icons loaded successfully");
 

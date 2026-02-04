@@ -9,7 +9,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class TestMain extends Application {
-    public static void main(String[] args) {
+    static void main(String[] args) {
         launch(args);
     }
 

@@ -63,7 +63,7 @@ public class MainPage extends StackPane {
         setupComponents();
         setupEventHandlers();
         showWelcome();
-        getStylesheets().add(getClass().getResource("/ui/styles/startpane.css").toExternalForm());
+        getStylesheets().add(Objects.requireNonNull(getClass().getResource("/ui/styles/startpane.css")).toExternalForm());
 
         logger.debug("MainPage initialized");
     }
@@ -200,6 +200,7 @@ public class MainPage extends StackPane {
         setupContextMenu();
     }
 
+    @SuppressWarnings("unchecked")
     private void setupColumns() {
         double total = 1 + 1.5 + 1.5; // = 4.0
         keyColumn.prefWidthProperty().bind(translationTreeTable.widthProperty().multiply(1 / total));

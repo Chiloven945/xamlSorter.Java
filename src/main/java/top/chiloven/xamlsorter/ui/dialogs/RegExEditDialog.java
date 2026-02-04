@@ -110,6 +110,7 @@ public class RegExEditDialog extends Dialog<ButtonType> {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void initializeControls() {
         // 配置作用域选择框
         scopeComboBox.getItems().addAll(

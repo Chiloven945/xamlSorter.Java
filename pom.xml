@@ -13,10 +13,10 @@
     <url>https://github.com/Chiloven945/xamlSorter.Java</url>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>21.0.7</javafx.version>
+        <javafx.version>25.0.2</javafx.version>
         <ikonli.version>12.4.0</ikonli.version>
     </properties>
 
@@ -126,6 +126,15 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>top.chiloven.xamlsorter.Main</mainClass>
+                </configuration>
             </plugin>
 
         </plugins>

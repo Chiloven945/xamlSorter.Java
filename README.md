@@ -13,7 +13,7 @@
 An JavaFX application to sort XAML language files, create for the PCL i18n Project. It is currently in development and
 is not yet ready for production use.
 
-Additionally, this application is developed using Java 21 and JavaFX 21, and is built using Maven.
+Additionally, this application is developed using Java 25 and JavaFX 25, and is built using Maven.
 
 ## To-Dos
 
